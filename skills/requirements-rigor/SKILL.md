@@ -1,6 +1,6 @@
 ---
 name: requirements-rigor
-description: Vocabulário e regras de rigor para artefatos de requisitos. Use ao auditar ou escrever uma User Story, critério de aceite, condição de teste ou ata de reunião, e sempre que precisar decidir se algo é inferência ou invenção, marcar uma lacuna, avaliar INVEST, converter critério para Gherkin ou dar veredito de prontidão.
+description: "Vocabulário e regras de rigor para artefatos de requisitos. Use ao auditar ou escrever uma User Story, critério de aceite, condição de teste ou ata de reunião, e sempre que precisar decidir se algo é inferência ou invenção, marcar uma lacuna, avaliar INVEST, converter critério para Gherkin ou dar veredito de prontidão."
 ---
 
 # Rigor de requisitos

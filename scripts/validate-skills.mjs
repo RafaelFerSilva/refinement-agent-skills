@@ -11,13 +11,22 @@ const skillsDir = join(root, 'skills');
 const errors = [];
 const fail = (m) => errors.push(m);
 
-function frontmatter(text) {
+function frontmatter(text, skillName) {
   const m = text.match(/^---\n([\s\S]*?)\n---\n/);
   if (!m) return null;
   const fm = {};
   for (const line of m[1].split('\n')) {
+    if (!line.trim()) continue;
     const kv = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (kv) fm[kv[1]] = kv[2].replace(/^"(.*)"$/, '$1');
+    if (!kv) {
+      fail(`${skillName}: linha inválida no frontmatter: "${line}"`);
+      continue;
+    }
+    const val = kv[2].trim();
+    if (val.includes(': ') && !(val.startsWith('"') && val.endsWith('"')) && !(val.startsWith("'") && val.endsWith("'"))) {
+      fail(`${skillName}: valor de "${kv[1]}" contém ": " mas não está entre aspas (incompatível com parsers YAML)`);
+    }
+    fm[kv[1]] = val.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
   }
   return fm;
 }
@@ -32,7 +41,7 @@ for (const name of skills) {
   const skillFile = join(dir, 'SKILL.md');
   if (!existsSync(skillFile)) { fail(`${name}: sem SKILL.md`); continue; }
   const text = readFileSync(skillFile, 'utf8');
-  const fm = frontmatter(text);
+  const fm = frontmatter(text, name);
   if (!fm) { fail(`${name}: frontmatter ausente`); continue; }
   if (fm.name !== name) fail(`${name}: name "${fm.name}" difere da pasta`);
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(name) || name.length > 64) fail(`${name}: nome fora do padrão do Agent Skills`);

@@ -1,6 +1,6 @@
 ---
 name: refine-story
-description: Sabatina uma User Story escrita pelo PO até ela estar pronta para planning, e publica a versão refinada no tracker com veredito.
+description: "Sabatina uma User Story escrita pelo PO até ela estar pronta para planning, e publica a versão refinada no tracker com veredito."
 disable-model-invocation: true
 argument-hint: "[caminho, ID ou texto da US]"
 ---

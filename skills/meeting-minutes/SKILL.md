@@ -1,6 +1,6 @@
 ---
 name: meeting-minutes
-description: Transforma uma transcrição de reunião em ata auditável: decisões e ações com proveniência, acordos presumidos para confirmar por questionário, ações em JSON e insumo para o discovery.
+description: "Transforma uma transcrição de reunião em ata auditável: decisões e ações com proveniência, acordos presumidos para confirmar por questionário, ações em JSON e insumo para o discovery."
 disable-model-invocation: true
 argument-hint: "[caminho da transcrição ou cole o texto; 'modo ações' para só a tabela]"
 ---

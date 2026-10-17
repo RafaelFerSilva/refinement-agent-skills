@@ -1,6 +1,6 @@
 ---
 name: socratic-examination
-description: Conduz uma sabatina: entrevista o PO em rodadas até a fronteira de decisões esvaziar, buscando fatos antes de perguntar e registrando termos e decisões no glossário. Use quando um fluxo mandar sabatinar, ou quando o usuário pedir para ser sabatinado sobre uma história, um escopo ou uma decisão.
+description: "Conduz uma sabatina: entrevista o PO em rodadas até a fronteira de decisões esvaziar, buscando fatos antes de perguntar e registrando termos e decisões no glossário. Use quando um fluxo mandar sabatinar, ou quando o usuário pedir para ser sabatinado sobre uma história, um escopo ou uma decisão."
 ---
 
 # Sabatina

@@ -1,6 +1,6 @@
 ---
 name: qa-plan
-description: Sabatina uma User Story do ponto de vista de teste e publica a base do plano de teste: condições com técnica declarada, risco, camadas, bloqueadores de automação e perguntas com destinatário.
+description: "Sabatina uma User Story do ponto de vista de teste e publica a base do plano de teste: condições com técnica declarada, risco, camadas, bloqueadores de automação e perguntas com destinatário."
 disable-model-invocation: true
 argument-hint: "[caminho ou ID da US refinada]"
 ---

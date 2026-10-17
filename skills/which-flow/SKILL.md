@@ -1,6 +1,6 @@
 ---
 name: which-flow
-description: Pergunte qual fluxo de refinamento usar. Um roteador sobre as skills deste pacote.
+description: "Pergunte qual fluxo de refinamento usar. Um roteador sobre as skills deste pacote."
 disable-model-invocation: true
 ---
 

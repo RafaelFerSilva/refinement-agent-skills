@@ -1,6 +1,6 @@
 ---
 name: configure-refinement
-description: Configura um workspace para os fluxos de refinamento: o modo (com código ou sem código), o tracker em markdown local, as convenções de publicação e o bloco de instruções em AGENTS.md ou CLAUDE.md. Rode uma vez por workspace.
+description: "Configura um workspace para os fluxos de refinamento: o modo (com código ou sem código), o tracker em markdown local, as convenções de publicação e o bloco de instruções em AGENTS.md ou CLAUDE.md. Rode uma vez por workspace."
 disable-model-invocation: true
 ---
 

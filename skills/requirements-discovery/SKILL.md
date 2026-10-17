@@ -1,6 +1,6 @@
 ---
 name: requirements-discovery
-description: Sabatina um input bruto de stakeholders (transcrição, briefing, e-mail, ideia de feature) até virar épicos e User Stories candidatas publicadas no tracker; quando o escopo não cabe numa sessão, abre um mapa de decisões e o resolve uma decisão por sessão.
+description: "Sabatina um input bruto de stakeholders (transcrição, briefing, e-mail, ideia de feature) até virar épicos e User Stories candidatas publicadas no tracker; quando o escopo não cabe numa sessão, abre um mapa de decisões e o resolve uma decisão por sessão."
 disable-model-invocation: true
 argument-hint: "[caminho do input ou cole o texto; ou caminho de uma spec com mapa aberto]"
 ---
