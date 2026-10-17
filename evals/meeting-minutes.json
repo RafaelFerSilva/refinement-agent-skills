@@ -1,0 +1,33 @@
+{
+  "skill_name": "meeting-minutes",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/meeting-minutes evals/fixtures/transcricao-projeto-frota.md . Publique a ata em .scratch/projeto-frota-2026-04-14/ata.md.",
+      "expected_output": "Ata completa. Triagem ÍNTEGRA com o erro 'telimetria' sinalizado. Uma decisão (alertas no MVP) com DITO de Carlos e confirmação de Marcus. Tabela com A01 (telemetria, Priya, semana de 2026-04-20, Medium [EST], nota de substituição de Marcus), A02 (revisar documento de escopo, Carlos, [A DEFINIR] ou 'hoje' sem a circunstância pessoal) e A03 treinamento como [ACOMPANHAMENTO]. SAP como acordo presumido com destinatários. JSON com os objetos das ações reais, dueDate null para a semana sem dia fixo. Autoverificação OK. Questionário para Carlos e Marcus sobre o SAP, escrito ao lado da ata; discovery-input.md com os trechos de requisito.",
+      "files": ["evals/fixtures/transcricao-projeto-frota.md"],
+      "assertions": [
+        "node scripts/grade-output.mjs <ata> --skill meeting-minutes passa em todas as checagens",
+        "A triagem registra [POSSÍVEL ERRO DE TRANSCRIÇÃO: telimetria → telemetria]",
+        "A decisão sobre alertas no MVP tem proveniência DITO de Carlos e confirmação de Marcus",
+        "A ação de telemetria tem uma única linha, responsável Priya, com nota [substitui: Marcus, ~12min]",
+        "A doença da filha de Carlos não aparece em nenhuma seção; o compromisso de revisar o documento de escopo aparece",
+        "A exclusão do SAP está em Acordos Presumidos, não em Decisões",
+        "O treinamento de motoristas é [ACOMPANHAMENTO] e não tem objeto no JSON",
+        "Existe discovery-input.md com os trechos de requisito organizados por falante",
+        "Existe um questionário para Carlos e Marcus sobre o acordo presumido do SAP, no formato de QUESTIONARIO.md, ao lado da ata"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/meeting-minutes modo ações evals/fixtures/transcricao-projeto-frota.md",
+      "expected_output": "Só as seções Tabela de Ações, Perguntas em Aberto e JSON, com as mesmas regras de proveniência e o aviso final.",
+      "files": ["evals/fixtures/transcricao-projeto-frota.md"],
+      "assertions": [
+        "A saída contém a tabela de ações, as perguntas em aberto e o JSON, e não contém resumo executivo nem decisões registradas",
+        "O JSON tem exatamente um objeto por ação real da tabela",
+        "O aviso final está presente"
+      ]
+    }
+  ]
+}

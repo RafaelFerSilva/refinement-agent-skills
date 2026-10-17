@@ -1,0 +1,38 @@
+{
+  "skill_name": "qa-plan",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/qa-plan evals/fixtures/us-318-encerrar-alerta.md . Modo sem código; glossário em evals/fixtures/CONTEXT-frota.md.",
+      "expected_output": "Triagem TESTÁVEL ou TESTÁVEL COM RESSALVAS, dita em uma linha, com a nota de que não há spec de /refine-story. Matriz com uma condição por motivo da lista (particionamento de equivalência), transição inválida (encerrar alerta já encerrado) como [INDEFINIDO → Pergunta n], autorização (quem não é operador de despacho), alerta criado a partir de leitura retroativa (fato do glossário) e idempotência. Perguntas numeradas numa sequência única com destinatário [PO] ou [DEV]; as de DEV (como a fila ativa é observável, registro do horário com fuso) separadas para o questionário ao time. Nenhum resultado esperado inventado. A rodada espera o PO.",
+      "files": [
+        "evals/fixtures/us-318-encerrar-alerta.md",
+        "evals/fixtures/CONTEXT-frota.md"
+      ],
+      "assertions": [
+        "A resposta classifica a US como TESTÁVEL ou TESTÁVEL COM RESSALVAS e diz o critério usado",
+        "A matriz tem uma condição por motivo da lista, marcada como [DERIVADO: particionamento de equivalência]",
+        "Existe condição de encerrar um alerta já encerrado, com resultado [INDEFINIDO → Pergunta n] e técnica transição de estados",
+        "Existe condição ou pergunta sobre alerta originado de leitura retroativa, com base no CONTEXT.md",
+        "Todo [INDEFINIDO → Pergunta n] tem pergunta numerada n com destinatário [PO] ou [DEV], numa sequência única",
+        "Perguntas de DEV são separadas para questionário ao time de desenvolvimento, não respondidas por suposição",
+        "Nenhuma condição derivada aparece sem técnica nomeada",
+        "A resposta espera o PO responder as perguntas [PO] antes de publicar o plano"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/qa-plan evals/fixtures/us-231-exportar-pdf.md",
+      "expected_output": "Triagem NÃO TESTÁVEL: os quatro critérios não descrevem comportamento observável (subjetivo, task, subjetivo, DoD). Lista três a cinco perguntas mínimas e recomenda /refine-story. Para sem montar matriz.",
+      "files": [
+        "evals/fixtures/us-231-exportar-pdf.md"
+      ],
+      "assertions": [
+        "A resposta classifica a US como NÃO TESTÁVEL",
+        "A resposta explica por que cada critério não é observável",
+        "A resposta lista entre três e cinco perguntas mínimas",
+        "A resposta recomenda /refine-story e não produz matriz de condições"
+      ]
+    }
+  ]
+}

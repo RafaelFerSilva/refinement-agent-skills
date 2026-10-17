@@ -1,0 +1,31 @@
+{
+  "skill_name": "requirements-discovery",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/requirements-discovery evals/fixtures/briefing-alertas-velocidade.md . Modo sem código; glossário em evals/fixtures/CONTEXT-frota.md.",
+      "expected_output": "Triagem UTILIZÁVEL ou PARCIALMENTE UTILIZÁVEL. Mapa em largura: domínio de alertas de velocidade com confiança, stakeholders Carlos (negócio) e Priya (técnico), um épico com complexidade justificada. Anti-padrões detectados: 'intuitivo' (resultado não verificável), 'qualquer dispositivo' (escopo infinito), 'rápido' (desempenho). SAP registrado como fora de escopo presumido ou [VALIDAR COM EQUIPE], não como decisão. Primeira rodada em largura com resposta recomendada e base; nenhum SLA inventado; espera o usuário.",
+      "files": ["evals/fixtures/briefing-alertas-velocidade.md", "evals/fixtures/CONTEXT-frota.md"],
+      "assertions": [
+        "A resposta diz a triagem do input em uma linha",
+        "Stakeholders Carlos e Priya aparecem com tipo (negócio, técnico)",
+        "'intuitivo' e 'qualquer dispositivo' são sinalizados como anti-padrões, com pergunta",
+        "O papel usado para o operador é 'operador de despacho', conforme o glossário, e não 'usuário'",
+        "A exclusão do SAP do MVP não é registrada como decisão",
+        "Nenhum número de latência ou SLA é afirmado para 'rápido'",
+        "A primeira rodada tem perguntas numeradas com resposta recomendada e espera o usuário"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/requirements-discovery evals/fixtures/briefing-inutilizavel.md",
+      "expected_output": "Triagem INUTILIZÁVEL. Diz que o input não permite estruturar histórias, lista três a cinco perguntas mínimas que destravariam a análise e para.",
+      "files": ["evals/fixtures/briefing-inutilizavel.md"],
+      "assertions": [
+        "A resposta classifica o input como INUTILIZÁVEL",
+        "A resposta lista entre três e cinco perguntas mínimas",
+        "Nenhuma história, épico ou domínio é produzido"
+      ]
+    }
+  ]
+}

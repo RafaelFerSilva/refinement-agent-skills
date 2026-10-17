@@ -1,0 +1,5 @@
+interface:
+  display_name: "QA Plan"
+  short_description: "Deriva condições de teste com técnica declarada e sabatina o que ficou indefinido"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Qual fluxo?"
+  short_description: "Roteador sobre as skills de refinamento"
+policy:
+  allow_implicit_invocation: false

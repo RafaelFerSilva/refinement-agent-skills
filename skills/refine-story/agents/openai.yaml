@@ -1,0 +1,5 @@
+interface:
+  display_name: "Refine Story"
+  short_description: "Sabatina uma User Story até o veredito e publica a versão refinada"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Requirements Discovery"
+  short_description: "Sabatina input bruto até virar épicos e histórias candidatas, com mapa de decisões quando não cabe numa sessão"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,52 @@
+{
+  "skill_name": "refine-story",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/refine-story evals/fixtures/us-245-silenciar-alertas.md . O workspace está em modo sem código; o glossário do produto está em evals/fixtures/CONTEXT-frota.md.",
+      "expected_output": "Triagem ANALISÁVEL dita em uma linha. Primeira rodada no formato de sabatina (❓ Q<n> e **Recomendação:**): quem silencia (recomendando operador de despacho com base no glossário), o que é 'por um tempo' (duração, quem define, sem recomendar número), o que acontece com um alerta que chega durante o silenciamento (sem recomendação, com opções), e o que 'voltam sozinhos' significa de forma verificável. AC2 reconhecido como task e AC4 como DoD, sem perguntas sobre eles; 'de forma simples' sinalizado como resultado não verificável. Nenhum valor de duração inventado. A resposta termina esperando o PO.",
+      "files": [
+        "evals/fixtures/us-245-silenciar-alertas.md",
+        "evals/fixtures/CONTEXT-frota.md"
+      ],
+      "assertions": [
+        "A resposta classifica a US como ANALISÁVEL antes de qualquer pergunta",
+        "A primeira rodada contém ao menos três perguntas no formato ❓ Q<n>, cada uma seguida de **Recomendação:** com resposta recomendada ou com \"sem recomendação\"",
+        "A pergunta sobre o papel recomenda operador de despacho e cita o glossário como base",
+        "Existe uma pergunta sobre a duração do silenciamento e ela não recomenda um número",
+        "AC2 é tratado como task de implementação e AC4 como Definition of Done, sem perguntas sobre eles",
+        "'de forma simples' no AC1 é sinalizado como resultado não verificável",
+        "Nenhum valor numérico de duração, limite ou SLA aparece como afirmação",
+        "A resposta espera o PO responder; não escreve a US refinada na primeira mensagem"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/refine-story evals/fixtures/us-402-esqueleto-login-google.md . Modo sem código.",
+      "expected_output": "Triagem ESQUELETO. A primeira rodada pergunta quais cenários o PO precisa definir (happy path, conta Google sem cadastro, conta já vinculada) sem escrever critérios de aceite por conta própria.",
+      "files": [
+        "evals/fixtures/us-402-esqueleto-login-google.md",
+        "evals/fixtures/CONTEXT-frota.md"
+      ],
+      "assertions": [
+        "A resposta classifica a US como ESQUELETO",
+        "Nenhum cenário Gherkin completo (Dado/Quando/Então) é escrito na primeira rodada",
+        "As perguntas pedem ao PO os cenários, oferecendo os que o texto sugere como inferência com base",
+        "A resposta espera o PO responder"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/refine-story evals/fixtures/517-nao-e-us-migrar-banco.md",
+      "expected_output": "Triagem NÃO É US: é uma task técnica. Explica em duas ou três linhas, sugere reclassificar como task, e para sem fazer perguntas de refinamento.",
+      "files": [
+        "evals/fixtures/517-nao-e-us-migrar-banco.md"
+      ],
+      "assertions": [
+        "A resposta diz que o item não é uma User Story e nomeia o artefato real (task técnica)",
+        "A resposta sugere o tratamento (reclassificar como task) em poucas linhas",
+        "A resposta não inicia uma rodada de perguntas nem reescreve o item como narrativa"
+      ]
+    }
+  ]
+}

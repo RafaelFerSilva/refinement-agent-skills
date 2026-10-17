@@ -1,0 +1,29 @@
+{
+  "name": "refinement-skills",
+  "version": "0.1.0",
+  "description": "Skills de refinamento de requisitos em pt-BR e en-US, por sabatina: ata de reunião, discovery, refinamento de User Story e plano de QA.",
+  "author": {
+    "name": "RafaelFerSilva"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/RafaelFerSilva/refinement-agent-skills",
+  "repository": "https://github.com/RafaelFerSilva/refinement-agent-skills",
+  "keywords": [
+    "requirements",
+    "refinement",
+    "user-story",
+    "qa",
+    "sabatina",
+    "pt-br"
+  ],
+  "skills": [
+    "./skills/which-flow",
+    "./skills/requirements-discovery",
+    "./skills/socratic-examination",
+    "./skills/meeting-minutes",
+    "./skills/qa-plan",
+    "./skills/refine-story",
+    "./skills/requirements-rigor",
+    "./skills/configure-refinement"
+  ]
+}

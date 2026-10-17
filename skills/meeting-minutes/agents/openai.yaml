@@ -1,0 +1,5 @@
+interface:
+  display_name: "Ata de reunião"
+  short_description: "Transcrição em ata auditável, ações em JSON e insumo para discovery"
+policy:
+  allow_implicit_invocation: false
