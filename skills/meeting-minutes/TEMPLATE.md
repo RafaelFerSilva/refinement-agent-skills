@@ -1,101 +1,101 @@
-# Ata: <título da reunião>
+# Minutes: <meeting title>
 
-Status: rascunho
-Azure: <ID ou nenhum>
-Data: <AAAA-MM-DD> | Duração: <minutos> | Participantes: <nome: papel, ...>
-Projeto: <uma linha>
+Status: draft
+Azure: <ID or none>
+Date: <YYYY-MM-DD> | Duration: <minutes> | Attendees: <name: role, ...>
+Project: <one line>
 
-### 0. Triagem
+### 0. Triage
 
-<ÍNTEGRA | DEGRADADA com resumo das lacunas | INSUFICIENTE>. Erros de transcrição detectados. Glossário aplicado: <termos dos metadados usados na ata>. Nota de trecho pessoal omitido, se houver, sem o conteúdo.
+<INTACT | DEGRADED with gap summary | INSUFFICIENT>. Transcription errors detected. Glossary applied: <metadata terms applied to minutes>. Note on personal content omitted, if any, without sensitive details.
 
-### 1. Resumo executivo
+### 1. Executive Summary
 
-4 a 6 bullets, cada um uma decisão, alinhamento ou blocker, compreensível por quem não estava. Acordos presumidos entram só como "pendente de confirmação: ...".
+4 to 6 bullet points, each capturing a decision, alignment, or blocker, clear to someone who was not present. Presumed agreements appear only as "pending confirmation: ...".
 
-### 2. Decisões registradas (DITO apenas)
+### 2. Recorded Decisions (STATED only)
 
-- **Decisão:** <o que foi decidido>
-  **Proveniência:** [DITO: falante, "paráfrase"] (+ nota de reversão, se houve)
-  **Contexto:** <por quê>
-  **Impacto:** <o que muda>
+- **Decision:** <what was decided>
+  **Provenance:** [STATED: speaker, "paraphrase"] (+ reversal note, if applicable)
+  **Context:** <rationale>
+  **Impact:** <what changes>
 
-### 3. Tabela de ações
+### 3. Action Items Table
 
-| ID | Ação | Responsável | Prazo | Prioridade | Proveniência | Observação |
+| ID | Action | Assignee | Deadline | Priority | Provenance | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
 
-Responsável: nome dito ou [A DEFINIR]. Prazo: data dita em ISO; implícito, em palavras mais a data calculada quando a aritmética for possível; ausente, [A DEFINIR]. Prioridade: escala Jira mais [CTX] ou [EST], aritmética na observação quando [EST]. [ACOMPANHAMENTO] para intenção sem dono ou verbo executável: Responsável e Prazo `[A DEFINIR]`, Prioridade `n/a`.
+Assignee: spoken name or [TO BE DEFINED]. Deadline: stated date in ISO; implicit date in words plus calculated ISO date when arithmetic is possible; missing, [TO BE DEFINED]. Priority: Highest, High, Medium, Low plus [CTX] or [EST], with date arithmetic in notes when [EST]. [TRACKING] for general intentions without an owner or actionable verb: Assignee and Deadline `[TO BE DEFINED]`, Priority `n/a`.
 
-### 4. Acordos presumidos, confirmar
+### 4. Presumed Agreements, to Confirm
 
-- **Acordo presumido:** <o que parece acordado>
-  **Base:** [PRESUMIDO: padrão, com minuto]
-  **Confirmar com:** <participantes>
-  **Se confirmado, vira:** <decisão | ação, para quem>
+- **Presumed agreement:** <what appears agreed>
+  **Base:** [ASSUMED: pattern, with ~minute]
+  **Confirm with:** <attendees>
+  **If confirmed, becomes:** <decision | action item, for whom>
 
-Seção vazia: "Nenhum acordo presumido detectado."
+Empty section: "No presumed agreements detected."
 
-### 5. Ações presumidas
+### 5. Presumed Actions
 
-- <tarefa> → decorre de: decisão <n> → <candidato natural, se o papel nos metadados indicar; senão "sem candidato">
+- <task> -> follows from: decision <n> -> <natural candidate, if role in metadata indicates; otherwise "no candidate">
 
-### 6. Perguntas em aberto
+### 6. Open Questions
 
-- <pergunta ou incerteza> + proveniência [DITO: falante] | quem responde (ou [A DEFINIR]) | bloqueia a ação <ID>?
+- <question or uncertainty> + provenance [STATED: speaker] | recipient (or [TO BE DEFINED]) | blocks action item <ID>?
 
-Inclui lacunas de transcrição com possível conteúdo, retratações ambíguas, falantes não identificados com compromisso.
+Includes transcription gaps with possible actionable content, ambiguous retractions, unidentified speakers with commitments.
 
-### 7. Ações em JSON
+### 7. Action Items in JSON
 
-Só ações reais da tabela, sem [ACOMPANHAMENTO] e sem presumidas.
+Real action items from the table only, excluding [TRACKING] and presumed actions.
 
 ```json
 [
   {
-    "title": "descrição clara e específica da ação",
-    "assignee": "nome falado ou null",
+    "title": "clear and specific action description",
+    "assignee": "spoken name or null",
     "priority": "Highest | High | Medium | Low",
-    "dueDate": "YYYY-MM-DD ou null",
+    "dueDate": "YYYY-MM-DD or null",
     "epicLink": null,
     "labels": ["meeting-action"],
-    "description": "contexto para o executor + proveniência (falante, ~minuto) + pendências"
+    "description": "context for assignee + provenance (speaker, ~minute) + dependencies"
   }
 ]
 ```
 
-dueDate só ISO 8601 ou null; prazo implícito sem data calculável vai em palavras na description. assignee [A DEFINIR] vira null com a primeira linha da description "PENDENTE: definir responsável antes de mover para In Progress". priority igual à tabela, sem remapeamento.
+dueDate must be ISO 8601 or null; implicit deadlines without calculable dates go in textual description. Assignee [TO BE DEFINED] becomes null with first line of description "PENDING: assign owner before moving to In Progress". Priority matches table directly.
 
-Notas de importação: (1) assignee usa o nome falado; mapear para as contas do tracker antes de importar; (2) epicLink: vincular manualmente ao épico após a importação.
+Import notes: (1) assignee uses spoken name; map to tracker accounts before importing; (2) epicLink: manually link to epic following import.
 
-### 8. Autoverificação
+### 8. Self-Audit
 
-"Autoverificação: OK" ou o que foi corrigido.
+"Self-Audit: OK" or details of corrections made.
 
-⚠️ Esta ata é um rascunho gerado por IA a partir da transcrição. Requer validação dos participantes antes de circular como registro oficial, em especial os Acordos Presumidos, que não foram verbalizados e precisam de confirmação explícita.
+> ⚠️ These minutes are an AI-generated draft derived from a transcript. They require attendee validation before circulating as an official record, particularly Presumed Agreements, which were not explicitly verbalized and require confirmation.
 
-### Insumo para discovery
+### Discovery Input
 
-Arquivo `discovery-input.md` ao lado da ata:
+File `discovery-input.md` alongside minutes:
 
 ```md
-# Insumo para discovery: <título da reunião>
+# Discovery Input: <meeting title>
 
-Status: rascunho
-Azure: <ID ou nenhum>
-Origem: ata em <caminho>
+Status: draft
+Azure: <ID or none>
+Source: minutes at <path>
 
-## <Falante, papel>
+## <Speaker, role>
 
-- <trecho com conteúdo de requisito: necessidade, capacidade ou restrição verbalizada, com ~minuto>
+- <excerpt containing requirement content: stated need, capability, or constraint, with ~minute>
 
-## Acordos presumidos (não confirmados)
+## Presumed Agreements (unconfirmed)
 
-- <acordo> [PRESUMIDO: base]
+- <agreement> [ASSUMED: base]
 
-## Lacunas que o discovery precisa fechar
+## Gaps that discovery must close
 
-- <o que ninguém disse e uma história vai precisar>
+- <what no one stated and a User Story will require>
 
-⚠️ <o mesmo aviso final da ata>
+> ⚠️ <same disclaimer as minutes>
 ```

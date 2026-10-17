@@ -74,7 +74,7 @@ for (const s of skills) if (s !== 'which-flow' && !router.includes(s)) fail(`whi
 // Autocontenção: toda chamada à Skill tool aponta para uma skill deste pacote.
 for (const name of skills) {
   const text = readFileSync(join(skillsDir, name, 'SKILL.md'), 'utf8');
-  for (const m of text.matchAll(/Skill tool para `([a-z0-9-]+)`/g)) {
+  for (const m of text.matchAll(/Skill tool (?:para|for) `([a-z0-9-]+)`/g)) {
     if (!skills.includes(m[1])) fail(`${name}: chama a Skill tool para ${m[1]}, que não existe em skills/`);
   }
 }

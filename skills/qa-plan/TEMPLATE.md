@@ -1,53 +1,53 @@
-# Plano de QA: <ID ou título da US>
+# QA Plan: <US ID or title>
 
-Status: <EXECUTÁVEL | PARCIAL | BLOQUEADO>
-Azure: <ID do work item ou nenhum>
-Origem: <caminho da US refinada>, sessão de /qa-plan em <AAAA-MM-DD>
+Status: <EXECUTABLE | PARTIAL | BLOCKED>
+Azure: <work item ID or none>
+Source: <refined US path>, /qa-plan session on <YYYY-MM-DD>
 
-## Triagem de testabilidade
+## Testability Triage
 
-<TESTÁVEL | TESTÁVEL COM RESSALVAS | NÃO TESTÁVEL> + motivo em meia linha. Nota sobre refinamento prévio, se aplicável.
+<TESTABLE | TESTABLE WITH RESERVATIONS | NOT TESTABLE> + rationale in half a line. Note on prior refinement, if applicable.
 
-## Matriz de condições de teste
+## Test Conditions Matrix
 
-Agrupada por critério ou comportamento de origem.
+Grouped by originating criterion or behavior.
 
-| # | Condição | Origem | Resultado esperado | Prio | Camada |
+| # | Condition | Origin | Expected Result | Priority | Layer |
 | --- | --- | --- | --- | --- | --- |
 
-## Análise de risco
+## Risk Analysis
 
-Quantas P1, P2 e P3. As três condições de maior risco e por quê. Onde o esforço de automação se concentra. Impactos INDETERMINADOS com a pergunta associada.
+Count of P1, P2, and P3 conditions. Top three highest-risk conditions and rationale. Where automation effort concentrates. INDETERMINATE impacts linked to questions.
 
-Justificativa por condição: `#n`: meia linha.
+Condition rationales: `#n`: half a line.
 
-## Cenários P1 em Gherkin
+## P1 Scenarios in Gherkin
 
-Só as condições P1; as demais vivem na matriz. Cada cenário indica a camada-alvo e os pré-requisitos de massa.
+P1 conditions only; remaining conditions live in the matrix. Each scenario notes the target layer and test data prerequisites.
 
-Cenário: <nome>
-  Dado <estado>
-  Quando <evento>
-  Então <resultado verificável>
+Scenario: <name>
+  Given <state>
+  When <event>
+  Then <verifiable outcome>
 
-## Auditoria de automatizabilidade
+## Automatability Audit
 
-Por cenário P1 e P2: os quatro bloqueadores verificados, `[BLOQUEADOR: tipo]` onde houver, e a ação ou pergunta que o remove. Fechamento: lista consolidada de pré-requisitos de automação (mocks, massa, controles de ambiente).
+Per P1 and P2 scenario: four blockers evaluated, `[BLOCKER: type]` where present, and required action or question to remove it. Summary: consolidated list of automation prerequisites (mocks, test data, environment controls).
 
-## Impacto de regressão
+## Regression Impact
 
-Fluxos existentes que a US toca, o que pode quebrar em silêncio, qual verificação cobre. Sem contexto sobre o sistema: só as perguntas de impacto para DEV.
+Existing flows touched by this US, what could silently break, and which verification covers it. Without existing system context: list impact questions for DEV.
 
-## Decisões da sabatina
+## Examination Decisions
 
-- <pergunta> → <resposta do PO> (<quem>, <data>)
+- <question> -> <PO answer> (<who>, <date>)
 
-## Perguntas em aberto
+## Open Questions
 
-1. [PO|DEV] <pergunta> → <o que destrava no plano> (questionário: <caminho ou nenhum>)
+1. [PO|DEV] <question> -> <what it unblocks in plan> (questionnaire: <path or none>)
 
-## Veredito de cobertura
+## Coverage Verdict
 
-<✅ PLANO EXECUTÁVEL | 🔶 EXECUTÁVEL PARCIALMENTE: P1 executáveis; <n> condições aguardam as perguntas <lista> e <m> aguardam remoção de bloqueadores <lista> | ⛔ PLANO BLOQUEADO: <motivo>. Recomendação: <voltar ao refinamento | resolver bloqueadores de infraestrutura primeiro>>
+<✅ EXECUTABLE PLAN | 🔶 PARTIALLY EXECUTABLE: P1 executable; <n> conditions await questions <list> and <m> await blocker removal <list> | ⛔ BLOCKED PLAN: <rationale>. Recommendation: <return to refinement | resolve infrastructure blockers first>>
 
-⚠️ Este output é a base analítica do plano de teste, não o plano final. A decisão de cobertura, priorização e esforço é do time de QA, com validação de PO (comportamentos indefinidos) e Dev (arquitetura e camadas).
+> ⚠️ This output provides the analytical baseline for a test plan, not the final test plan. Decisions on coverage, prioritization, and effort belong to the QA team, with validation from PO (undefined behaviors) and Dev (architecture and layers).

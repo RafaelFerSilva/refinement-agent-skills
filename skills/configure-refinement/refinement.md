@@ -1,43 +1,42 @@
-# Refinamento
+# Refinement
 
-Modo: <com-codigo | sem-codigo>
-Idioma: <en-US | pt-BR>
+Mode: <com-codigo | sem-codigo>
+Language: <en-US | pt-BR>
 
-Como os fluxos `/refine-story`, `/qa-plan`, `/requirements-discovery` e `/meeting-minutes` operam neste workspace.
+How the `/refine-story`, `/qa-plan`, `/requirements-discovery`, and `/meeting-minutes` workflows operate in this workspace.
 
-## Modo
+## Mode
 
-- **sem-codigo**: o PO é a fonte das respostas. Fatos vêm de `CONTEXT.md`, das histórias em `.scratch/` e dos documentos em `docs/`. Perguntas de arquitetura, observabilidade e camada de teste vão para o time de desenvolvimento por questionário; nunca são respondidas por suposição.
-- **com-codigo**: antes de perguntar, o agente procura no código. Perguntas de arquitetura são respondidas lendo o código, com a fonte citada. O PO só recebe perguntas de comportamento esperado.
+- **sem-codigo** (without code): the PO is the source of answers. Facts originate from `CONTEXT.md`, previous stories in `.scratch/`, and documents in `docs/`. Architecture, observability, and test-layer questions flow to the engineering team via questionnaires; never answered by assumption.
+- **com-codigo** (with code): before asking questions, the agent inspects source code directly. Architecture questions are resolved by reading code, citing the source file. The PO receives only business and expected-behavior questions.
 
-## Idioma
+## Language
 
-- **en-US** (padrão): sabatina e perguntas em inglês. Narrativas no formato "As a [role], I want [capability], so that [outcome]". Critérios em Gherkin com `Scenario:`, `Given`, `When`, `Then`, `And`. Vereditos `READY`, `REFINE`, `BLOCKED` (QA: `EXECUTABLE`, `PARTIAL`, `BLOCKED`). Marcadores em inglês: `[INFERENCE: base]`, `[TO CONFIRM: whom]`, `[AMBIGUITY]`, `[DECOMPOSE]`.
-- **pt-BR**: sabatina e perguntas em português. Narrativas no formato "Como [papel], quero [capacidade], para que [resultado]". Critérios em Gherkin com `Cenário:`, `Dado`, `Quando`, `Então`, `E`. Vereditos `PRONTA`, `REFINAR`, `BLOQUEADA` (QA: `EXECUTÁVEL`, `PARCIAL`, `BLOQUEADO`). Marcadores em português: `[INFERÊNCIA: base]`, `[A CONFIRMAR: quem]`, `[AMBIGUIDADE]`, `[DECOMPOR]`.
+- **en-US** (default): examination and questions conducted in English. Narratives in the format "As a [role], I want [capability], so that [outcome]". Gherkin criteria using `Scenario:`, `Given`, `When`, `Then`, `And`. Verdicts `READY`, `REFINE`, `BLOCKED` (QA: `EXECUTABLE`, `PARTIAL`, `BLOCKED`). Rigor markers in English: `[INFERENCE: base]`, `[TO CONFIRM: whom]`, `[AMBIGUITY]`, `[DECOMPOSE]`.
+- **pt-BR**: examination and questions conducted in Portuguese. Narratives in the format "Como [papel], quero [capacidade], para que [resultado]". Gherkin criteria using `Cenário:`, `Dado`, `Quando`, `Então`, `E`. Verdicts `PRONTA`, `REFINAR`, `BLOQUEADA` (QA: `EXECUTÁVEL`, `PARCIAL`, `BLOQUEADO`). Rigor markers in Portuguese: `[INFERÊNCIA: base]`, `[A CONFIRMAR: quem]`, `[AMBIGUIDADE]`, `[DECOMPOR]`.
 
+## Fact sources
 
-## Fontes de fatos
-
-Em ordem: `CONTEXT.md` (glossário do produto), `docs/adr/`, histórias anteriores em `.scratch/`, documentos em `docs/` (regulamentos, telas, planilhas de requisitos que o PO trouxer vão para lá).
+In priority order: `CONTEXT.md` (product domain glossary), `docs/adr/`, previous stories in `.scratch/`, documents in `docs/` (regulations, wireframes, requirements sheets).
 
 ## Work items
 
-Toda US nasce como work item em `<URL base, ex.: https://dev.azure.com/<org>/<projeto>/_workitems/edit/>`. Cada artefato leva `Azure: <ID>` logo abaixo de `Status:`, ou `Azure: nenhum`.
+Every User Story originates as a work item in `<Base URL, e.g.: https://dev.azure.com/<org>/<project>/_workitems/edit/>`. Each artifact carries `Azure: <ID>` directly below `Status:`, or `Azure: none`.
 
 ## Slugs
 
-Pastas em `.scratch/` usam kebab-case: reunião `<projeto>-<AAAA-MM-DD>`, com o nome do projeto como aparece no título da reunião; discovery `<tema>`; US `<ID>-<titulo-curto>`, com o ID como aparece na US. Se o tracker definir outra convenção, ela prevalece.
+Directories in `.scratch/` use kebab-case: meeting `<project>-<YYYY-MM-DD>`, using the project name as it appears in the meeting title; discovery `<topic>`; US `<ID>-<short-title>`, with the ID matching the tracker. If the tracker defines an alternate convention, it takes precedence.
 
-## Onde cada fluxo publica
+## Publishing locations by workflow
 
-| Fluxo | Artefato |
+| Workflow | Artifact |
 | --- | --- |
-| `/meeting-minutes` | `.scratch/<projeto>-<data>/ata.md` e `discovery-input.md` |
-| `/requirements-discovery` | `.scratch/<tema>/spec.md`, `issues/NN-<slug>.md` (candidatas) e `issues/NN-decisao-<slug>.md` (mapa) |
-| `/refine-story` | `.scratch/<ID>-<titulo>/spec.md` |
-| `/qa-plan` | `.scratch/<ID>-<titulo>/qa-plan.md` |
-| questionários | ao lado do artefato que os gerou, `questionario-<destinatario>.md` |
+| `/meeting-minutes` | `.scratch/<project>-<date>/minutes.md` and `discovery-input.md` |
+| `/requirements-discovery` | `.scratch/<topic>/spec.md`, `issues/NN-<slug>.md` (candidate stories) and `issues/NN-decision-<slug>.md` (map) |
+| `/refine-story` | `.scratch/<ID>-<title>/spec.md` |
+| `/qa-plan` | `.scratch/<ID>-<title>/qa-plan.md` |
+| questionnaires | written alongside generating artifact: `questionnaire-<recipient>.md` |
 
-## Vereditos
+## Verdicts
 
-PRONTA, REFINAR e BLOQUEADA são a linha `Status:` do artefato de `/refine-story`; EXECUTÁVEL, PARCIAL e BLOQUEADO, a de `/qa-plan`; `candidata`, a das histórias que `/requirements-discovery` gera; `mapa aberto`, `em andamento` e `concluído`, a da spec de discovery.
+READY, REFINE, and BLOCKED (or PRONTA, REFINAR, BLOQUEADA) form the `Status:` line for `/refine-story`; EXECUTABLE, PARTIAL, and BLOCKED for `/qa-plan`; `candidate` for candidate stories generated by `/requirements-discovery`; `open map`, `in progress`, and `completed` for discovery specs.

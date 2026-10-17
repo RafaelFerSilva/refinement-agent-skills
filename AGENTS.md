@@ -1,34 +1,34 @@
-# AGENTS.md: constituição do pacote
+# AGENTS.md: package constitution
 
-> Leia este arquivo antes de qualquer ação neste repositório.
+> Read this file before taking any action in this repository.
 
-> Fonte única de verdade para agentes. `CLAUDE.md` (Claude Code) e `GEMINI.md` (Gemini CLI) só importam este arquivo; Codex, Cursor e Copilot o leem direto. Mudanças no fluxo de IA vão aqui.
+> Single source of truth for agents. `CLAUDE.md` (Claude Code) and `GEMINI.md` (Gemini CLI) only import this file; Codex, Cursor, and Copilot read it directly. AI workflow changes belong here.
 
-## O que é este repositório
+## What this repository is
 
-**refinement-skills** é um pacote de skills de agente para refinamento de requisitos em pt-BR e en-US: da transcrição de reunião ao plano de teste, por sabatina. Ele não é o workspace onde as USs são analisadas; é instalado nele. Vocabulário do pacote em `CONTEXT.md`; decisões em `docs/adr/`.
+**refinement-skills** is an agent skills package for software requirements refinement in en-US and pt-BR: from meeting transcripts to QA test plans, driven by socratic examination. It is not the workspace where User Stories are analyzed; it is installed into target workspaces. Package vocabulary lives in `CONTEXT.md`; architectural decisions in `docs/adr/`.
 
-- **Fonte das skills:** `skills/<nome>/SKILL.md`, uma pasta por skill, sem buckets. Cada pasta tem `agents/openai.yaml` com os metadados do Codex.
-- **Autocontido:** toda skill que um fluxo chama pela Skill tool vive em `skills/`. Nenhuma dependência de pacote de terceiros, nem citação a um.
-- **Manifesto:** `.claude-plugin/plugin.json` lista toda skill de `skills/`; `marketplace.json` faz do repositório seu próprio marketplace.
+- **Skill source:** `skills/<name>/SKILL.md`, one folder per skill, no buckets. Each folder contains `agents/openai.yaml` with Codex metadata.
+- **Self-contained:** every skill invoked across workflows lives directly under `skills/`. No external third-party package dependencies, nor references to one.
+- **Manifest:** `.claude-plugin/plugin.json` lists every skill in `skills/`; `marketplace.json` makes the repository its own marketplace.
 
-## Invariantes
+## Invariants
 
-- `name` no frontmatter é igual ao nome da pasta. Corpo em pt-BR; chaves do frontmatter em inglês.
-- Fluxos (`refine-story`, `qa-plan`, `requirements-discovery`, `meeting-minutes`, `which-flow`, `configure-refinement`) são invocados pelo usuário: `disable-model-invocation: true` e `policy.allow_implicit_invocation: false` no `openai.yaml`. As primitivas `socratic-examination` e `requirements-rigor` são invocadas pelo modelo: a `description` é o ponteiro que decide quando disparam. Uma skill invocada só pelo usuário não pode ser chamada por outra skill; o que um fluxo precisa de outra skill, ele chama de uma primitiva ou faz ele mesmo.
-- Regra que mais de um fluxo usa vive em `requirements-rigor` ou em `socratic-examination`, uma vez. Fluxo aponta para lá; não repete.
-- Sem travessão em nenhuma prosa do repositório. Reescreva com vírgula, dois-pontos ou ponto.
-- Skill nova ou renomeada entra em `plugin.json`, no `README.md` e no roteador `which-flow`. Um roteador que não conhece uma skill é um roteador que mente.
-- `prompts/` é gerado de `skills/` por `scripts/build-prompts.mjs` e nunca editado à mão. Mudou uma skill, rode o build; o validador reprova prompt desatualizado. Referência nova a arquivo ou à Skill tool dentro de uma skill precisa de uma regra de adaptação no build, senão ele falha.
+- `name` in frontmatter matches the folder name. Canonical instructions in en-US; frontmatter keys in English.
+- Workflows (`refine-story`, `qa-plan`, `requirements-discovery`, `meeting-minutes`, `which-flow`, `configure-refinement`) are user-invoked: `disable-model-invocation: true` and `policy.allow_implicit_invocation: false` in `openai.yaml`. The primitives `socratic-examination` and `requirements-rigor` are model-invoked: the `description` is the trigger that decides when they fire. A user-invoked skill cannot be called by another skill; what a workflow needs from another skill, it calls from a primitive or performs itself.
+- Any rule used by more than one workflow lives in `requirements-rigor` or `socratic-examination`, once. Workflows point there; they do not repeat rules.
+- No em-dash or en-dash in any repository prose. Rewrite with commas, colons, or periods.
+- Any new or renamed skill must be added to `plugin.json`, `README.md`, and the `which-flow` router. A router that does not know a skill is a router that lies.
+- `prompts/` is generated from `skills/` via `scripts/build-prompts.mjs` and never edited manually. When a skill changes, run the build; the validator rejects outdated prompts. Any new reference to a file or the Skill tool inside a skill requires an adaptation rule in the build script, otherwise it fails.
 
-## Definição de pronto
+## Definition of Done
 
-`node scripts/validate-skills.mjs` e `claude plugin validate . --strict` verdes; `node scripts/build-prompts.mjs` rodado depois de qualquer mudança em `skills/`. Mensagens de commit em Conventional Commits; commit e push só quando o usuário pedir.
+`node scripts/validate-skills.mjs` and `claude plugin validate . --strict` green; `node scripts/build-prompts.mjs` executed after any change in `skills/`. Commit messages follow Conventional Commits; commit and push only when requested by the user.
 
-## Como escrever
+## Writing style
 
-Todo passo termina em critério de conclusão, checável e exigente. Referência que só alguns ramos usam vai para um arquivo irmão apontado do `SKILL.md`; o que todo ramo precisa fica inline. Frase que não muda o comportamento do agente é cortada. Diga o comportamento desejado em vez de proibir o indesejado. Mantenha cada significado num lugar só.
+Every step concludes with a checkable, rigorous completion criterion. References used only by specific branches live in sibling files linked from `SKILL.md`; what every branch requires stays inline. Any sentence that does not change agent behavior is pruned. State the desired behavior instead of forbidding the undesired one. Keep each meaning in a single place.
 
-## Dogfooding e evals
+## Dogfooding and evals
 
-`scripts/link-skills.sh` linka `skills/*` em `~/.claude/skills` e `~/.agents/skills` para usar as skills neste próprio repositório. Evals em `evals/`, no formato do `skill-creator` da Anthropic; `scripts/grade-output.mjs` roda as asserções mecânicas de um artefato. A camada de controle completa está em `docs/agents/harness.md`.
+`scripts/link-skills.sh` links `skills/*` into `~/.claude/skills` and `~/.agents/skills` to dogfood skills within this repository. Evals live in `evals/`, following the Anthropic `skill-creator` format; `scripts/grade-output.mjs` runs automated assertions on artifacts. The complete harness layer is documented in `docs/agents/harness.md`.

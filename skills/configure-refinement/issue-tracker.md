@@ -1,10 +1,10 @@
-# Tracker: markdown local
+# Tracker: local markdown
 
-Os artefatos de refinamento deste workspace vivem em `.scratch/`, versionados com o repositório.
+Refinement artifacts in this workspace live in `.scratch/`, versioned alongside repository code.
 
-- Uma pasta por assunto: `.scratch/<slug>/`, slug conforme `refinement.md`.
-- Todo artefato tem `Status:` logo abaixo do título e, quando o workspace usa work items, a linha de ID do work item. Questionários são a exceção: seguem o formato próprio, sem `Status:`.
-- Histórias candidatas e decisões pendentes de um discovery ficam em `.scratch/<slug>/issues/NN-<slug>.md`, numeradas a partir de 01.
-- Comentários e histórico ficam ao fim do arquivo sob `## Comentários`.
+- One directory per topic: `.scratch/<slug>/`, following naming conventions in `refinement.md`.
+- Every artifact carries `Status:` directly beneath its title and, when work items are configured, the work item ID line. Questionnaires are the exception: they follow their own format without `Status:`.
+- Candidate stories and open decisions for a discovery live in `.scratch/<slug>/issues/NN-<slug>.md`, numbered starting at 01.
+- Comments and discussion history appear at the end of the file under `## Comments`.
 
-Quando um fluxo diz "publique": escreva o arquivo em `.scratch/<slug>/`, criando a pasta. Quando diz "leia a US": o usuário passa o caminho ou o ID; um ID resolve para `.scratch/*/` por busca no título.
+When a workflow says "publish": write the file to `.scratch/<slug>/`, creating the directory if missing. When it says "read the US": the user provides the file path or ID; an ID resolves to `.scratch/*/` by matching the title or identifier.

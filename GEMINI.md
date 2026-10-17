@@ -1,5 +1,5 @@
 # GEMINI.md
 
-Ponte de compatibilidade para o Gemini CLI. A fonte única de verdade para agentes de IA neste repositório é `AGENTS.md`, importado abaixo. Qualquer mudança no fluxo de IA vai em `AGENTS.md`, nunca aqui.
+Compatibility bridge for Gemini CLI. The single source of truth for AI agents in this repository is `AGENTS.md`, imported below. Any change in the AI workflow goes into `AGENTS.md`, never here.
 
 @./AGENTS.md

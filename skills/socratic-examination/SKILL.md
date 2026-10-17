@@ -1,17 +1,17 @@
 ---
 name: socratic-examination
-description: "Conduz uma sabatina: entrevista o PO em rodadas até a fronteira de decisões esvaziar, buscando fatos antes de perguntar e registrando termos e decisões no glossário. Use quando um fluxo mandar sabatinar, ou quando o usuário pedir para ser sabatinado sobre uma história, um escopo ou uma decisão."
+description: "Conducts socratic examination: interviews the PO in rounds until the decision frontier is empty, seeking facts before asking and recording terms and decisions in the glossary. Use when a workflow instructs examination, or when the user asks to be examined on a story, scope, or decision."
 ---
 
-# Sabatina
+# Socratic examination
 
-Entreviste o PO até chegar a um entendimento compartilhado, sem decisão silenciosa de nenhum dos lados. Trate o assunto como uma **árvore de decisões**: cada decisão abre as decisões que dependem dela.
+Interview the PO until a shared understanding is reached, with no silent decisions on either side. Treat the subject as a **decision tree**: each decision unlocks the decisions that depend on it.
 
-## Rodadas e fronteira
+## Rounds and frontier
 
-A **fronteira** são as perguntas cujos pré-requisitos já estão resolvidos: as que podem ser feitas agora sem adivinhar respostas ainda não dadas. Trabalhe em **rodadas**: pergunte toda a fronteira de uma vez, numerada, cada pergunta com sua resposta recomendada, e espere as respostas antes da próxima rodada. Pergunta cuja resposta depende de outra ainda aberta nesta rodada pertence à próxima.
+The **frontier** comprises questions whose prerequisites are resolved: those that can be asked now without guessing pending answers. Work in **rounds**: ask the entire frontier at once, numbered, each question with its recommended answer, and await responses before beginning the next round. A question whose answer depends on another open question in this round belongs in the next round.
 
-Formato de uma rodada em en-US (padrão):
+Format of a round in en-US (default):
 
 ```
 ❓ **Q1. <short title>** (blocking, when it blocks the verdict)
@@ -23,7 +23,7 @@ Formato de uma rodada em en-US (padrão):
 **Recommendation:** no recommendation: <why>, options: <a>, <b>
 ```
 
-Formato de uma rodada em pt-BR:
+Format of a round in pt-BR:
 
 ```
 ❓ **Q1. <título curto>** (bloqueante, quando trava o veredito)
@@ -35,27 +35,27 @@ Formato de uma rodada em pt-BR:
 **Recomendação:** sem recomendação: <por quê>, opções: <a>, <b>
 ```
 
-Bloqueantes primeiro. A numeração continua entre rodadas: a rodada 2 começa onde a 1 parou, para que o artefato final referencie as perguntas sem ambiguidade.
+Blocking questions first. Numbering is continuous across rounds: round 2 continues where round 1 ended, allowing the final artifact to reference questions unambiguously.
 
-Cada resposta reformula a árvore: decisões resolvidas empurram a fronteira e destravam perguntas que dependiam delas. Recalcule a fronteira e pergunte a próxima rodada. A sabatina termina quando a fronteira está vazia, ou quando o PO pede para fechar com o que há. Não sintetize antes disso.
+Each answer reshapes the tree: resolved decisions advance the frontier and unlock dependent questions. Recalculate the frontier and ask the next round. Examination ends when the frontier is empty, or when the PO requests closing with current information. Do not synthesize before that point.
 
-## Fatos e decisões
+## Facts and decisions
 
-Fatos são trabalho seu, nunca do PO. Antes de perguntar, procure a resposta no `CONTEXT.md`, nos ADRs, nas histórias anteriores em `.scratch/` e nos documentos do workspace; no modo com código, também no código, por subagente. Fato encontrado não vira pergunta: vira resposta recomendada com a fonte citada. No modo sem código a busca se limita ao workspace, sem subagente; se nada for encontrado, diga isso em uma linha no topo da rodada.
+Facts are your responsibility, never the PO's. Before asking, search for the answer in `CONTEXT.md`, ADRs, previous stories in `.scratch/`, and workspace documents; in code mode, inspect the codebase via subagent. A found fact does not become a question: it becomes a recommended answer citing the source. In no-code mode, search is restricted to the workspace without subagents; if nothing is found, state this in a single line at the top of the round.
 
-Decisões são do PO: escopo, valor, prioridade, comportamento esperado que nenhuma fonte define. Ponha cada uma para ele e espere. Sem base para recomendar, escreva "sem recomendação" (ou "no recommendation") e as opções com a implicação de cada uma; recomendar sem base é invenção. Quando duas fontes sustentam leituras diferentes, recomende a mais direta e exponha a outra como opção.
+Decisions belong to the PO: scope, business value, priority, expected behavior that no source defines. Present each to the PO and wait. Without a grounding base to recommend, write "no recommendation" (or "sem recomendação" in pt-BR) and list available options with the implication of each; recommending without evidence is an invention. When two sources support different readings, recommend the most direct and expose the other as an option.
 
-Resposta que o PO não sabe dar recebe `[A CONFIRMAR: quem]` (ou `[TO CONFIRM: whom]`) e sai da fronteira. O destinatário é quem o PO indicar; senão, o papel que o glossário associa ao assunto; senão, o próprio PO leva a pergunta. Essas perguntas vão para o questionário que o fluxo gera ao final.
+An answer the PO cannot provide receives `[TO CONFIRM: whom]` (or `[A CONFIRMAR: quem]`) and leaves the frontier. The recipient is whom the PO specifies; otherwise, the role associated with the topic in the glossary; otherwise, the PO takes the question. These questions flow into the questionnaire generated by the workflow at the end.
 
-## Glossário e decisões registradas
+## Glossary and recorded decisions
 
-A sabatina afia a linguagem do produto enquanto acontece:
+Examination sharpens product language as it proceeds:
 
-- **Desafie contra o glossário.** Termo do PO que conflita com o `CONTEXT.md`: aponte na hora. "O glossário define 'alerta' como X, mas você parece querer dizer Y. Qual dos dois?"
-- **Afie o termo vago.** Palavra sobrecarregada ou imprecisa: proponha o termo canônico. "Quando diz 'conta', é o Usuário ou a Persona? São coisas diferentes."
-- **Teste com cenários concretos.** Relação entre conceitos em discussão: invente um caso-limite que force a precisão da fronteira entre eles.
-- **Confira com o que existe.** Afirmação do PO sobre como algo funciona: confira nos artefatos do workspace e, no modo com código, no código. Contradição entra na rodada como pergunta; você não a resolve.
-- **Registre no momento em que resolver.** Termo resolvido entra no `CONTEXT.md` na hora, no formato de [GLOSSARIO.md](GLOSSARIO.md); não acumule para o fim. Só o que o PO resolveu: termo em discussão continua pergunta.
-- **Ofereça um ADR com parcimônia.** Só quando a decisão é difícil de reverter, surpreenderia quem ler o artefato sem contexto, e resultou de uma escolha real entre alternativas. Formato em [ADR.md](ADR.md).
+- **Challenge against the glossary.** A PO term conflicting with `CONTEXT.md`: point it out immediately. "The glossary defines 'alert' as X, but you seem to mean Y. Which of the two?"
+- **Sharpen vague terms.** Overloaded or imprecise words: propose the canonical term. "When you say 'account', do you mean User or Persona? They are distinct entities."
+- **Test with concrete scenarios.** Relationship between concepts under discussion: invent an edge case that forces precision on their boundary.
+- **Verify against existing artifacts.** PO statement about how something works: verify in workspace artifacts and, in code mode, against source code. A contradiction enters the round as a question; you do not resolve it unilaterally.
+- **Record immediately upon resolution.** A resolved domain term enters `CONTEXT.md` immediately, in the format of [GLOSSARY.md](GLOSSARY.md); do not accumulate for the end. Record only what the PO resolves: a term under discussion remains a question.
+- **Offer an ADR sparingly.** Only when the decision is difficult to reverse, would surprise someone reading the artifact without context, and resulted from a genuine choice between alternatives. Format in [ADR.md](ADR.md).
 
-O `CONTEXT.md` é glossário e nada mais: sem detalhe de implementação, sem rascunho, sem decisão de escopo.
+`CONTEXT.md` is a domain glossary and nothing else: no implementation details, no drafts, no scope decisions.

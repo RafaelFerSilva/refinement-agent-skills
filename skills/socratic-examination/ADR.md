@@ -1,13 +1,13 @@
-# Formato de um ADR
+# ADR Format
 
-Arquivo `docs/adr/NNNN-<slug>.md`, numerado a partir do maior existente mais um. Crie a pasta quando o primeiro ADR for necessário.
+File `docs/adr/NNNN-<slug>.md`, numbered sequentially from the highest existing number plus one. Create the directory when the first ADR is required.
 
 ```md
-# <Título curto da decisão>
+# <Short decision title>
 
-<Uma a três frases: o contexto, a decisão, o motivo.>
+<One to three sentences: context, decision, rationale.>
 ```
 
-Um ADR pode ser um parágrafo. O valor está em registrar que a decisão existiu e por quê, não em preencher seções. Seções opcionais, só quando acrescentam: Status (proposta, aceita, substituída por NNNN), Alternativas consideradas, Consequências.
+An ADR can be a single paragraph. The value lies in recording that the decision occurred and why, not in filling arbitrary sections. Optional sections, only when they add value: Status (proposed, accepted, superseded by NNNN), Considered alternatives, Consequences.
 
-Registre quando as três valem: difícil de reverter; surpreendente sem contexto; resultado de uma escolha real entre alternativas. Faltando uma, não registre.
+Record an ADR only when all three criteria apply: difficult to reverse; surprising without context; result of a genuine choice among alternatives. If any criterion is missing, do not record an ADR.

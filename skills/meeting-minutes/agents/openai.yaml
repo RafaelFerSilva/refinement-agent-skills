@@ -1,5 +1,5 @@
 interface:
-  display_name: "Ata de reunião"
-  short_description: "Transcrição em ata auditável, ações em JSON e insumo para discovery"
+  display_name: "Meeting Minutes"
+  short_description: "Transcript into auditable minutes, JSON actions, and discovery input"
 policy:
   allow_implicit_invocation: false

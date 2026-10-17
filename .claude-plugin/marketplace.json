@@ -3,19 +3,21 @@
   "owner": {
     "name": "RafaelFerSilva"
   },
-  "description": "Skills de refinamento de requisitos em pt-BR e en-US, por sabatina.",
+  "description": "Software requirements refinement skills in en-US and pt-BR driven by socratic examination.",
   "plugins": [
     {
       "name": "refinement-skills",
       "source": "./",
-      "description": "Ata de reunião, discovery, refinamento de User Story e plano de QA, por sabatina.",
+      "description": "Meeting minutes, discovery, User Story refinement, and QA test plan driven by socratic examination.",
       "category": "productivity",
       "keywords": [
         "requirements",
         "refinement",
         "user-story",
         "qa",
-        "pt-br"
+        "socratic-examination",
+        "pt-br",
+        "en-us"
       ]
     }
   ]

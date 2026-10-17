@@ -1,48 +1,48 @@
 ---
 name: meeting-minutes
-description: "Transforma uma transcrição de reunião em ata auditável: decisões e ações com proveniência, acordos presumidos para confirmar por questionário, ações em JSON e insumo para o discovery."
+description: "Transforms a meeting transcript into auditable minutes: decisions and action items with provenance, presumed agreements for asynchronous confirmation, action items in JSON, and discovery input."
 disable-model-invocation: true
-argument-hint: "[caminho da transcrição ou cole o texto; 'modo ações' para só a tabela]"
+argument-hint: "[transcript file path or paste text; 'actions mode' for table and JSON only]"
 ---
 
-# Ata de reunião
+# Meeting minutes
 
-Processe uma transcrição e gere um registro estruturado e **auditável**. Ata vira fato: três semanas depois alguém vai citar este documento como prova do que ficou combinado. Por isso tudo que você registra é rastreável à transcrição, e tudo que você presume fica visivelmente separado do que foi dito. Registrar é atestar; sua análise nunca se disfarça de fala dos participantes.
+Process a transcript and generate a structured, **auditable** record. Minutes become facts: three weeks later someone will cite this document as proof of what was agreed. Therefore, everything you record is traceable to the transcript, and everything you presume remains visibly separated from what was explicitly stated. Recording is certifying; your analysis must never disguise itself as attendee speech.
 
-Este fluxo é síntese, sem entrevista: a reunião já aconteceu. O que ele deixa aberto vai para quem pode responder, por questionário, e o que tem conteúdo de requisito vai para `/requirements-discovery`.
+This workflow is synthesis without interview: the meeting has already occurred. Questions left open are directed to their recipients via questionnaires, and requirement content flows to `/requirements-discovery`.
 
-Transcrição: $ARGUMENTS
+Transcript: $ARGUMENTS
 
-## Fronteira de proveniência
+## Provenance boundary
 
-A base é `requirements-rigor`; aqui ela assume três formas:
+Grounded in `requirements-rigor`, here provenance assumes three forms:
 
-- `[DITO: falante, "paráfrase curta"]` (en-US: `[STATED: speaker, "short paraphrase"]`): consta na transcrição. Toda ação, decisão e prioridade carrega quem disse e uma paráfrase de 5 a 15 palavras. Paráfrase honesta basta para auditoria.
-- `[PRESUMIDO: base]` (en-US: `[ASSUMED: base]`): sua análise inferiu de um padrão da conversa: silêncio após proposta, "ok" ambíguo, tarefa que decorre de uma decisão mas ninguém assumiu. Presumido nunca entra em Decisões, Tabela de Ações ou JSON; vive nas seções de presunção, com o trecho e quem deve confirmar.
-- `[A DEFINIR]` (en-US: `[TO BE DEFINED]`): responsável ou prazo não mencionado nem presumível. O placeholder é a resposta correta.
+- `[STATED: speaker, "short paraphrase"]` (pt-BR: `[DITO: falante, "paráfrase curta"]`): stated in the transcript. Every action, decision, and priority carries who stated it and a 5 to 15 word paraphrase. An honest paraphrase suffices for auditing.
+- `[ASSUMED: base]` (pt-BR: `[PRESUMIDO: base]`): your analysis inferred from conversational patterns: silence following a proposal, ambiguous "ok", task implied by a decision that no one explicitly assumed. Presumed items never enter Decisions, Action Items Table, or JSON; they live in presumption sections, with the excerpt and who must confirm.
+- `[TO BE DEFINED]` (pt-BR: `[A DEFINIR]`): assignee or deadline neither mentioned nor inferable. The placeholder is the correct answer.
 
-Teste rápido: "se o participante ler esta linha e disser 'eu nunca falei isso', consigo apontar o trecho?" Sim: DITO. "Não falou, mas deu a entender": PRESUMIDO. Nem isso: A DEFINIR, ou fora da ata. Os demais marcadores de `requirements-rigor`, como `[INFERÊNCIA: base]` (ou `[INFERENCE: base]`), continuam válidos.
+Quick test: "if an attendee reads this line and says 'I never said that', can I point to the excerpt?" Yes: STATED. "They didn't say it directly, but implied it": ASSUMED. Neither: TO BE DEFINED, or excluded from minutes. Remaining markers from `requirements-rigor`, such as `[INFERENCE: base]`, remain valid.
 
-## Passos
+## Steps
 
-1. **Metadados.** Leia `docs/agents/refinement.md` do workspace para identificar o idioma configurado (`en-US` ou `pt-BR`, padrão `en-US`) e onde publicar. Ata, questionários e insumos gerados seguem esse idioma. Título, data, duração, participantes com papéis, projeto, glossário de termos que a transcrição automática distorce. A data é obrigatória: a aritmética de prazos depende dela. Se faltar, pergunte em uma linha antes de seguir. Leia `CONTEXT.md` para o glossário quando houver.
-   Concluído quando: data e participantes estão conhecidos.
+1. **Metadata.** Read `docs/agents/refinement.md` in the workspace to identify the configured language (`en-US` or `pt-BR`, default `en-US`) and publishing path. Minutes, questionnaires, and generated inputs follow this language. Identify title, date, duration, attendees with roles, project, and glossary terms distorted by automated transcription. Date is mandatory: deadline arithmetic depends on it. If missing, ask in a single line before proceeding. Read `CONTEXT.md` for glossary terms when present.
+   Completed when: date and attendees are established.
 
-2. **Triar.** ÍNTEGRA (contínua, falantes identificáveis), DEGRADADA (trechos inaudíveis, falantes trocados, cortes), INSUFICIENTE (fragmento curto demais, ou não é a reunião dos metadados). INSUFICIENTE: diga e pare; ata de fachada circula como registro oficial. DEGRADADA: cada lacuna que possa ter contido ação ou decisão vira pergunta em aberto ("trecho inaudível aos ~12min logo após proposta de X"); a lacuna nunca é reconstruída. Termo distorcido: use a forma do glossário e marque `[POSSÍVEL ERRO DE TRANSCRIÇÃO: original → adotada]` na seção 0 e use só a forma adotada no corpo. Conteúdo pessoal, saúde, família, comentários sobre ausentes: fora da ata em qualquer seção; um compromisso de projeto embutido em contexto pessoal entra sem a circunstância. Falante não identificado com compromisso: responsável `[A DEFINIR: falante não identificado aos ~Xmin]` e pergunta em aberto. Uma nota de que um trecho pessoal foi omitido pode ficar na triagem, sem o conteúdo; prazo que só existe dentro do trecho pessoal entra em palavras, sem a circunstância.
-   Concluído quando: a triagem está escrita na seção 0 com os erros de transcrição detectados.
+2. **Triage.** INTACT (continuous audio, identifiable speakers), DEGRADED (inaudible segments, misassigned speakers, cuts), INSUFFICIENT (too brief, or not the meeting from metadata). INSUFFICIENT: state reason and stop; facade minutes must not circulate as official records. DEGRADED: every gap that might have contained an action or decision becomes an open question ("inaudible segment at ~12min following proposal by X"); gaps are never reconstructed. Distorted terminology: apply glossary spelling and mark `[POSSIBLE TRANSCRIPTION ERROR: original -> adopted]` in section 0, using only the adopted term throughout the body. Personal details, health, family, remarks on absent colleagues: omit from all sections; a project commitment embedded in personal context is recorded without the circumstance. Unidentified speaker with commitment: assignee `[TO BE DEFINED: unidentified speaker at ~Xmin]` and open question. A note that personal content was omitted may appear in triage without details; deadlines mentioned only inside personal context are kept textually without personal circumstance.
+   Completed when: triage is recorded in section 0 with detected transcription errors.
 
-3. **Extrair.** Aplique as regras de [REGRAS.md](REGRAS.md): retratação e supersedência, granularidade de ações, prioridade com proveniência, o que conta como decisão.
-   Concluído quando: cada decisão e cada ação tem proveniência DITO, e cada presunção está nas seções 4 ou 5.
+3. **Extract.** Apply the rules from [RULES.md](RULES.md): retraction and supersedence, action item granularity, priority with provenance, what counts as a decision.
+   Completed when: every decision and action item carries STATED provenance, and presumptions live strictly in sections 4 or 5.
 
-4. **Escrever a ata** no formato de [TEMPLATE.md](TEMPLATE.md). Em "modo ações", só as seções 3, 6 e 7.
-   Concluído quando: o arquivo existe em `.scratch/<projeto>-<AAAA-MM-DD>/ata.md`, ou onde `docs/agents/refinement.md` definir, com o aviso final.
+4. **Write minutes** following [TEMPLATE.md](TEMPLATE.md). In "actions mode", write sections 3, 6, and 7 only.
+   Completed when: the file exists at `.scratch/<project>-<YYYY-MM-DD>/minutes.md` (or where configured in `docs/agents/refinement.md`), with final disclaimer.
 
-5. **Autoverificar** e reportar em uma linha na seção 8: toda ação real da tabela tem objeto no JSON e nenhum objeto do JSON está fora da tabela; toda linha e decisão tem DITO; nenhum PRESUMIDO vazou; prioridades idênticas entre tabela e JSON; datas do JSON em ISO ou null.
-   Concluído quando: a seção 8 diz "OK" ou o que foi corrigido.
+5. **Self-audit** and report in a single line in section 8: every real action in the table has a matching JSON object and no JSON object exists outside the table; every row and decision carries STATED; no ASSUMED leaked into table or decisions; priorities match between table and JSON; JSON dates are ISO or null.
+   Completed when: section 8 states "Self-Audit: OK" or details corrections.
 
-6. **Encaminhar.** Acordos presumidos e perguntas em aberto com destinatário fora da sessão: escreva um questionário por destinatário no formato de `QUESTIONARIO.md` de `requirements-rigor`, ao lado da ata, e aponte cada um a partir da seção que o gerou. Trechos com conteúdo de requisito (necessidades, capacidades, restrições verbalizadas): escreva `discovery-input.md` ao lado da ata, no formato do fim de [TEMPLATE.md](TEMPLATE.md), e diga ao usuário que `/requirements-discovery` parte dele.
-   Concluído quando: cada acordo presumido tem destinatário e questionário, e o insumo para discovery existe quando a reunião tinha conteúdo de requisito.
+6. **Route open items.** Presumed agreements and open questions with recipients outside the session: write one questionnaire per recipient following `QUESTIONNAIRE.md` in `requirements-rigor`, alongside minutes, and link each from the generating section. Excerpts with requirement content (stated needs, capabilities, constraints): write `discovery-input.md` alongside minutes following the template at the end of [TEMPLATE.md](TEMPLATE.md), and instruct user that `/requirements-discovery` begins from it.
+   Completed when: each presumed agreement has a recipient and questionnaire, and discovery input exists when the meeting contained requirement content.
 
-## Aviso final
+## Final notice
 
-> ⚠️ Esta ata é um rascunho gerado por IA a partir da transcrição. Requer validação dos participantes antes de circular como registro oficial, em especial os Acordos Presumidos, que não foram verbalizados e precisam de confirmação explícita.
+> ⚠️ These minutes are an AI-generated draft derived from a transcript. They require attendee validation before circulating as an official record, particularly Presumed Agreements, which were not explicitly verbalized and require confirmation.

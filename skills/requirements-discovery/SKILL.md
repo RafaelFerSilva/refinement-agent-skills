@@ -1,78 +1,78 @@
 ---
 name: requirements-discovery
-description: "Sabatina um input bruto de stakeholders (transcrição, briefing, e-mail, ideia de feature) até virar épicos e User Stories candidatas publicadas no tracker; quando o escopo não cabe numa sessão, abre um mapa de decisões e o resolve uma decisão por sessão."
+description: "Examines raw stakeholder input (transcripts, briefs, emails, feature ideas) into epics and candidate user stories published to the tracker; when scope exceeds a single session, opens a decision map and resolves one decision per session."
 disable-model-invocation: true
-argument-hint: "[caminho do input ou cole o texto; ou caminho de uma spec com mapa aberto]"
+argument-hint: "[input path or paste text; or path to spec with an open map]"
 ---
 
 # Discovery
 
-Converta input não estruturado de stakeholders em requisitos rastreáveis por **sabatina**. Você não é um transcritor: captura o que foi dito e o que foi implicado, sinaliza o que ficou ambíguo, e devolve histórias candidatas que `/refine-story` leva até o planning. O que o input não sustenta não entra; o que ele sugere entra como inferência com base; o que ele deixa aberto vira pergunta.
+Convert unstructured stakeholder input into traceable requirements through **socratic examination**. You are not a transcriber: capture what was stated and what was implied, flag ambiguities, and produce candidate stories that `/refine-story` carries to sprint planning. What the input does not support does not enter; what it hints at enters as a grounded inference; what it leaves open becomes a question.
 
 Input: $ARGUMENTS
 
-## Antes de começar
+## Before starting
 
-Leia `docs/agents/refinement.md` do workspace: ele define o modo, o idioma (`en-US` ou `pt-BR`, padrão `en-US`) e onde publicar. Faltando, peça `/configure-refinement` e pare. Se o argumento é uma spec com `Status: mapa aberto` (ou `Status: open map`), vá direto para "Retomar o mapa". Se o input veio de `/meeting-minutes`, ele já separa o que foi dito do que foi presumido: trate os acordos presumidos como não confirmados. A sabatina e as specs geradas seguem o idioma configurado.
+Read `docs/agents/refinement.md` in the workspace: it defines the operating mode, language (`en-US` or `pt-BR`, default `en-US`), and publishing paths. If missing, request `/configure-refinement` and stop. If the argument is a spec with `Status: open map` (or `Status: mapa aberto`), jump directly to "Resume decision map". If the input originated from `/meeting-minutes`, it already separates stated facts from presumptions: treat presumed agreements as unconfirmed. Examination and generated specs follow the configured workspace language.
 
-## Passos
+## Steps
 
-1. **Carregar e triar.** Leia o input, o `CONTEXT.md`, e chame a Skill tool para `requirements-rigor`. Varra os anti-padrões (leia o `ANTI-PADROES.md` de `requirements-rigor` à parte) e os termos que sempre viram pergunta: é essa varredura que fundamenta a triagem. Classifique contando trechos, não volume: UTILIZÁVEL (todo trecho estrutura requisito), PARCIALMENTE UTILIZÁVEL (ao menos um trecho estrutura e ao menos um não), INUTILIZÁVEL (nenhum trecho estrutura). INUTILIZÁVEL: diga isso com o motivo trecho a trecho, liste as três a cinco perguntas mínimas com destinatário (quem trouxe o input, salvo papel identificável no glossário), escreva o questionário no formato de `QUESTIONARIO.md` de `requirements-rigor`, diga que `/requirements-discovery` roda de novo com as respostas, e pare sem publicar mais nada; histórias de enchimento não ajudam ninguém. PARCIAL: siga, e o artefato final abre com a lista dos trechos que não geraram nada e o que falta em cada um.
-   Concluído quando: a classificação foi dita em uma linha, seguida do motivo trecho a trecho quando não é UTILIZÁVEL.
+1. **Load and triage.** Read the input, `CONTEXT.md`, and invoke the Skill tool for `requirements-rigor`. Scan for anti-patterns (read `ANTI-PATTERNS.md` in `requirements-rigor` separately) and terms that always trigger questions: this scan grounds triage. Classify by counting excerpts, not text volume: USABLE (every excerpt structures a requirement), PARTIALLY USABLE (at least one excerpt structures a requirement and at least one does not), UNUSABLE (no excerpt structures a requirement). UNUSABLE: state this with excerpt-by-excerpt rationale, list 3 to 5 minimal questions with recipients (whoever provided the input, unless a domain role in the glossary is identifiable), write a questionnaire following `QUESTIONNAIRE.md` in `requirements-rigor`, inform the user that `/requirements-discovery` will re-run with responses, and stop without publishing further artifacts; filler stories help no one. PARTIAL: proceed, and the final artifact opens with a list of unused excerpts and what is missing in each.
+   Completed when: classification is stated in a single line, followed by excerpt-by-excerpt rationale when not USABLE.
 
-2. **Mapear em largura.** Antes de qualquer história, varra o input inteiro: domínios de negócio com confiança (Alta, Média, Baixa; Baixa marca onde o discovery precisa de outra conversa), stakeholders com tipo (negócio, técnico, usuário final) e o que cada um defende, épicos com complexidade P, M, G ou GG justificada em uma linha; trecho sem lista fechada ou sem critério mensurável não vira épico ainda, fica no processamento parcial até a sabatina dimensioná-lo. Quando o input é de segunda mão, quem o anotou entra na tabela de stakeholders com tipo "fonte". Duas vozes em posições opostas sobre o mesmo requisito: `[CONFLITO]`, as duas posições registradas, sem resolver. Requisito dito por uma voz só recebe `[VALIDAR COM EQUIPE]` onde a confirmação importa: necessidade de um papel que não foi ouvido, decisão de escopo de quem não decide; com duas vozes em assuntos disjuntos, não marque tudo. Requisito de negócio e restrição técnica vêm de stakeholders diferentes e têm pesos diferentes: distinga.
-   Concluído quando: cada trecho do input está atribuído a um domínio e a um épico, ou listado como não aproveitado.
+2. **Breadth-first mapping.** Before generating any story, scan the full input: business domains with confidence ratings (High, Medium, Low; Low marks where discovery requires a follow-up conversation), stakeholders with type (business, technical, end-user) and what each advocates, epics with complexity S, M, L, or XL justified in a single line; excerpts without closed lists or measurable criteria do not become epics yet, remaining in partial processing until examination sizes them. When input is second-hand, the note-taker enters the stakeholders table with type "source". Two voices in opposing positions on the same requirement: add `[CONFLICT]`, recording both positions without resolving unilaterally. A requirement stated by a single voice receives `[VALIDATE WITH TEAM]` where confirmation is critical: unmet role needs, scope decisions made by non-decision-makers; do not mark everything when two voices address disjoint topics. Business needs and technical constraints originate from different stakeholders and carry different weight: distinguish them.
+   Completed when: each input excerpt is mapped to a domain and epic, or listed as unexploited.
 
-3. **Buscar fatos antes de perguntar.** Glossário, histórias anteriores em `.scratch/`, documentos do workspace e, no modo com código, o código: a integração mencionada já existe? o limite já está implementado? Fato encontrado vira resposta recomendada com a fonte. No modo sem código a busca se limita aos arquivos do workspace, sem subagente; se nada for encontrado, diga isso em uma linha no topo da rodada 1.
-   Concluído quando: cada pergunta candidata está marcada como respondida por fonte ou aberta.
+3. **Search for facts before asking.** Check glossary, previous stories in `.scratch/`, workspace documents, and in code mode, the codebase: does the mentioned integration already exist? Is the threshold already implemented? A found fact becomes a recommended answer with cited source. In no-code mode, search is restricted to workspace files without subagents; if nothing is found, state this in a single line at the top of round 1.
+   Completed when: each candidate question is marked as answered by a source or open.
 
-4. **Decidir o tamanho.** Chame a Skill tool para `socratic-examination` e sabatine primeiro em largura: o destino (o que este discovery entrega), o escopo, os conflitos e o que muda o tamanho de um épico. SLA, canal e edge cases são profundidade e ficam para o passo 5. Se ao fim dessa rodada a fronteira cabe numa sessão, siga para o passo 5. Se sobra **névoa** (decisões que você vê vindo mas não consegue formular ainda, porque dependem de perguntas abertas), abra o mapa: publique a spec no formato de [TEMPLATE.md](TEMPLATE.md) com `Status: mapa aberto`, uma decisão pendente por arquivo em `issues/NN-decisao-<slug>.md` para cada pergunta já formulável, com `Bloqueada por:` quando depende de outra, e a névoa ainda não formulável na seção "Ainda não especificado". O teste entre decisão e névoa é conseguir formular a pergunta com precisão agora, não conseguir respondê-la. Traçar o mapa é o trabalho de uma sessão: pare e diga ao usuário que `/requirements-discovery <caminho da spec>` resolve uma decisão por sessão.
-   Concluído quando: ou a fronteira cabe numa sessão, ou a spec com mapa aberto e suas decisões pendentes existem.
+4. **Decide scope size.** Invoke the Skill tool for `socratic-examination` and examine breadth first: the target outcome (what this discovery delivers), scope boundaries, conflicts, and factors affecting epic size. SLAs, channels, and edge cases represent depth and are deferred to step 5. If at the end of this round the frontier fits in a single session, proceed to step 5. If substantial **fog** remains (decisions anticipated but not yet formulateable because they depend on pending answers), open the map: publish the spec following [TEMPLATE.md](TEMPLATE.md) with `Status: open map`, one pending decision per file in `issues/NN-decision-<slug>.md` for each formulateable question, marking `Blocked by:` when dependent on another, and unformulateable fog in "Not yet specified". The distinction between a decision and fog is whether you can formulate the question with precision right now, not whether you can answer it. Mapping the fog is the goal of one session: stop and inform the user that `/requirements-discovery <spec-path>` resolves one decision per session.
+   Completed when: either the question frontier fits in a single session, or the spec with an open map and pending decision files exists.
 
-5. **Sabatinar.** Continue as rodadas de `socratic-examination` em profundidade, épico a épico: papéis, capacidades, resultados, edge cases que o input sugere, dependências. Termo do domínio resolvido entra no `CONTEXT.md` na hora. Fato que nenhum presente sabe recebe `[A CONFIRMAR: quem]` e sai da fronteira.
-   Concluído quando: a fronteira está vazia, ou o usuário pediu para fechar.
+5. **Examine.** Continue rounds of `socratic-examination` in depth, epic by epic: roles, capabilities, outcomes, edge cases suggested by input, dependencies. Domain terms resolved are added to `CONTEXT.md` immediately. A fact that no attendee knows receives `[TO CONFIRM: whom]` (or `[A CONFIRMAR: quem]`) and leaves the frontier.
+   Completed when: the frontier is empty, or the user requests closing.
 
-6. **Sintetizar.** Escreva a spec de discovery no formato de [TEMPLATE.md](TEMPLATE.md) e uma história candidata por arquivo, no formato de `skills/refine-story/TEMPLATE.md`, com `Status: candidata` e scorecard INVEST preliminar. História que reprova no INVEST não vira card limpo: fica como candidata com `[INVEST-FAIL]` e o que resolveria. Inclua as dependências não declaradas: integrações, serviços e decisões técnicas que precisam existir para as histórias serem implementáveis, cada uma com a história que bloqueia e a ação necessária. Toda linha das histórias tem correspondência no input ou um `[INFERÊNCIA]` válido; o que não tem nenhum dos dois é gold plating e sai.
-   Concluído quando: spec e histórias existem no local que `docs/agents/refinement.md` define, com o aviso final.
+6. **Synthesize.** Write the discovery spec following [TEMPLATE.md](TEMPLATE.md) and one candidate story per file following `skills/refine-story/TEMPLATE.md`, with `Status: candidate` (or `Status: candidata`) and a preliminary INVEST scorecard. A story failing INVEST does not become a clean card: it remains a candidate with `[INVEST-FAIL]` and resolution guidance. Include undeclared dependencies: integrations, external services, and architectural decisions required for stories to be implementable, each paired with the blocked story and required action. Every line in candidate stories matches input or a valid `[INFERENCE: base]`; unbacked additions are gold plating and must be removed.
+   Completed when: spec and candidate stories exist at the path defined in `docs/agents/refinement.md`, with final disclaimer.
 
-7. **Encaminhar.** `[A CONFIRMAR]` com destinatário fora da sessão: um questionário por destinatário, no formato de `QUESTIONARIO.md` de `requirements-rigor`, ao lado da spec.
-   Concluído quando: nada aberto ficou sem destinatário ou sem questionário.
+7. **Route open items.** Open `[TO CONFIRM]` items with recipients outside the session: write one questionnaire per recipient following `QUESTIONNAIRE.md` in `requirements-rigor`, alongside the spec.
+   Completed when: no open question remains without a recipient or questionnaire.
 
-8. **Reportar.** Épicos, quantas histórias candidatas, conflitos em aberto, e o próximo passo: `/refine-story` por história, ou `/requirements-discovery <caminho da spec>` se o mapa está aberto.
+8. **Report.** Epics created, candidate story count, open conflicts, and next steps: `/refine-story` per story, or `/requirements-discovery <spec-path>` if map is open.
 
-## Retomar o mapa
+## Resume decision map
 
-Quando o argumento é uma spec com `Status: mapa aberto`:
+When the argument is a spec with `Status: open map`:
 
-1. Leia a spec inteira e as decisões pendentes em `issues/`. Uma decisão está **livre** quando está aberta e toda decisão em `Bloqueada por:` está resolvida.
-   Concluído quando: você sabe quais decisões estão livres.
-2. Escolha a decisão: a que o usuário nomeou, senão a primeira livre pelo número. Marque `Status: em sabatina` no arquivo antes de começar, para que outra sessão não a pegue.
-   Concluído quando: o arquivo está marcado.
-3. Resolva-a com `socratic-examination`, uma decisão por sessão. Tipo pesquisa resolve-se lendo a fonte externa, com citação, sem sabatina. Registre a resposta no próprio arquivo sob `## Resposta`, marque `Status: resolvida`, e acrescente uma linha com o resumo e o caminho na seção "Decisões da sabatina" da spec.
-   Concluído quando: a decisão está resolvida e a spec aponta para ela.
-4. A resposta pode clarear a névoa: o que ficou formulável sai de "Ainda não especificado" e vira nova decisão pendente; o que ficou fora do destino vai para "Fora de escopo". Decisão que a resposta invalida é fechada com uma linha de motivo.
-   Concluído quando: nenhuma decisão pendente contradiz a resposta e a névoa foi relida.
-5. Sem decisão pendente aberta: mude a spec para `Status: em andamento` e siga para o passo 5 dos passos principais, na mesma sessão se couber, senão na próxima com o mesmo comando.
-   Concluído quando: a spec saiu de mapa aberto, ou você disse ao usuário quantas decisões ainda faltam.
+1. Read the full spec and pending decisions in `issues/`. A decision is **unblocked** when it is open and all decisions in `Blocked by:` are resolved.
+   Completed when: you know which decisions are unblocked.
+2. Select the decision: named by the user, or the first unblocked by number. Mark `Status: in examination` in the file before starting, preventing concurrent sessions from picking it.
+   Completed when: file status is updated.
+3. Resolve it with `socratic-examination`, one decision per session. Research-type decisions are resolved by reading external sources with citations, without examination rounds. Record the answer directly in the file under `## Answer`, mark `Status: resolved`, and add a line with summary and path in the "Examination decisions" section of the spec.
+   Completed when: decision is resolved and linked from spec.
+4. The answer may clear surrounding fog: newly formulateable items leave "Not yet specified" and become new pending decisions; items outside the scope move to "Out of scope". Any decision invalidated by the answer is closed with a one-line rationale.
+   Completed when: no pending decision contradicts the answer and fog is reassessed.
+5. With no pending decisions open: update spec to `Status: in progress` and proceed to step 5 of main steps, in the same session if context permits, otherwise in the next session using the same command.
+   Completed when: spec leaves open map status, or you report how many decisions remain.
 
-Decisão pendente, formato:
+Pending decision format:
 
 ```md
-# Decisão NN: <pergunta em uma frase>
+# Decision NN: <question in one sentence>
 
-Status: <aberta | em sabatina | resolvida | fechada>
-Bloqueada por: <NN, NN ou nenhuma>
-Tipo: <sabatina | pesquisa>
+Status: <open | in examination | resolved | closed>
+Blocked by: <NN, NN or none>
+Type: <examination | research>
 
-## Pergunta
+## Question
 
-<o que precisa ser decidido e por que trava o resto>
+<what must be decided and why it blocks progress>
 
-## Resposta
+## Answer
 
-<ao resolver: a decisão, quem decidiu, a data>
+<upon resolution: decision, who decided, date>
 ```
 
-## Aviso final
+## Final notice
 
-> ⚠️ Este output é um rascunho analítico. Requer revisão humana antes de entrar em sprint. Valide: viabilidade técnica, compliance e dependências não mapeadas.
+> ⚠️ This output is an analytical draft. It requires human review before entering a sprint. Validate: technical feasibility, compliance, and unmapped dependencies.

@@ -1,16 +1,16 @@
-# <ID ou título curto>: Como <papel>, quero <capacidade>
+# <ID or short title>: As a <role>, I want <capability>
 
-Status: <PRONTA | REFINAR | BLOQUEADA>
-Azure: <ID do work item ou nenhum>
-Origem: <caminho, ID ou "texto colado">, sessão de /refine-story em <AAAA-MM-DD>
+Status: <READY | REFINE | BLOCKED>
+Azure: <work item ID or none>
+Source: <path, ID, or "pasted text">, /refine-story session on <YYYY-MM-DD>
 
-## Narrativa
+## Narrative
 
-Como <papel>, quero <capacidade>, para que <resultado verificável>.
+As a <role>, I want <capability>, so that <verifiable outcome>.
 
-## Scorecard INVEST
+## INVEST Scorecard
 
-| Critério | Resultado | Motivo (quando não PASS) |
+| Criterion | Result | Rationale (when not PASS) |
 | --- | --- | --- |
 | Independent | PASS | |
 | Negotiable | | |
@@ -19,46 +19,46 @@ Como <papel>, quero <capacidade>, para que <resultado verificável>.
 | Small | | |
 | Testable | | |
 
-## Critérios de aceite
+## Acceptance Criteria
 
-Cenário: <happy path>
-  Dado <estado>
-  Quando <evento>
-  Então <resultado verificável>
+Scenario: <happy path>
+  Given <state>
+  When <event>
+  Then <verifiable outcome>
 
-Cenário: <edge case>
-  Dado <estado>
-  Quando <evento>
-  Então <resultado verificável>
+Scenario: <edge case>
+  Given <state>
+  When <event>
+  Then <verifiable outcome>
 
-## Auditoria do texto original
+## Original Text Audit
 
-- Narrativa: <original> → <problema> → <versão proposta>
-- AC1: ANTES <texto> → DEPOIS <cenário> (<violação corrigida>)
-- Movidos: <critério que era task, DoD ou órfão> → <destino>
-- Anti-padrões: <tipo> em <trecho>
+- Narrative: <original> -> <problem> -> <proposed version>
+- AC1: BEFORE <text> -> AFTER <scenario> (<violation corrected>)
+- Moved: <criterion that was a task, DoD, or orphan> -> <destination>
+- Anti-patterns: <type> in <excerpt>
 
-## Decisões da sabatina
+## Examination Decisions
 
-- <pergunta> → <resposta do PO> (<quem>, <data>)
+- <question> -> <PO answer> (<who>, <date>)
 
-## Perguntas em aberto
+## Open Questions
 
-1. [<quem>] <pergunta> → <impacto se não respondida> (questionário: <caminho ou nenhum>)
+1. [<recipient>] <question> -> <impact if unanswered> (questionnaire: <path or none>)
 
-## Notas
+## Notes
 
-- Soluções sugeridas pelo PO, preservadas como referência: <...>
-- Tasks sugeridas, movidas dos critérios: <...>
-- Story points: <os do time, se houver> [ESTIMATIVA EM RISCO: <lacuna>] | [A CALIBRAR NO PLANNING] <contexto para o time>
-- Dependências: <declaradas> + <detectadas [INFERÊNCIA: base]>
+- Solutions suggested by PO, preserved as reference: <...>
+- Suggested technical tasks, moved from criteria: <...>
+- Story points: <team points, if any> [ESTIMATE AT RISK: <gap>] | [CALIBRATE IN PLANNING] <context for team>
+- Dependencies: <declared> + <detected [INFERENCE: base]>
 
-## Proposta de decomposição
+## Decomposition Proposal
 
-<só quando houver [DECOMPOR] ou requisito duplo: narrativa de cada parte, qual critério original vai para qual, qual parte carrega a dependência>
+<only when [DECOMPOSE] or double requirement exists: narrative for each part, mapping of original criteria, which part bears dependencies>
 
-## Veredito
+## Verdict
 
-<✅ PRONTA | 🔶 REFINAR, destrava com as perguntas <n>, <m> | ⛔ BLOQUEADA: <motivo>>
+<✅ READY | 🔶 REFINE, unblocks with questions <n>, <m> | ⛔ BLOCKED: <rationale>>
 
-⚠️ Este output é preparação para o refinamento, não o substitui. A decisão sobre escopo, valor e prioridade é do PO e do time.
+> ⚠️ This output is preparation for refinement, not a replacement. Decisions on scope, value, and priority belong strictly to the PO and team.

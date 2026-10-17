@@ -1,64 +1,64 @@
-# Discovery: <título>
+# Discovery: <title>
 
-Status: <mapa aberto | em andamento | concluído>
-Azure: <ID do épico ou nenhum>
-Origem: <caminho do input>, sessão de /requirements-discovery em <AAAA-MM-DD>
+Status: <open map | in progress | completed>
+Azure: <epic ID or none>
+Source: <input path>, /requirements-discovery session on <YYYY-MM-DD>
 
-## Destino
+## Target Outcome
 
-<o que este discovery entrega quando terminar: uma ou duas linhas; toda sessão se orienta por isto>
+<what this discovery delivers when finished: one or two lines; all sessions orient around this>
 
-## Processamento parcial
+## Partial Processing
 
-<só quando a triagem foi PARCIAL: trechos do input que não geraram artefato e o que falta em cada um>
+<only when triage was PARTIALLY USABLE: input excerpts that generated no artifact and what is missing in each>
 
-## Domínios
+## Domains
 
-| Domínio | Descrição | Confiança |
+| Domain | Description | Confidence |
 | --- | --- | --- |
 
 ## Stakeholders
 
-| Nome ou papel | Tipo | Defende | Conflitos |
+| Name or role | Type | Advocates for | Conflicts |
 | --- | --- | --- | --- |
 
-Tipo: negócio, técnico, usuário final, ou fonte (quem anotou um input de segunda mão).
+Type: business, technical, end-user, or source (who recorded second-hand input).
 
-## Épicos
+## Epics
 
-| Épico | Descrição | Complexidade | Justificativa | Domínio |
+| Epic | Description | Complexity | Rationale | Domain |
 | --- | --- | --- | --- | --- |
 
-## Decisões da sabatina
+## Examination Decisions
 
-- <pergunta> → <resposta> (<quem>, <data>; decisão pendente: <caminho, quando veio do mapa>)
+- <question> -> <answer> (<who>, <date>; pending decision: <path, when originating from map>)
 
-## Decisões pendentes
+## Pending Decisions
 
-<só com mapa aberto: uma linha por arquivo em issues/NN-decisao-<slug>.md, com o status>
+<only with open map: one line per file in issues/NN-decision-<slug>.md, with status>
 
-## Ainda não especificado
+## Not Yet Specified
 
-<só com mapa aberto: a névoa em escopo que ainda não dá para formular como decisão; graduada em decisões pendentes conforme a fronteira avança>
+<only with open map: scope fog that cannot yet be formulated as a decision; graduated into pending decisions as frontier advances>
 
-## Perguntas em aberto
+## Open Questions
 
-1. [<quem>] <pergunta> → <impacto se não respondida> (questionário: <caminho ou nenhum>)
+1. [<recipient>] <question> -> <impact if unanswered> (questionnaire: <path or none>)
 
-## Dependências não declaradas
+## Undeclared Dependencies
 
-- <dependência> → bloqueia <história> → <ação necessária>
+- <dependency> -> blocks <story> -> <required action>
 
-## Fora de escopo
+## Out of Scope
 
-- <item> → <por quê>
+- <item> -> <rationale>
 
-## Fluxo principal por épico
+## Primary Flow by Epic
 
-Um `flowchart TD` em Mermaid por épico, até 10 nós: atores como início e fim, passos críticos do happy path, nós de decisão só onde há bifurcação real, `[?]` em nós com dependência não confirmada.
+One `flowchart TD` in Mermaid per epic, up to 10 nodes: actors as start and end points, critical steps of happy path, decision nodes only where real branching occurs, `[?]` on nodes with unconfirmed dependencies.
 
-## Histórias candidatas
+## Candidate Stories
 
-- `issues/01-<slug>.md`: Como <papel>, quero <capacidade>. INVEST: <PASS em todos | FAIL em <letras>>
+- `issues/01-<slug>.md`: As <role>, I want <capability>. INVEST: <PASS across all | FAIL on <letters>>
 
-⚠️ Este output é um rascunho analítico. Requer revisão humana antes de entrar em sprint. Valide: viabilidade técnica, compliance e dependências não mapeadas.
+> ⚠️ This output is an analytical draft. It requires human review before entering a sprint. Validate: technical feasibility, compliance, and unmapped dependencies.

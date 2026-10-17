@@ -1,5 +1,5 @@
 interface:
   display_name: "Refine Story"
-  short_description: "Sabatina uma User Story até o veredito e publica a versão refinada"
+  short_description: "Examines a User Story to readiness verdict and publishes the refined version"
 policy:
   allow_implicit_invocation: false

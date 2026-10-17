@@ -1,57 +1,57 @@
 ---
 name: qa-plan
-description: "Sabatina uma User Story do ponto de vista de teste e publica a base do plano de teste: condições com técnica declarada, risco, camadas, bloqueadores de automação e perguntas com destinatário."
+description: "Examines a User Story from a testing perspective and publishes the test plan baseline: conditions with declared techniques, risk levels, testing layers, automation blockers, and questions with assigned recipients."
 disable-model-invocation: true
-argument-hint: "[caminho ou ID da US refinada]"
+argument-hint: "[refined US file path or ID]"
 ---
 
-# Plano de QA
+# QA Plan
 
-Derive a base do plano de teste de uma User Story por **sabatina**: condições de teste com método declarado, resultado esperado só quando a especificação o sustenta, e perguntas para quem pode responder o resto. Você não responde "esta US está bem escrita?", isso é `/refine-story`. Você responde: o que pode quebrar, como provo que funciona, e o que precisa existir para eu conseguir provar.
+Derive the baseline test plan for a User Story through **socratic examination**: test conditions with declared design techniques, expected results asserted only when specifications support them, and questions directed to whoever can resolve the rest. You do not ask "is this story well-written?", that is `/refine-story`. You answer: what can break, how do I prove it works, and what must exist for me to execute that proof.
 
-Um QA pleno deve conseguir implementar os testes a partir do artefato; um QA sênior deve concordar com a priorização.
+A mid-level QA engineer should be able to implement tests directly from this artifact; a senior QA engineer should agree with its prioritization.
 
 US: $ARGUMENTS
 
-## Fronteira de três camadas
+## Three-layer boundary
 
-Derivar condições que ninguém escreveu é o trabalho de QA, desde que feito com método. Por isso a fronteira aqui tem três camadas; a base continua sendo `requirements-rigor`. Toda condição do plano pertence a exatamente uma:
+Deriving unwritten conditions is the essence of QA, provided it follows established methods. Therefore, the boundary here operates across three layers; the foundation remains `requirements-rigor`. Every condition in the plan belongs to exactly one layer:
 
-- `[ESPECIFICADO: trecho]` (en-US: `[SPECIFIED: excerpt]`): condição e resultado esperado vêm do texto. Cite a origem.
-- `[DERIVADO: técnica]` (en-US: `[DERIVED: technique]`): a condição decorre de uma técnica de test design aplicada ao especificado. Nomeie sempre a técnica; condição sem técnica é palpite e não entra. O resultado esperado só pode ser afirmado se decorre logicamente da especificação.
-- `[INDEFINIDO → Pergunta n]` (en-US: `[UNDEFINED → Question n]`): condição legítima cujo resultado esperado a especificação não define. A condição entra no plano; o resultado vira pergunta numerada.
+- `[SPECIFIED: excerpt]` (pt-BR: `[ESPECIFICADO: trecho]`): condition and expected result originate directly from text. Cite the source.
+- `[DERIVED: technique]` (pt-BR: `[DERIVADO: técnica]`): the condition follows from a test design technique applied to what was specified. Always name the technique; a condition without a declared technique is a guess and must not enter. Expected results may only be asserted if they follow logically from the specification.
+- `[UNDEFINED -> Question n]` (pt-BR: `[INDEFINIDO → Pergunta n]`): a legitimate condition whose expected result the specification does not define. The condition enters the matrix; the result becomes a numbered question.
 
-Teste rápido: "qual técnica gerou esta condição, e de qual trecho ela parte?" Sem resposta para as duas, fora do plano.
+Quick test: "which technique generated this condition, and from which excerpt does it stem?" If either cannot be answered, exclude it from the plan.
 
-## Antes de começar
+## Before starting
 
-Leia `docs/agents/refinement.md` do workspace: ele define o modo (com código ou sem código), o idioma (`en-US` ou `pt-BR`, padrão `en-US`) e onde publicar. O modo decide quem responde as perguntas de arquitetura: com código, você mesmo, lendo o código; sem código, o time de desenvolvimento, por questionário. Sabatina e plano de QA são redigidos no idioma configurado. Faltando o arquivo, peça `/configure-refinement` e pare.
+Read `docs/agents/refinement.md` in the workspace: it defines the operating mode (with or without code), language (`en-US` or `pt-BR`, default `en-US`), and publishing paths. The mode dictates who answers architectural questions: with code, you resolve them by inspecting the codebase; without code, the engineering team resolves them via questionnaires. Socratic examination and the QA plan are authored in the configured language. If the file is missing, request `/configure-refinement` and stop.
 
-## Passos
+## Steps
 
-1. **Carregar.** Leia a US, o `CONTEXT.md`, os ADRs da área, [TEST-DESIGN.md](TEST-DESIGN.md), e chame a Skill tool para `requirements-rigor`. Se há `.scratch/<slug>/spec.md` de um `/refine-story`, parta dele: as decisões daquela sabatina já respondem parte das suas perguntas. Sem esse arquivo, trate a US como não refinada, mesmo que a linha `Status:` diga PRONTA.
-   Concluído quando: a triagem de testabilidade está dita em uma linha: TESTÁVEL (todo resultado esperado tem ponto de observação e nenhuma dependência está por confirmar), TESTÁVEL COM RESSALVAS (dá para derivar condições, mas ao menos um resultado não tem ponto de observação definido ou depende de dependência não confirmada), ou NÃO TESTÁVEL.
+1. **Load.** Read the US, `CONTEXT.md`, domain ADRs, [TEST-DESIGN.md](TEST-DESIGN.md), and invoke the Skill tool for `requirements-rigor`. If `.scratch/<slug>/spec.md` exists from `/refine-story`, start from it: decisions from that session already answer many questions. Without this file, treat the US as unrefined, even if `Status:` says READY.
+   Completed when: testability triage is stated in a single line: TESTABLE (every expected outcome has an observation point and no dependencies are pending confirmation), TESTABLE WITH RESERVATIONS (conditions can be derived, but at least one outcome lacks an observation point or depends on unconfirmed dependencies), or NOT TESTABLE.
 
-2. **Triar.** NÃO TESTÁVEL (os critérios não descrevem comportamento observável: só tasks, ou termos subjetivos sem métrica em todos eles): diga o que falta, liste as três a cinco perguntas mínimas e recomende `/refine-story`. Pare aqui; analisar o intestável produz plano de fachada. Se a US não passou por refinamento, diga isso e siga, avisando que parte das perguntas seria absorvida por um `/refine-story`.
-   Concluído quando: a triagem foi dita.
+2. **Triage.** NOT TESTABLE (criteria fail to describe observable behavior: exclusively tasks, or subjective terms without metrics across all criteria): explain what is missing, list 3 to 5 minimal questions, and recommend `/refine-story`. Stop here; analyzing untestable material produces facade plans. If the US has not undergone refinement, state this and proceed, noting that many questions would be resolved by `/refine-story`.
+   Completed when: triage is declared.
 
-3. **Derivar condições.** Para cada critério, aplique as técnicas de TEST-DESIGN.md que se aplicam, sem forçar as que não se aplicam, e verifique todos os ângulos silenciosos, reportando só os aplicáveis. Monte a matriz: condição, origem, resultado esperado ou `[INDEFINIDO → Pergunta n]`, prioridade, camada. Condições indefinidas permanecem na matriz: cobertura futura visível vale mais que cobertura oculta. Numere as perguntas numa sequência única, PO e DEV juntos, para que `[INDEFINIDO → Pergunta n]` resolva sem ambiguidade. A justificativa de prioridade, meia linha por condição, vai numa lista na análise de risco, não na tabela.
-   Concluído quando: toda condição tem origem declarada e todo `[INDEFINIDO]` tem número de pergunta.
+3. **Derive conditions.** For each criterion, apply applicable techniques from [TEST-DESIGN.md](TEST-DESIGN.md), avoiding forcing inapplicable techniques, and review silent angles, reporting only applicable ones. Build the matrix: condition, origin, expected result or `[UNDEFINED -> Question n]`, priority, layer. Undefined conditions remain in the matrix: visible future coverage is far better than hidden gaps. Number questions in a single sequence across PO and DEV combined, so `[UNDEFINED -> Question n]` resolves unambiguously. Priority rationales (half-line per condition) go in a list within the risk analysis section, not inside the table.
+   Completed when: every condition has a declared origin and every `[UNDEFINED]` has an assigned question number.
 
-4. **Buscar fatos antes de perguntar.** Separe as perguntas por destinatário. **PO**: comportamento esperado indefinido. **DEV**: arquitetura, observabilidade, camada, isolamento de dependência externa, controle de tempo, provisionamento de massa, resposta de erro da API, persistência após falha, idempotência técnica. No modo com código, despache um subagente para responder as de DEV lendo o código: a notificação é síncrona ou assíncrona? há lock na aprovação? existe mock do sistema externo? Fato encontrado vira resultado esperado ou camada definida, com a fonte. No modo sem código a busca se limita aos arquivos do workspace, sem subagente; se nada for encontrado, diga isso em uma linha no topo da rodada 1.
-   Concluído quando: cada pergunta está marcada como respondida por fonte ou aberta, com destinatário.
+4. **Search for facts before asking.** Separate questions by recipient. **PO**: undefined business behavior. **DEV**: architecture, observability, testing layer, isolation of external dependencies, time control, test data provisioning, API error response, persistence after failure, technical idempotency. In code mode, dispatch a subagent to answer DEV questions by reading code: is notification synchronous or asynchronous? is there a lock on approval? does a mock exist for the external system? A found fact becomes an expected result or defined layer, with source citation. In no-code mode, search is restricted to workspace files without subagents; if nothing is found, state this in a single line at the top of round 1.
+   Completed when: each question is marked as answered by a source or open, with assigned recipient.
 
-5. **Sabatinar o PO.** Chame a Skill tool para `socratic-examination`. A rodada vai junto com a matriz no estado atual, porque as perguntas referenciam condições. A fronteira são as perguntas de PO, bloqueantes primeiro (as que travam condições P1), cada uma com resposta recomendada quando a especificação dá base; quando não dá, "sem recomendação" e, se houver, as opções. Resposta do PO atualiza a matriz na hora. Desafie termos contra o glossário, mas registre no `CONTEXT.md` só o que o PO resolver.
-   Concluído quando: a fronteira de PO está vazia, ou o PO pediu para fechar.
+5. **Examine PO.** Invoke the Skill tool for `socratic-examination`. The question round accompanies the current matrix, as questions reference specific conditions. The frontier consists of PO questions, blocking items first (those that unblock P1 conditions), each with a recommended answer when specifications provide grounding; when absent, provide "no recommendation" (or "sem recomendação" in pt-BR) and options. PO answers update the matrix immediately. Challenge terms against the glossary, but record in `CONTEXT.md` only what the PO resolves.
+   Completed when: PO question frontier is empty, or PO requests closing.
 
-6. **Sintetizar.** Escreva o plano no formato de [TEMPLATE.md](TEMPLATE.md): matriz, análise de risco, cenários P1 em Gherkin com autoauditoria, auditoria de automatizabilidade, impacto de regressão só a partir do que o contexto declara sobre o sistema existente (sem contexto, só as perguntas de impacto), perguntas restantes com destinatário, veredito de cobertura.
-   Concluído quando: o arquivo existe no local que `docs/agents/refinement.md` define e o aviso final está presente.
+6. **Synthesize.** Write the plan following [TEMPLATE.md](TEMPLATE.md): matrix, risk analysis, P1 scenarios in Gherkin with self-audit, automatability audit, regression impact based strictly on existing system documentation (without context, list impact questions for DEV), remaining questions by recipient, coverage verdict.
+   Completed when: file exists at path defined by `docs/agents/refinement.md` with final disclaimer present.
 
-7. **Encaminhar.** Perguntas de DEV abertas no modo sem código, e perguntas de PO que o PO não soube responder: escreva um questionário por destinatário no formato de `QUESTIONARIO.md` de `requirements-rigor`, ao lado do plano, e aponte os arquivos a partir das perguntas em aberto.
-   Concluído quando: nenhuma pergunta aberta ficou sem destinatário ou sem questionário.
+7. **Route open items.** Open DEV questions in no-code mode and open PO questions that could not be answered: write one questionnaire per recipient following `QUESTIONNAIRE.md` in `requirements-rigor`, alongside the plan, and link files from open questions.
+   Completed when: no open question remains without a recipient or questionnaire.
 
-8. **Reportar.** Veredito, onde o plano foi publicado, quantas P1 estão executáveis, e o que cada questionário destrava.
+8. **Report.** Verdict, where the plan was published, count of executable P1 conditions, and what each questionnaire unblocks.
 
-## Aviso final
+## Final notice
 
-> ⚠️ Este output é a base analítica do plano de teste, não o plano final. A decisão de cobertura, priorização e esforço é do time de QA, com validação de PO (comportamentos indefinidos) e Dev (arquitetura e camadas).
+> ⚠️ This output provides the analytical baseline for a test plan, not the final test plan. Decisions on coverage, prioritization, and effort belong to the QA team, with validation from PO (undefined behaviors) and Dev (architecture and layers).

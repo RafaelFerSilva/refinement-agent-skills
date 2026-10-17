@@ -1,110 +1,109 @@
 # Refinement Skills
 
-Pacote de skills que leva requisitos de software, em pt-BR e en-US, da conversa ao plano de teste por sabatina. Este glossário define o vocabulário do pacote; o vocabulário do produto analisado vive no `CONTEXT.md` do workspace onde o pacote é instalado.
+Skills package that drives software requirements, in en-US and pt-BR, from discussions to QA test plans via socratic examination. This glossary defines the package vocabulary; the domain vocabulary of the product under analysis lives in the `CONTEXT.md` of the workspace where the package is installed.
 
 ## Language
 
-### Artefatos
+### Artifacts
 
 **User Story**:
-A unidade de requisito que o PO escreve e o time leva ao planning: narrativa mais critérios de aceite. Abreviada US em identificadores e nomes de skill.
-_Avoid_: card, item, demanda, história (sozinha)
+The unit of requirement written by the PO and brought to sprint planning: narrative plus acceptance criteria. Abbreviated as US in identifiers and skill names.
+_Avoid_: card, item, task, story (alone)
 
-**Narrativa**:
-A frase "Como [papel], quero [capacidade], para que [resultado]" que abre uma User Story.
-_Avoid_: título, descrição, user story (para só esta frase)
+**Narrative**:
+The statement "As a [role], I want [capability], so that [outcome]" (or in pt-BR "Como [papel], quero [capacidade], para que [resultado]") that introduces a User Story.
+_Avoid_: title, description, user story (for this sentence alone)
 
-**Critério de aceite**:
-Um comportamento observável que prova a User Story entregue, escrito em Gherkin. Abreviado AC em identificadores.
-_Avoid_: requisito, regra, teste, cenário (o cenário é a forma Gherkin de um critério)
+**Acceptance criterion**:
+An observable behavior that proves the User Story is delivered, written in Gherkin. Abbreviated as AC in identifiers.
+_Avoid_: requirement, rule, test, scenario (the scenario is the Gherkin form of a criterion)
 
-**Candidata**:
-Uma User Story produzida por `/requirements-discovery` a partir de input bruto, ainda não sabatinada com o PO.
-_Avoid_: rascunho, draft, proposta
+**Candidate story**:
+A User Story produced by `/requirements-discovery` from raw input, not yet examined with the PO.
+_Avoid_: draft, rough story, proposal
 
-**Spec de discovery**:
-O artefato de `/requirements-discovery`: domínios, stakeholders, épicos, decisões, dependências e as candidatas que ele gerou.
-_Avoid_: PRD, documento de requisitos, levantamento
+**Discovery spec**:
+The artifact produced by `/requirements-discovery`: domains, stakeholders, epics, decisions, dependencies, and candidate stories.
+_Avoid_: PRD, requirements document, brief
 
-**Plano de QA**:
-O artefato de `/qa-plan`: matriz de condições de teste com origem, risco, camada e bloqueadores. É a base do plano de teste, não o plano final.
-_Avoid_: plano de teste (reservado ao artefato final do time de QA), casos de teste
+**QA plan**:
+The artifact produced by `/qa-plan`: test conditions matrix with provenance, risk level, layer, and automation blockers. It is the basis for the test plan, not the final test plan.
+_Avoid_: test plan (reserved for the QA team's final artifact), test cases
 
-**Ata**:
-O artefato de `/meeting-minutes`: decisões e ações com proveniência, acordos presumidos separados do que foi dito.
-_Avoid_: resumo, minutes, digest (fora do nome da skill)
+**Minutes**:
+The artifact produced by `/meeting-minutes`: decisions and action items with provenance, with presumed agreements separated from stated agreements.
+_Avoid_: summary, digest (outside skill name)
 
-### Sabatina
+### Examination
 
-**Sabatina**:
-A entrevista em rodadas que um fluxo conduz com o PO até a fronteira esvaziar. A skill `socratic-examination` é a primitiva que a conduz.
-_Avoid_: entrevista, questionário (é outra coisa), interrogatório
+**Socratic examination**:
+The structured interview conducted in rounds with the PO until the question frontier is empty. The `socratic-examination` skill is the primitive that conducts it.
+_Avoid_: interview, questionnaire (which is an async document), interrogation
 
-**Rodada**:
-Um conjunto de perguntas feitas de uma vez: toda a fronteira, numerada, cada uma com resposta recomendada. O PO responde, a fronteira se recalcula, vem a próxima rodada.
-_Avoid_: turno, iteração
+**Round**:
+A set of questions asked at once: the entire frontier, numbered, each with a recommended answer. The PO answers, the frontier recalculates, and the next round begins.
+_Avoid_: turn, iteration
 
-**Fronteira**:
-As perguntas cujos pré-requisitos já estão resolvidos e que podem ser feitas agora sem adivinhar respostas ainda não dadas. A sabatina termina quando a fronteira está vazia.
-_Avoid_: backlog de perguntas, pendências
+**Frontier**:
+The questions whose prerequisites are resolved and can be asked now without guessing pending answers. The examination ends when the frontier is empty.
+_Avoid_: question backlog, pending list
 
-**Fato**:
-O que pode ser verificado numa fonte: glossário, história anterior, documento, código. Buscar fatos é trabalho do agente, nunca do PO.
-_Avoid_: informação, dado
+**Fact**:
+Information that can be verified against a source: glossary, previous stories, documentation, code. Finding facts is the agent's job, never the PO's.
+_Avoid_: information, data
 
-**Decisão**:
-O que só o PO ou o time pode resolver: escopo, valor, prioridade, comportamento esperado não especificado. Nunca é tomada pelo agente.
-_Avoid_: escolha, definição
+**Decision**:
+What only the PO or the team can resolve: scope, business value, priority, unspecified expected behavior. Never made by the agent.
+_Avoid_: choice, definition
 
-**Resposta recomendada**:
-A sugestão que acompanha cada pergunta da rodada, com a base que a sustenta. É a forma que uma inferência assume durante a sabatina.
-_Avoid_: sugestão, palpite, default
+**Recommended answer**:
+The suggestion accompanying each question in a round, citing the grounding evidence. This is how an inference manifests during examination.
+_Avoid_: guess, hunch, default
 
-**Questionário**:
-O documento que um fluxo gera para quem não está na sessão responder depois. Recebe as perguntas que a sabatina não pôde fechar.
-_Avoid_: formulário, lista de perguntas
+**Questionnaire**:
+The document generated for stakeholders not present in the session to answer asynchronously. Receives questions that examination could not close.
+_Avoid_: form, list of questions
 
 ### Rigor
 
-**Inferência**:
-Conclusão que decorre diretamente de uma frase do input ou de um fato, à qual outra pessoa chegaria lendo o mesmo material. Carrega sempre a base.
-_Avoid_: suposição, dedução, assunção
+**Inference**:
+A conclusion that directly follows from input text or a verified fact, which another person would reach reading the same material. Always cites its base.
+_Avoid_: assumption, deduction, conjecture
 
-**Invenção**:
-Valor, regra ou comportamento sem base no material, mesmo que seja boa prática. Proibida; vira pergunta ou placeholder.
-_Avoid_: alucinação, chute, gold plating (é o caso específico de escopo além do pedido)
+**Invention**:
+A value, rule, or behavior without backing in the source material, even if it is considered good practice. Strictly forbidden; must become a question or marker.
+_Avoid_: hallucination, guess, gold plating (specific case of scope beyond request)
 
-**Marcador**:
-Uma etiqueta entre colchetes no artefato que torna uma inferência ou uma lacuna visível: `[INFERÊNCIA: base]`, `[A CONFIRMAR: quem]` e os demais de `requirements-rigor`.
-_Avoid_: tag, flag, anotação
+**Marker**:
+A bracketed tag in the artifact that makes an inference or gap visible: `[INFERENCE: base]`, `[TO CONFIRM: whom]` (or in pt-BR `[INFERÊNCIA: base]`, `[A CONFIRMAR: quem]`), and others defined in `requirements-rigor`.
+_Avoid_: tag, flag, annotation
 
-**Lacuna**:
-O que o material não diz e o artefato precisa dizer. Fica visível como marcador; um artefato limpo com lacunas escondidas é pior do que um com lacunas explícitas.
-_Avoid_: gap, pendência, TBD
+**Gap**:
+What the material does not state and the artifact requires. Remains visible as a marker; a clean artifact hiding gaps is worse than one with explicit gaps.
+_Avoid_: missing item, pending, TBD
 
-**Veredito**:
-A conclusão de um fluxo sobre o artefato, sem meio-termo: PRONTA, REFINAR ou BLOQUEADA para uma User Story; EXECUTÁVEL, PARCIAL ou BLOQUEADO para um plano de QA. É a linha `Status:` do artefato.
-_Avoid_: status (como palavra solta), nota, score
+**Verdict**:
+The final conclusion of a workflow on an artifact: READY, REFINE, or BLOCKED for a User Story (PRONTA, REFINAR, BLOQUEADA in pt-BR); EXECUTABLE, PARTIAL, or BLOCKED for a QA plan; candidate, open map, in progress, completed for discovery. Appears on the `Status:` line.
+_Avoid_: status (as an isolated word), score, grade
 
-### Operação
+### Operation
 
-**Fluxo**:
-Uma skill invocada pelo usuário que conduz uma sabatina e publica um artefato: `/meeting-minutes`, `/requirements-discovery`, `/refine-story`, `/qa-plan`. Por baixo dos fluxos rodam as primitivas `sabatina` e `requirements-rigor`, invocadas pelo modelo.
-_Avoid_: copilot, prompt, comando, agente
+**Workflow**:
+A user-invoked skill that runs an examination and publishes an artifact: `/meeting-minutes`, `/requirements-discovery`, `/refine-story`, `/qa-plan`. Workflows run on top of the model-invoked primitives `socratic-examination` and `requirements-rigor`.
+_Avoid_: copilot, prompt, command, agent
 
 **Workspace**:
-O repositório onde o pacote é instalado e as USs são analisadas. Tem `CONTEXT.md` do produto, `docs/agents/refinement.md` com o modo, e `.scratch/` com os artefatos.
-_Avoid_: projeto (ambíguo com o produto), repo de análise
+The repository where the package is installed and User Stories are analyzed. Contains the product's `CONTEXT.md`, `docs/agents/refinement.md` with operating mode, and `.scratch/` with generated artifacts.
+_Avoid_: project (ambiguous with product), analysis repo
 
-**Modo**:
-Como o workspace responde perguntas de fato. **Com código**: o agente lê o código do produto. **Sem código**: o PO é a fonte e perguntas de arquitetura vão para o time por questionário.
-_Avoid_: cenário, perfil, ambiente
+**Mode**:
+How the workspace resolves factual questions. **With code** (`com-codigo`): the agent inspects product code directly. **Without code** (`sem-codigo`): the PO is the source of facts, and architecture questions are routed to the dev team via questionnaires.
+_Avoid_: scenario, profile, environment
 
-**Idioma**:
-A língua em que a sabatina acontece e os artefatos são gerados, definida por `Idioma:` em `docs/agents/refinement.md` do workspace: **en-US** (padrão) ou **pt-BR**.
-_Avoid_: locale, linguagem (reservado para linguagem de programação ou termos do negócio)
+**Language**:
+The language in which the examination takes place and artifacts are generated, defined by `Language:` (or `Idioma:`) in `docs/agents/refinement.md`: **en-US** (default) or **pt-BR**.
+_Avoid_: locale, programming language
 
 **Tracker**:
-Onde os artefatos são publicados, conforme `docs/agents/refinement.md` do workspace: arquivos em `.scratch/` com o ID do work item do Azure DevOps.
-_Avoid_: backlog, Jira (o tracker é configurável), board
-
+Where artifacts are published, as configured in `docs/agents/refinement.md`: local markdown files in `.scratch/` formatted with work item identifiers.
+_Avoid_: backlog, Jira (tracker is configurable), board

@@ -1,7 +1,7 @@
 {
   "name": "refinement-skills",
   "version": "0.1.0",
-  "description": "Skills de refinamento de requisitos em pt-BR e en-US, por sabatina: ata de reunião, discovery, refinamento de User Story e plano de QA.",
+  "description": "Requirements refinement skills in en-US and pt-BR driven by socratic examination: meeting minutes, discovery, user story refinement, and QA test plan.",
   "author": {
     "name": "RafaelFerSilva"
   },
@@ -13,8 +13,9 @@
     "refinement",
     "user-story",
     "qa",
-    "sabatina",
-    "pt-br"
+    "socratic-examination",
+    "pt-br",
+    "en-us"
   ],
   "skills": [
     "./skills/which-flow",

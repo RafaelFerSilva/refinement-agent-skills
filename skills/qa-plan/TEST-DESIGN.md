@@ -1,80 +1,78 @@
 # Test design
 
-Referência de `/qa-plan`: as técnicas que geram condições, os ângulos que USs nunca escrevem, e as réguas de risco, camada e automatizabilidade que priorizam o plano.
+Reference for `/qa-plan`: techniques that generate test conditions, silent angles that stories omit, and baseline criteria for risk, layer, and automatability that prioritize the plan.
 
-## Técnicas de derivação
+## Derivation techniques
 
-Para cada critério, avalie quais se aplicam e derive. Técnica não aplicável não é forçada.
+For each criterion, evaluate which techniques apply and derive conditions. Never force inapplicable techniques.
 
-- **Particionamento de equivalência**: classes de entrada ou estado com o mesmo comportamento esperado. Uma condição por classe válida e por classe inválida.
-- **Análise de valor limite**: para toda faixa, limite ou tamanho especificado, o valor no limite, imediatamente abaixo e imediatamente acima. Limite não especificado: a existência do limite é `[INDEFINIDO → Pergunta]`.
-- **Tabela de decisão**: quando o comportamento depende de combinações (regras com E ou OU, perfil × estado). Combinação cujo resultado a especificação não define: `[INDEFINIDO]`.
-- **Transição de estados**: entidade com ciclo de vida (status, fluxo de aprovação). Mapeie estados e transições válidas e derive testes para as transições inválidas, onde bugs de estado vivem. Transição não mencionada: `[INDEFINIDO]`.
-- **Pairwise**: três ou mais variáveis independentes com vários valores e combinação completa inviável. Proponha o conjunto pairwise e declare o que fica de fora.
-- **Casos negativos**: para cada ação especificada, ação sem permissão, sobre recurso inexistente, duplicada (idempotência), com entrada malformada. Resultado não especificado: `[INDEFINIDO]`.
+- **Equivalence partitioning**: classes of input or state with identical expected behavior. One condition per valid class and one per invalid class.
+- **Boundary value analysis**: for every specified range, limit, or size, verify the boundary value, immediately below, and immediately above. Unspecified boundary: the existence of the boundary is `[UNDEFINED -> Question]`.
+- **Decision table**: when behavior depends on combinations (rules with AND or OR, profile × state). Combinations without defined outcomes in the specification: `[UNDEFINED]`.
+- **State transition**: entities with lifecycles (status changes, approval workflows). Map valid states and transitions, and derive tests for invalid transitions, where state corruption bugs typically occur. Unmentioned transition: `[UNDEFINED]`.
+- **Pairwise**: three or more independent variables with multiple values where full combinatorial testing is infeasible. Propose pairwise sets and explicitly document what is excluded.
+- **Negative testing**: for each specified action, test unauthorized execution, non-existent resource, duplicate execution (idempotency), malformed input. Unspecified outcome: `[UNDEFINED]`.
 
-## Ângulos silenciosos
+## Silent angles
 
-Verifique todos; reporte só os aplicáveis. Ângulo irrelevante listado é ruído que ensina o time a ignorar a seção. Cada ângulo aplicável gera condição `[DERIVADO: ângulo silencioso]` ou pergunta `[INDEFINIDO]`.
+Review all; report only applicable angles. Listing irrelevant angles creates noise that encourages teams to ignore the section. Each applicable angle generates a condition `[DERIVED: silent angle]` or a question `[UNDEFINED]`.
 
-- **Autorização**: quem não pode executar esta ação? O acesso negado está coberto?
-- **Dados sensíveis**: os dados desta US aparecem em logs, mensagens de erro, URLs ou exports? Há regulação aplicável no contexto?
-- **Concorrência**: dois atores sobre o mesmo recurso ao mesmo tempo. Qual ganha? Há lost update?
-- **Idempotência**: a mesma ação duas vezes (duplo clique, retry de rede) produz efeito duplicado?
-- **Falha parcial**: operação com mais de um passo ou sistema que falha no meio. Qual o estado resultante? É recuperável?
-- **Fuso e tempo**: datas, prazos, agendamento. Virada de dia, fuso do usuário contra o do servidor, horário de verão.
-- **Encoding**: acentos, emojis, caracteres especiais, quando há texto livre.
+- **Authorization**: who cannot execute this action? Is access denial covered?
+- **Sensitive data**: does data from this US appear in logs, error messages, URLs, or exports? Are regulations applicable in this context?
+- **Concurrency**: two actors operating on the same resource concurrently. Which wins? Is there a lost update risk?
+- **Idempotency**: does performing the same action twice (double-click, network retry) produce duplicate effects?
+- **Partial failure**: multi-step operation or external system failing midway. What is the resulting state? Is it recoverable?
+- **Time and timezone**: dates, deadlines, scheduling. Midnight cutoffs, client timezone versus server timezone, daylight saving time shifts.
+- **Encoding**: accents, emojis, special characters in free-form text fields.
 
-## Risco e prioridade
+## Risk and priority
 
-Para cada condição, probabilidade de falha (Alta, Média, Baixa: complexidade da lógica, histórico da área se o contexto o traz, integrações envolvidas) e impacto (Alto, Médio, Baixo: consequência para o negócio conforme o que a US e o contexto declaram, sem cenários catastróficos inventados).
+For each condition, assess probability of failure (High, Medium, Low: logic complexity, area history if provided in context, external integrations involved) and impact (High, Medium, Low: business consequence as declared in US and context, avoiding invented catastrophe scenarios).
 
-- **P1**: automatizar e rodar em toda execução.
-- **P2**: automatizar; pode rodar em ciclo mais espaçado.
-- **P3**: candidato a exploratório ou verificação pontual.
+- **P1**: automate and run on every execution cycle.
+- **P2**: automate; can run in broader, spaced regression suites.
+- **P3**: candidate for exploratory testing or spot verification.
 
-Justifique em meia linha por condição, numa lista na análise de risco. Impacto que depende de informação de negócio ausente: INDETERMINADO mais pergunta.
+Justify in half a line per condition in a list within the risk analysis section. Impact dependent on missing business information: INDETERMINATE plus question.
 
-## Camada
+## Layer
 
-A camada mais barata que verifica a condição com confiança:
+The lowest-cost layer that verifies the condition with high confidence:
 
-- **UNIDADE**: lógica pura, cálculo, validação isolada.
-- **INTEGRAÇÃO/API**: contrato entre componentes, persistência, regra que atravessa módulos.
-- **E2E/UI**: só onde a jornada do usuário é o objeto do teste: o happy path da jornada principal e condições em que o fluxo visual é o próprio requisito.
+- **UNIT**: pure business logic, calculations, isolated validation.
+- **INTEGRATION/API**: contracts between components, persistence, cross-module workflows.
+- **E2E/UI**: only where user journey itself is the subject of verification: happy path of the primary journey and conditions where visual flow is the requirement.
 
-Empurrar tudo para E2E é o anti-padrão a combater. Condição verificável em camada mais baixa vai para lá, com o porquê. Camada que depende de arquitetura desconhecida: `[CAMADA A VALIDAR COM DEV]` com as opções.
+Pushing all testing to E2E is an anti-pattern to eliminate. Conditions verifiable in lower layers belong there, with explicit rationale. Layers dependent on unknown architecture: `[LAYER TO VALIDATE WITH DEV]` with available options.
 
-## Automatizabilidade
+## Automatability
 
-Gherkin impecável pode ser inautomatizável. Para cada cenário P1 e P2, os quatro bloqueadores:
+Impeccable Gherkin can be unautomatable. For each P1 and P2 scenario, evaluate the four blockers:
 
-- **Dependência externa**: sistema de terceiro sem mock, stub ou sandbox confirmado no contexto: `[BLOQUEADOR: dependência externa sem estratégia de isolamento]`.
-- **Massa de dados**: estado inicial do `Dado` que só existe em produção ou nasce à mão: `[BLOQUEADOR: provisionamento de massa]`.
-- **Observabilidade**: resultado do `Então` invisível externamente: `[BLOQUEADOR: resultado não observável]`.
-- **Controle de tempo**: cenário que depende de passagem de tempo, agendamento ou expiração sem relógio controlável: `[BLOQUEADOR: relógio não controlável]`.
+- **External dependency**: third-party service without confirmed mock, stub, or sandbox in context: `[BLOCKER: external dependency without isolation strategy]`.
+- **Test data**: initial state in `Given` that exists only in production or must be generated manually: `[BLOCKER: test data provisioning]`.
+- **Observability**: outcome in `Then` invisible externally: `[BLOCKER: unobservable outcome]`.
+- **Time control**: scenario dependent on elapsed time, scheduling, or expiration without controllable clocks: `[BLOCKER: uncontrollable clock]`.
 
-Cenário com bloqueador não vira teste manual por padrão: primeiro a pergunta ou ação que remove o bloqueador; `[MANUAL-ONLY]` é o último recurso, justificado.
+Scenarios with blockers do not default to manual testing: first formulate the question or action item that removes the blocker; `[MANUAL-ONLY]` is a last resort requiring explicit justification.
 
-## Impacto de regressão
+## Regression impact
 
-Só a partir do que a US e o contexto declaram sobre o sistema existente: fluxos que a US toca, o que pode quebrar em silêncio em cada um, e qual verificação cobre. Sem contexto sobre o sistema existente, diga isso e formule as perguntas de impacto para DEV; arquitetura que você não conhece gera pergunta, não dedução.
+Derived strictly from what the US and context declare regarding the existing system: touched flows, what could silently break, and which verification covers it. Without existing system context, state this and list impact questions for DEV; unfamiliar architecture triggers questions, not assumptions.
 
-## Exemplo de matriz
+## Example matrix
 
-US já refinada: "Como analista financeiro, quero aprovar solicitações de reembolso de até R$ 500,00, para que reembolsos de baixo valor não dependam do gestor. AC1: Dado uma solicitação de valor menor ou igual a R$ 500,00 em estado 'pendente', Quando o analista aprova, Então o estado muda para 'aprovada' e o solicitante é notificado. AC2: Dado uma solicitação acima de R$ 500,00, Quando o analista tenta aprovar, Então o sistema bloqueia a ação e informa que a aprovação requer gestor."
+Refined US: "As a financial analyst, I want to approve reimbursement requests up to $500.00, so low-value reimbursements do not depend on manager approval. AC1: Given a reimbursement request under or equal to $500.00 in 'pending' status, When the analyst approves, Then status changes to 'approved' and requester is notified. AC2: Given a request exceeding $500.00, When the analyst attempts to approve, Then system blocks action and indicates manager approval is required."
 
-| # | Condição | Origem | Resultado esperado | Prio | Camada |
+| # | Condition | Origin | Expected Result | Priority | Layer |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Aprovar solicitação de R$ 499,99 pendente | [ESPECIFICADO: AC1] | Estado 'aprovada' e notificação enviada | P1 | INTEGRAÇÃO/API |
-| 2 | Aprovar solicitação de exatamente R$ 500,00 | [DERIVADO: valor limite] | Estado 'aprovada' (AC1 diz "até", inclusivo) | P1 | INTEGRAÇÃO/API |
-| 3 | Tentar aprovar R$ 500,01 | [DERIVADO: valor limite] | Bloqueio e mensagem de gestor [ESPECIFICADO: AC2] | P1 | INTEGRAÇÃO/API |
-| 4 | Aprovar solicitação de R$ 0,00 | [DERIVADO: valor limite] | [INDEFINIDO → Pergunta 1] | P2 | INTEGRAÇÃO/API |
-| 5 | Tentar aprovar solicitação já 'aprovada' | [DERIVADO: transição de estados] | [INDEFINIDO → Pergunta 2] | P1 | INTEGRAÇÃO/API |
-| 6 | Usuário sem papel de analista tenta aprovar | [DERIVADO: ângulo silencioso, autorização] | [INDEFINIDO → Pergunta 3] | P1 | INTEGRAÇÃO/API |
-| 7 | Falha no envio da notificação após mudança de estado | [DERIVADO: ângulo silencioso, falha parcial] | [INDEFINIDO → Pergunta 4] | P2 | [CAMADA A VALIDAR COM DEV: síncrona ou assíncrona] |
-| 8 | Jornada completa: analista localiza, aprova e vê confirmação | [ESPECIFICADO: narrativa] | Fluxo conclui com estado e notificação do AC1 | P1 | E2E |
+| 1 | Approve pending request for $499.99 | [SPECIFIED: AC1] | Status 'approved' and notification sent | P1 | INTEGRATION/API |
+| 2 | Approve request for exactly $500.00 | [DERIVED: boundary value] | Status 'approved' (AC1 states "up to", inclusive) | P1 | INTEGRATION/API |
+| 3 | Attempt approving $500.01 | [DERIVED: boundary value] | Blocked with manager message [SPECIFIED: AC2] | P1 | INTEGRATION/API |
+| 4 | Approve request for $0.00 | [DERIVED: boundary value] | [UNDEFINED -> Question 1] | P2 | INTEGRATION/API |
+| 5 | Attempt approving already 'approved' request | [DERIVED: state transition] | [UNDEFINED -> Question 2] | P1 | INTEGRATION/API |
+| 6 | User without analyst role attempts approval | [DERIVED: silent angle, authorization] | [UNDEFINED -> Question 3] | P1 | INTEGRATION/API |
+| 7 | Notification delivery fails after status change | [DERIVED: silent angle, partial failure] | [UNDEFINED -> Question 4] | P2 | [LAYER TO VALIDATE WITH DEV: synchronous or asynchronous] |
+| 8 | Complete journey: analyst locates, approves, sees confirmation | [SPECIFIED: narrative] | Workflow concludes with status and notification from AC1 | P1 | E2E |
 
-Perguntas: 1. [PO] Solicitação de R$ 0,00 ou valor negativo pode existir e ser aprovada? 2. [PO] O que acontece ao tentar aprovar solicitação que não está 'pendente'? A condição 5 é P1 por risco de pagamento duplicado. 3. [PO] Algum outro papel aprova até R$ 500? 4. [DEV] A notificação é síncrona ou assíncrona? Se falhar, a aprovação persiste?
-
-Repare: toda condição derivada nomeia a técnica; nenhum resultado foi inventado; a regra central (o limite exato) concentra a prioridade; só a jornada justifica E2E; e no modo com código a pergunta 4 é respondida lendo o código, não perguntando.
+Questions: 1. [PO] Can a request for $0.00 or negative value exist and be approved? 2. [PO] What happens when attempting to approve a request not in 'pending' status? Condition 5 is P1 due to duplicate payment risk. 3. [PO] Can any other role approve up to $500? 4. [DEV] Is notification synchronous or asynchronous? If delivery fails, does approval persist?

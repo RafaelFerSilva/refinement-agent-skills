@@ -1,8 +1,8 @@
 <!--
-Por que este arquivo existe: quando há um CLAUDE.md na raiz, o Claude Code lê só ele
-e ignora o AGENTS.md. O import abaixo mantém o AGENTS.md como fonte única de verdade.
-Comentários HTML são removidos antes de entrar no contexto do agente.
+Why this file exists: when CLAUDE.md exists in the root, Claude Code only reads it
+and ignores AGENTS.md. The import below maintains AGENTS.md as the single source of truth.
+HTML comments are stripped before entering agent context.
 -->
 @AGENTS.md
 
-Ponte de compatibilidade para o Claude Code. Qualquer mudança no fluxo de IA vai em `AGENTS.md`, nunca aqui.
+Compatibility bridge for Claude Code. Any AI workflow change goes into `AGENTS.md`, never here.

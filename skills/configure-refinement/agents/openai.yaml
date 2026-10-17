@@ -1,5 +1,5 @@
 interface:
-  display_name: "Configurar refinamento"
-  short_description: "Configura modo e convenções do workspace para os fluxos de refinamento"
+  display_name: "Configure Refinement"
+  short_description: "Configures workspace mode and conventions for refinement workflows"
 policy:
   allow_implicit_invocation: false

@@ -1,5 +1,5 @@
 interface:
   display_name: "Requirements Discovery"
-  short_description: "Sabatina input bruto até virar épicos e histórias candidatas, com mapa de decisões quando não cabe numa sessão"
+  short_description: "Examines raw input into epics and candidate stories, with a decision map when scope exceeds a session"
 policy:
   allow_implicit_invocation: false

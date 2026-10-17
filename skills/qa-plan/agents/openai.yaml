@@ -1,5 +1,5 @@
 interface:
   display_name: "QA Plan"
-  short_description: "Deriva condições de teste com técnica declarada e sabatina o que ficou indefinido"
+  short_description: "Derives test conditions with declared techniques and examines undefined behavior"
 policy:
   allow_implicit_invocation: false
