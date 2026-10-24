@@ -2,7 +2,7 @@
 
 > Read this file before taking any action in this repository.
 
-> Single source of truth for agents. `CLAUDE.md` (Claude Code) and `GEMINI.md` (Gemini CLI) only import this file; Codex, Cursor, and Copilot read it directly. AI workflow changes belong here.
+> Single source of truth for agents. `.claude/CLAUDE.md` (Claude Code) and `GEMINI.md` (Gemini CLI) only import this file; Codex, Cursor, and Copilot read it directly. AI workflow changes belong here.
 
 ## What this repository is
 

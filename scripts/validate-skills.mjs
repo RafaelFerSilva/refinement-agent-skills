@@ -110,6 +110,13 @@ for (const f of readdirSync(join(root, 'evals')).filter((f) => f.endsWith('.json
   }
 }
 
+// Claude Code bridge: lives in .claude/, imports AGENTS.md, and never sits at the plugin root,
+// where `claude plugin validate` warns that it is not loaded as context.
+const bridge = join(root, '.claude', 'CLAUDE.md');
+if (existsSync(join(root, 'CLAUDE.md'))) fail('CLAUDE.md at the repository root: a plugin root CLAUDE.md is not loaded as context, move it to .claude/CLAUDE.md');
+if (!existsSync(bridge)) fail('.claude/CLAUDE.md missing: Claude Code loses the AGENTS.md instructions in this repository');
+else if (!readFileSync(bridge, 'utf8').includes('@../AGENTS.md')) fail('.claude/CLAUDE.md does not import @../AGENTS.md');
+
 // Grader regression: every artifact fixture passes its own grader, in the language its name declares.
 const artifactsDir = join(root, 'evals', 'fixtures', 'artifacts');
 let graded = 0;
