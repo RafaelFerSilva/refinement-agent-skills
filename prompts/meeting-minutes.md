@@ -53,6 +53,8 @@ Quick test: "if an attendee reads this line and says 'I never said that', can I 
 
 ## Final notice
 
+Published artifacts only. A triage that stops the workflow and an examination round publish nothing, so they carry no notice: the notice qualifies an artifact someone may circulate.
+
 > ⚠️ These minutes are an AI-generated draft derived from a transcript. They require attendee validation before circulating as an official record, particularly Presumed Agreements, which were not explicitly verbalized and require confirmation.
 
 In a pt-BR workspace:
@@ -117,7 +119,7 @@ Format (pt-BR): "Como [papel específico], quero [uma capacidade, um verbo], par
 
 ## INVEST Scorecard
 
-Evaluate each criterion as PASS, FAIL, or INDETERMINATE (pt-BR: PASS, FAIL, or INDETERMINADO; criterion names stay in English in both languages). INDETERMINATE means the source text does not provide enough information to assess, and must become a question, not a guess.
+Evaluate each criterion as PASS, FAIL, or INDETERMINATE (pt-BR: PASS, FAIL, or INDETERMINADO; criterion names stay in English in both languages). Naming a failure in prose, in a question or anywhere else, carries `[INVEST-FAIL: letter]` with it: a scorecard and a round that disagree about which criteria fail leave the reader deciding which one to trust. INDETERMINATE means the source text does not provide enough information to assess, and must become a question, not a guess.
 
 - **Independent**: developable without blocking or being blocked by another story.
 - **Negotiable**: describes the problem, not the solution. Prescribing solution instead of problem fails; the solution suggested by the PO is moved to notes, preserved as reference.

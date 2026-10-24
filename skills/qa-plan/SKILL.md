@@ -54,6 +54,8 @@ Read `docs/agents/refinement.md` in the workspace: it defines the operating mode
 
 ## Final notice
 
+Published artifacts only. A triage that stops the workflow and an examination round publish nothing, so they carry no notice: the notice qualifies an artifact someone may circulate.
+
 > ⚠️ This output provides the analytical baseline for a test plan, not the final test plan. Decisions on coverage, prioritization, and effort belong to the QA team, with validation from PO (undefined behaviors) and Dev (architecture and layers).
 
 In a pt-BR workspace:

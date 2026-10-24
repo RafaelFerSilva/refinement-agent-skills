@@ -45,6 +45,8 @@ Quick test: "if an attendee reads this line and says 'I never said that', can I 
 
 ## Final notice
 
+Published artifacts only. A triage that stops the workflow and an examination round publish nothing, so they carry no notice: the notice qualifies an artifact someone may circulate.
+
 > ⚠️ These minutes are an AI-generated draft derived from a transcript. They require attendee validation before circulating as an official record, particularly Presumed Agreements, which were not explicitly verbalized and require confirmation.
 
 In a pt-BR workspace:
