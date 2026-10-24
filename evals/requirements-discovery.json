@@ -39,14 +39,14 @@
     {
       "id": 3,
       "prompt": "/requirements-discovery evals/fixtures/briefing-alertas-velocidade.md . The workspace configuration is at evals/fixtures/refinement-no-code-pt-BR.md: read it as `docs/agents/refinement.md`. O glossário está em evals/fixtures/CONTEXT-frota.md.",
-      "expected_output": "Same mapping as case 1, written in Portuguese because the workspace declares `Language: pt-BR`: triage in a single line, domains with confidence, stakeholders with Marcus as \"fonte\", epics with complexity, and the first round with **Recomendação:** per question. No SLA invented for \"rápido\".",
+      "expected_output": "Same mapping as case 1, written in Portuguese because the workspace declares `Language: pt-BR`: triage in a single line as UTILIZÁVEL or PARCIALMENTE UTILIZÁVEL, domains with confidence, stakeholders with Marcus as \"fonte\", epics with complexity, and the first round with **Recomendação:** per question. No SLA invented for \"rápido\".",
       "files": [
         "evals/fixtures/briefing-alertas-velocidade.md",
         "evals/fixtures/CONTEXT-frota.md",
         "evals/fixtures/refinement-no-code-pt-BR.md"
       ],
       "assertions": [
-        "Triage, mapping, and the examination round are written in Portuguese",
+        "Triage is stated in a single line as UTILIZÁVEL or PARCIALMENTE UTILIZÁVEL, and mapping and the examination round are written in Portuguese",
         "The note-taker enters the stakeholders table with the type reserved for second-hand input",
         "\"rápido\" becomes a latency question citing the \"Em tempo real\" glossary entry, with no SLA number asserted",
         "Rigor markers appear in their Portuguese form, with no English markers mixed in",

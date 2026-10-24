@@ -24,7 +24,7 @@ The boundary manifests differently depending on the stage:
 
 During examination, finding facts is the agent's job: glossary, previous stories, workspace documents, and in code mode, the codebase. A found fact does not become a question: it becomes a recommended answer with the cited source. Decisions belong to the PO. Without a basis to recommend, the recommended answer is "no recommendation", and when options exist, list them with the implication of each.
 
-Refinement language is determined by `Language:` (or `Idioma:`) in `docs/agents/refinement.md` (`en-US` or `pt-BR`), with `en-US` as default. When the language is `pt-BR`, examination, markers, narrative, Gherkin, and verdicts adopt their Portuguese form.
+Refinement language is determined by `Language:` (or `Idioma:`) in `docs/agents/refinement.md` (`en-US` or `pt-BR`), with `en-US` as default. When the language is `pt-BR`, examination, markers, narrative, Gherkin, triage labels, and verdicts adopt their Portuguese form.
 
 ## Markers
 
@@ -61,7 +61,7 @@ Format (pt-BR): "Como [papel específico], quero [uma capacidade, um verbo], par
 
 ## INVEST Scorecard
 
-Evaluate each criterion as PASS, FAIL, or INDETERMINATE. INDETERMINATE means the source text does not provide enough information to assess, and must become a question, not a guess.
+Evaluate each criterion as PASS, FAIL, or INDETERMINATE (pt-BR: PASS, FAIL, or INDETERMINADO; criterion names stay in English in both languages). INDETERMINATE means the source text does not provide enough information to assess, and must become a question, not a guess.
 
 - **Independent**: developable without blocking or being blocked by another story.
 - **Negotiable**: describes the problem, not the solution. Prescribing solution instead of problem fails; the solution suggested by the PO is moved to notes, preserved as reference.
@@ -96,6 +96,27 @@ Format (pt-BR): `Cenário:` nome descritivo, `Dado` estado inicial, `Quando` um 
 | Open-ended scope | all file formats, any device | Closed, explicit list |
 
 Complete anti-patterns, with examples, problems, and corrective actions, live in [ANTI-PATTERNS.md](ANTI-PATTERNS.md). Read when scanning or auditing text; the Skill tool loads only this file, sibling files must be read separately.
+
+## Triage labels
+
+Every workflow opens by classifying its input in a single line, and the label is the first thing a reader looks for. The labels per workflow:
+
+| Workflow | Label (en-US, default) | Label (pt-BR) | Meaning |
+| --- | --- | --- | --- |
+| `/refine-story` | ANALYZABLE | ANALISÁVEL | Has narrative and some criteria, even if flawed |
+| `/refine-story` | SKELETON | ESQUELETO | Title only, or narrative without criteria |
+| `/refine-story` | NOT A US | NÃO É US | Disguised epic, technical task, standalone non-functional requirement |
+| `/qa-plan` | TESTABLE | TESTÁVEL | Every expected outcome has an observation point and no dependency is pending |
+| `/qa-plan` | TESTABLE WITH RESERVATIONS | TESTÁVEL COM RESSALVAS | Conditions derivable, at least one outcome without observation point or with unconfirmed dependency |
+| `/qa-plan` | NOT TESTABLE | NÃO TESTÁVEL | No criterion describes observable behavior |
+| `/requirements-discovery` | USABLE | UTILIZÁVEL | Every excerpt structures a requirement |
+| `/requirements-discovery` | PARTIALLY USABLE | PARCIALMENTE UTILIZÁVEL | At least one excerpt structures a requirement and at least one does not |
+| `/requirements-discovery` | UNUSABLE | INUTILIZÁVEL | No excerpt structures a requirement |
+| `/meeting-minutes` | INTACT | ÍNTEGRA | Continuous audio, identifiable speakers |
+| `/meeting-minutes` | DEGRADED | DEGRADADA | Inaudible segments, misassigned speakers, cuts |
+| `/meeting-minutes` | INSUFFICIENT | INSUFICIENTE | Too brief, or not the meeting from the metadata |
+
+A triage label that stops the workflow (NOT A US, NOT TESTABLE, UNUSABLE, INSUFFICIENT) is stated with its rationale, and nothing further is published.
 
 ## Verdicts
 

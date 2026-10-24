@@ -56,7 +56,7 @@
     {
       "id": 4,
       "prompt": "/refine-story evals/fixtures/us-245-silenciar-alertas.md . The workspace configuration is at evals/fixtures/refinement-no-code-pt-BR.md: read it as `docs/agents/refinement.md`. O glossário do produto está em evals/fixtures/CONTEXT-frota.md, leia como `CONTEXT.md`.",
-      "expected_output": "Same examination as case 1, conducted in Portuguese because the workspace declares `Language: pt-BR`: triage stated in a single line, round in the ❓ Q<n> format with **Recomendação:**, markers `[INFERÊNCIA: base]` and `[A CONFIRMAR: quem]`, and the recommendation for the role citing \"operador de despacho\" from the glossary. No duration value invented, and the response ends waiting for the PO.",
+      "expected_output": "Same examination as case 1, conducted in Portuguese because the workspace declares `Language: pt-BR`: ANALISÁVEL triage stated in a single line, round in the ❓ Q<n> format with **Recomendação:**, markers `[INFERÊNCIA: base]` and `[A CONFIRMAR: quem]`, and the recommendation for the role citing \"operador de despacho\" from the glossary. No duration value invented, and the response ends waiting for the PO.",
       "files": [
         "evals/fixtures/us-245-silenciar-alertas.md",
         "evals/fixtures/CONTEXT-frota.md",
@@ -66,7 +66,7 @@
         "The examination round is written in Portuguese, with **Recomendação:** instead of **Recommendation:**",
         "The question about the role recommends \"operador de despacho\" and cites the glossary as its base",
         "Rigor markers appear in their Portuguese form, such as `[INFERÊNCIA:` or `[A CONFIRMAR:`, with no English markers mixed in",
-        "The US is classified before any question, and AC2 and AC4 are recognized as task and Definition of Done",
+        "The response classifies the US as ANALISÁVEL before any question, and AC2 and AC4 are recognized as task and Definition of Done",
         "No numeric value for duration, limit, or SLA appears as an assertion",
         "The response waits for the PO to answer"
       ]

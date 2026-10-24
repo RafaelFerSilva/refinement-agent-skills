@@ -36,7 +36,7 @@ Quick test: "if an attendee reads this line and says 'I never said that', can I 
 1. **Metadata.** Read `docs/agents/refinement.md` in the workspace to identify the configured language (`en-US` or `pt-BR`, default `en-US`) and publishing path. Minutes, questionnaires, and generated inputs follow this language. Identify title, date, duration, attendees with roles, project, and glossary terms distorted by automated transcription. Date is mandatory: deadline arithmetic depends on it. If missing, ask in a single line before proceeding. Read `CONTEXT.md` for glossary terms when present.
    Completed when: date and attendees are established.
 
-2. **Triage.** INTACT (continuous audio, identifiable speakers), DEGRADED (inaudible segments, misassigned speakers, cuts), INSUFFICIENT (too brief, or not the meeting from metadata). INSUFFICIENT: state reason and stop; facade minutes must not circulate as official records. DEGRADED: every gap that might have contained an action or decision becomes an open question ("inaudible segment at ~12min following proposal by X"); gaps are never reconstructed. Distorted terminology: apply glossary spelling and mark `[POSSIBLE TRANSCRIPTION ERROR: original -> adopted]` in section 0, using only the adopted term throughout the body. Personal details, health, family, remarks on absent colleagues: omit from all sections; a project commitment embedded in personal context is recorded without the circumstance. Unidentified speaker with commitment: assignee `[TO BE DEFINED: unidentified speaker at ~Xmin]` and open question. A note that personal content was omitted may appear in triage without details; deadlines mentioned only inside personal context are kept textually without personal circumstance.
+2. **Triage.** INTACT (continuous audio, identifiable speakers), DEGRADED (inaudible segments, misassigned speakers, cuts), INSUFFICIENT (too brief, or not the meeting from metadata). INSUFFICIENT: state reason and stop; facade minutes must not circulate as official records. DEGRADED: every gap that might have contained an action or decision becomes an open question ("inaudible segment at ~12min following proposal by X"); gaps are never reconstructed. Distorted terminology: apply glossary spelling and mark `[POSSIBLE TRANSCRIPTION ERROR: original -> adopted]` (pt-BR: `[POSSÍVEL ERRO DE TRANSCRIÇÃO: original -> adotada]`) in section 0, using only the adopted term throughout the body. Personal details, health, family, remarks on absent colleagues: omit from all sections; a project commitment embedded in personal context is recorded without the circumstance. Unidentified speaker with commitment: assignee `[TO BE DEFINED: unidentified speaker at ~Xmin]` and open question. A note that personal content was omitted may appear in triage without details; deadlines mentioned only inside personal context are kept textually without personal circumstance.
    Completed when: triage is recorded in section 0 with detected transcription errors.
 
 3. **Extract.** Apply the rules from the "Synthesis rules" section of this prompt: retraction and supersedence, action item granularity, priority with provenance, what counts as a decision.
@@ -76,7 +76,7 @@ The boundary manifests differently depending on the stage:
 
 During examination, finding facts is the agent's job: glossary, previous stories, workspace documents, and in code mode, the codebase. A found fact does not become a question: it becomes a recommended answer with the cited source. Decisions belong to the PO. Without a basis to recommend, the recommended answer is "no recommendation", and when options exist, list them with the implication of each.
 
-Refinement language is determined by `Language:` (or `Idioma:`) in `docs/agents/refinement.md` (`en-US` or `pt-BR`), with `en-US` as default. When the language is `pt-BR`, examination, markers, narrative, Gherkin, and verdicts adopt their Portuguese form.
+Refinement language is determined by `Language:` (or `Idioma:`) in `docs/agents/refinement.md` (`en-US` or `pt-BR`), with `en-US` as default. When the language is `pt-BR`, examination, markers, narrative, Gherkin, triage labels, and verdicts adopt their Portuguese form.
 
 ## Markers
 
@@ -113,7 +113,7 @@ Format (pt-BR): "Como [papel específico], quero [uma capacidade, um verbo], par
 
 ## INVEST Scorecard
 
-Evaluate each criterion as PASS, FAIL, or INDETERMINATE. INDETERMINATE means the source text does not provide enough information to assess, and must become a question, not a guess.
+Evaluate each criterion as PASS, FAIL, or INDETERMINATE (pt-BR: PASS, FAIL, or INDETERMINADO; criterion names stay in English in both languages). INDETERMINATE means the source text does not provide enough information to assess, and must become a question, not a guess.
 
 - **Independent**: developable without blocking or being blocked by another story.
 - **Negotiable**: describes the problem, not the solution. Prescribing solution instead of problem fails; the solution suggested by the PO is moved to notes, preserved as reference.
@@ -148,6 +148,27 @@ Format (pt-BR): `Cenário:` nome descritivo, `Dado` estado inicial, `Quando` um 
 | Open-ended scope | all file formats, any device | Closed, explicit list |
 
 Complete anti-patterns, with examples, problems, and corrective actions, live in the "Anti-patterns" section of this prompt.
+
+## Triage labels
+
+Every workflow opens by classifying its input in a single line, and the label is the first thing a reader looks for. The labels per workflow:
+
+| Workflow | Label (en-US, default) | Label (pt-BR) | Meaning |
+| --- | --- | --- | --- |
+| `/refine-story` | ANALYZABLE | ANALISÁVEL | Has narrative and some criteria, even if flawed |
+| `/refine-story` | SKELETON | ESQUELETO | Title only, or narrative without criteria |
+| `/refine-story` | NOT A US | NÃO É US | Disguised epic, technical task, standalone non-functional requirement |
+| `/qa-plan` | TESTABLE | TESTÁVEL | Every expected outcome has an observation point and no dependency is pending |
+| `/qa-plan` | TESTABLE WITH RESERVATIONS | TESTÁVEL COM RESSALVAS | Conditions derivable, at least one outcome without observation point or with unconfirmed dependency |
+| `/qa-plan` | NOT TESTABLE | NÃO TESTÁVEL | No criterion describes observable behavior |
+| `/requirements-discovery` | USABLE | UTILIZÁVEL | Every excerpt structures a requirement |
+| `/requirements-discovery` | PARTIALLY USABLE | PARCIALMENTE UTILIZÁVEL | At least one excerpt structures a requirement and at least one does not |
+| `/requirements-discovery` | UNUSABLE | INUTILIZÁVEL | No excerpt structures a requirement |
+| `/meeting-minutes` | INTACT | ÍNTEGRA | Continuous audio, identifiable speakers |
+| `/meeting-minutes` | DEGRADED | DEGRADADA | Inaudible segments, misassigned speakers, cuts |
+| `/meeting-minutes` | INSUFFICIENT | INSUFICIENTE | Too brief, or not the meeting from the metadata |
+
+A triage label that stops the workflow (NOT A US, NOT TESTABLE, UNUSABLE, INSUFFICIENT) is stated with its rationale, and nothing further is published.
 
 ## Verdicts
 

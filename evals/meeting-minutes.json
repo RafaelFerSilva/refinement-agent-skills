@@ -40,12 +40,13 @@
     {
       "id": 3,
       "prompt": "/meeting-minutes evals/fixtures/transcricao-projeto-frota.md . The workspace configuration is at evals/fixtures/refinement-no-code-pt-BR.md: read it as `docs/agents/refinement.md`.",
-      "expected_output": "Same minutes as case 1, written in Portuguese because the workspace declares `Language: pt-BR`: provenance as `[DITO: falante, \"paráfrase\"]`, presumed agreements as `[PRESUMIDO: base]`, general intention as `[ACOMPANHAMENTO]`, and placeholders as `[A DEFINIR]`. The priority scale stays Highest, High, Medium, Low in both outputs.",
+      "expected_output": "Same minutes as case 1, written in Portuguese because the workspace declares `Language: pt-BR`: ÍNTEGRA triage in section 0 with `[POSSÍVEL ERRO DE TRANSCRIÇÃO: telimetria -> telemetria]`, provenance as `[DITO: falante, \"paráfrase\"]`, presumed agreements as `[PRESUMIDO: base]`, general intention as `[ACOMPANHAMENTO]`, and placeholders as `[A DEFINIR]`. The priority scale stays Highest, High, Medium, Low in both outputs.",
       "files": [
         "evals/fixtures/transcricao-projeto-frota.md",
         "evals/fixtures/refinement-no-code-pt-BR.md"
       ],
       "assertions": [
+        "Section 0 records ÍNTEGRA triage and the transcription error as `[POSSÍVEL ERRO DE TRANSCRIÇÃO: ...]`",
         "The minutes are written in Portuguese, with provenance markers [DITO: and [PRESUMIDO:",
         "No English provenance marker ([STATED:, [ASSUMED) appears in the artifact",
         "Driver training appears as [ACOMPANHAMENTO] and produces no object in the JSON",

@@ -41,13 +41,14 @@
     {
       "id": 3,
       "prompt": "/qa-plan evals/fixtures/us-318-encerrar-alerta.md . The workspace configuration is at evals/fixtures/refinement-no-code-pt-BR.md: read it as `docs/agents/refinement.md`. O glossário está em evals/fixtures/CONTEXT-frota.md.",
-      "expected_output": "Same derivation as case 1, written in Portuguese because the workspace declares `Language: pt-BR`: matrix with `[ESPECIFICADO: trecho]`, `[DERIVADO: técnica]`, and `[INDEFINIDO → Pergunta n]`, questions numbered in a single sequence with recipient PO or DEV, and the first round addressed to the PO.",
+      "expected_output": "Same derivation as case 1, written in Portuguese because the workspace declares `Language: pt-BR`: testability triage stated in a single line as TESTÁVEL or TESTÁVEL COM RESSALVAS, matrix with `[ESPECIFICADO: trecho]`, `[DERIVADO: técnica]`, and `[INDEFINIDO → Pergunta n]`, questions numbered in a single sequence with recipient PO or DEV, and the first round addressed to the PO.",
       "files": [
         "evals/fixtures/us-318-encerrar-alerta.md",
         "evals/fixtures/CONTEXT-frota.md",
         "evals/fixtures/refinement-no-code-pt-BR.md"
       ],
       "assertions": [
+        "Testability triage is stated in a single line as TESTÁVEL or TESTÁVEL COM RESSALVAS, with no en-US label",
         "The matrix and the questions are written in Portuguese",
         "Origin markers appear in their Portuguese form: [ESPECIFICADO, [DERIVADO, and [INDEFINIDO, with no English markers mixed in",
         "Every derived condition names the technique that generated it",

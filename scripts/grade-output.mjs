@@ -33,6 +33,7 @@ const TABLE = {
   'en-US': {
     sections: {
       openQuestions: ['Open Questions'],
+      triage: ['Testability Triage', 'Triage'],
       invest: ['INVEST Scorecard'],
       verdict: ['Verdict'],
       matrix: ['Test Conditions Matrix'],
@@ -51,6 +52,12 @@ const TABLE = {
       'meeting-minutes': ['draft'],
     },
     refine: 'REFINE',
+    triageLabels: {
+      'refine-story': ['ANALYZABLE', 'SKELETON', 'NOT A US'],
+      'qa-plan': ['TESTABLE', 'TESTABLE WITH RESERVATIONS', 'NOT TESTABLE'],
+      'requirements-discovery': ['USABLE', 'PARTIALLY USABLE', 'UNUSABLE'],
+      'meeting-minutes': ['INTACT', 'DEGRADED', 'INSUFFICIENT'],
+    },
     tokens: ['[INFERENCE:', '[TO CONFIRM', '[STATED:', '[ASSUMED', '[SPECIFIED', '[DERIVED', '[UNDEFINED', '[TRACKING]', '[TO BE DEFINED', '[AMBIGUITY', '[DECOMPOSE', '[DIVERGENCE', '[ORPHAN', '[CONFLICT'],
     gherkin: /^\s*(?:Given|When|Then)\b/gim,
     legacyToConfirm: /\[TO CONFIRM WITH [^\]]+\]/,
@@ -73,6 +80,7 @@ const TABLE = {
   'pt-BR': {
     sections: {
       openQuestions: ['Perguntas em aberto'],
+      triage: ['Triagem de testabilidade', 'Triagem'],
       invest: ['Scorecard INVEST'],
       verdict: ['Veredito'],
       matrix: ['Matriz de condições de teste'],
@@ -91,6 +99,12 @@ const TABLE = {
       'meeting-minutes': ['rascunho'],
     },
     refine: 'REFINAR',
+    triageLabels: {
+      'refine-story': ['ANALISÁVEL', 'ESQUELETO', 'NÃO É US'],
+      'qa-plan': ['TESTÁVEL', 'TESTÁVEL COM RESSALVAS', 'NÃO TESTÁVEL'],
+      'requirements-discovery': ['UTILIZÁVEL', 'PARCIALMENTE UTILIZÁVEL', 'INUTILIZÁVEL'],
+      'meeting-minutes': ['ÍNTEGRA', 'DEGRADADA', 'INSUFICIENTE'],
+    },
     tokens: ['[INFERÊNCIA:', '[A CONFIRMAR', '[DITO:', '[PRESUMIDO', '[ESPECIFICADO', '[DERIVADO', '[INDEFINIDO', '[ACOMPANHAMENTO]', '[A DEFINIR', '[AMBIGUIDADE', '[DECOMPOR', '[DIVERGÊNCIA', '[ÓRFÃO', '[CONFLITO'],
     gherkin: /^\s*(?:Dado|Quando|Então)\b/gim,
     legacyToConfirm: /\[A CONFIRMAR COM [^\]]+\]/,
@@ -167,6 +181,15 @@ function section(key) {
 const status = (text.match(/^Status:\s*(.+)$/m) || [])[1]?.trim() ?? '';
 const numbered = (body) => body.match(/^\s*\d+\.\s+.*$/gm) || [];
 const withoutRecipient = (qs) => qs.filter((q) => !/^\s*\d+\.\s+\[[^\]]+\]/.test(q));
+// Triage label of the graded language, in the triage section the template defines for this workflow.
+function checkTriage() {
+  const labels = T.triageLabels[skill];
+  const body = section('triage');
+  const found = labels.filter((l) => body.includes(l));
+  const foreignLabels = O.triageLabels[skill].filter((l) => body.includes(l) && !found.some((f) => f.includes(l)));
+  check(`triage declares one of ${labels.join(', ')}`, found.length > 0,
+    found.length ? found.join(', ') : (foreignLabels.length ? `${other} label present: ${foreignLabels.join(', ')}` : body.trim().split('\n')[0]));
+}
 
 // Global checks
 check('final disclaimer present', /⚠️/.test(text));
@@ -209,6 +232,7 @@ switch (skill) {
     break;
   }
   case 'qa-plan': {
+    checkTriage();
     const undef = [...text.matchAll(T.undefinedQuestion)].map((m) => m[1]);
     const assigned = new Set([...numbered(section('openQuestions')).join('\n').matchAll(/^\s*(\d+)\.\s+\[(?:PO|DEV)\]/gm)].map((m) => m[1]));
     const missing = [...new Set(undef)].filter((n) => !assigned.has(n));
@@ -255,6 +279,7 @@ switch (skill) {
     check('every table row carries stated provenance', noProvenance.length === 0, noProvenance.join('\n'));
     check('no presumed item inside the table', !table.includes(T.assumed));
     if (!actionsMode) {
+      checkTriage();
       const decisions = section('decisions');
       check('recorded decisions carry stated provenance only', !decisions.includes(T.assumed) && (decisions.trim() === '' || decisions.includes(T.stated)));
       check('self-audit reported', T.selfAuditLabel.test(section('selfAudit')));

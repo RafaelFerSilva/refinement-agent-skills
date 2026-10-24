@@ -6,7 +6,7 @@ Fonte: .scratch/318-encerrar-alerta/spec.md, sessão /qa-plan em 2026-04-21
 
 ## Triagem de testabilidade
 
-TESTÁVEL COM RESERVAS: os resultados têm ponto de observação, a entrega da notificação depende de arquitetura não confirmada.
+TESTÁVEL COM RESSALVAS: os resultados têm ponto de observação, a entrega da notificação depende de arquitetura não confirmada.
 
 ## Matriz de condições de teste
 
