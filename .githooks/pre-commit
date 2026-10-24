@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Definition of Done, run before the commit lands. Enable once per clone:
+#   git config core.hooksPath .githooks
+#
+# Checks the working tree, not the staged tree: every check here is about
+# repository-wide consistency (prompt freshness, manifest, fixtures), so a
+# stash dance would buy little and risk unstaged work. Bypass with
+# `git commit --no-verify` when committing work in progress on purpose.
+set -uo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "Definition of Done: node not found on PATH, and every check needs it."
+  exit 1
+fi
+
+status=0
+run() {
+  local label="$1"; shift
+  if "$@" >/tmp/pre-commit-$$.log 2>&1; then
+    echo "  ok    $label"
+  else
+    echo "  FAIL  $label"
+    sed 's/^/        /' /tmp/pre-commit-$$.log
+    status=1
+  fi
+  rm -f /tmp/pre-commit-$$.log
+}
+
+echo "Definition of Done:"
+run "skills"   node scripts/validate-skills.mjs
+run "prompts"  node scripts/build-prompts.mjs --check
+
+# The CLI is optional: a contributor without it still gets the two node checks,
+# and the plugin manifest is covered by whoever has it installed.
+if command -v claude >/dev/null 2>&1; then
+  run "plugin"  claude plugin validate . --strict
+else
+  echo "  skip  plugin (claude CLI not installed)"
+fi
+
+if [ "$status" -ne 0 ]; then
+  echo
+  echo "Commit blocked. Fix the above, or use --no-verify to bypass on purpose."
+fi
+exit "$status"

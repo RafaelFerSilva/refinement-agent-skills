@@ -199,6 +199,7 @@ Para utilizar o fluxo em português:
 - `node scripts/validate-skills.mjs`: verifies frontmatter, plugin manifest, router consistency, self-containment, and prompt freshness.
 - `node scripts/build-prompts.mjs`: rebuilds standalone prompts in `prompts/` from `skills/`.
 - `claude plugin validate . --strict`: validates plugin manifest.
+- `git config core.hooksPath .githooks`: enables the pre-commit hook that runs the three checks above before each commit.
 - `scripts/install.sh`: fast installer script for local and remote setups.
 - `evals/`: evaluation fixtures following Anthropic skill-creator format.
 
