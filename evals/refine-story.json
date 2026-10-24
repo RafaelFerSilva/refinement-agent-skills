@@ -3,49 +3,72 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "/refine-story evals/fixtures/us-245-silenciar-alertas.md . O workspace está em modo sem código; o glossário do produto está em evals/fixtures/CONTEXT-frota.md.",
-      "expected_output": "Triagem ANALISÁVEL dita em uma linha. Primeira rodada no formato de sabatina (❓ Q<n> e **Recomendação:**): quem silencia (recomendando operador de despacho com base no glossário), o que é 'por um tempo' (duração, quem define, sem recomendar número), o que acontece com um alerta que chega durante o silenciamento (sem recomendação, com opções), e o que 'voltam sozinhos' significa de forma verificável. AC2 reconhecido como task e AC4 como DoD, sem perguntas sobre eles; 'de forma simples' sinalizado como resultado não verificável. Nenhum valor de duração inventado. A resposta termina esperando o PO.",
+      "prompt": "/refine-story evals/fixtures/us-245-silence-alerts.md . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`. The product glossary is at evals/fixtures/CONTEXT-fleet.md, read it as `CONTEXT.md`.",
+      "expected_output": "ANALYZABLE triage stated in a single line. First round in examination format (❓ Q<n> followed by **Recommendation:**): who silences (recommending dispatch operator, grounded on the glossary), what \"for a while\" means (duration, who defines it, with no number recommended), what happens to an alert arriving during the silencing (no recommendation, with options), and what \"come back on their own\" means verifiably. AC2 recognized as an implementation task and AC4 as Definition of Done, with no questions about them; \"in a simple way\" flagged as an unverifiable outcome. No duration value invented. The response ends waiting for the PO.",
       "files": [
-        "evals/fixtures/us-245-silenciar-alertas.md",
-        "evals/fixtures/CONTEXT-frota.md"
+        "evals/fixtures/us-245-silence-alerts.md",
+        "evals/fixtures/CONTEXT-fleet.md",
+        "evals/fixtures/refinement-no-code-en-US.md"
       ],
       "assertions": [
-        "A resposta classifica a US como ANALISÁVEL antes de qualquer pergunta",
-        "A primeira rodada contém ao menos três perguntas no formato ❓ Q<n>, cada uma seguida de **Recomendação:** com resposta recomendada ou com \"sem recomendação\"",
-        "A pergunta sobre o papel recomenda operador de despacho e cita o glossário como base",
-        "Existe uma pergunta sobre a duração do silenciamento e ela não recomenda um número",
-        "AC2 é tratado como task de implementação e AC4 como Definition of Done, sem perguntas sobre eles",
-        "'de forma simples' no AC1 é sinalizado como resultado não verificável",
-        "Nenhum valor numérico de duração, limite ou SLA aparece como afirmação",
-        "A resposta espera o PO responder; não escreve a US refinada na primeira mensagem"
+        "The response classifies the US as ANALYZABLE before any question",
+        "The first round contains at least three questions in the ❓ Q<n> format, each followed by **Recommendation:** carrying either a recommended answer or \"no recommendation\"",
+        "The question about the role recommends dispatch operator and cites the glossary as its base",
+        "There is a question about the silencing duration and it recommends no number",
+        "AC2 is treated as an implementation task and AC4 as Definition of Done, with no questions about them",
+        "\"in a simple way\" in AC1 is flagged as an unverifiable outcome",
+        "No numeric value for duration, limit, or SLA appears as an assertion",
+        "The response waits for the PO to answer; it does not write the refined US in the first message",
+        "Questions, recommendations, and markers are in English, following `Language: en-US` in the workspace configuration"
       ]
     },
     {
       "id": 2,
-      "prompt": "/refine-story evals/fixtures/us-402-esqueleto-login-google.md . Modo sem código.",
-      "expected_output": "Triagem ESQUELETO. A primeira rodada pergunta quais cenários o PO precisa definir (happy path, conta Google sem cadastro, conta já vinculada) sem escrever critérios de aceite por conta própria.",
+      "prompt": "/refine-story evals/fixtures/us-402-skeleton-google-login.md . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`. Glossary at evals/fixtures/CONTEXT-fleet.md.",
+      "expected_output": "SKELETON triage. The first round asks which scenarios the PO needs to define (happy path, Google account with no registration, account already linked) without writing acceptance criteria on its own.",
       "files": [
-        "evals/fixtures/us-402-esqueleto-login-google.md",
-        "evals/fixtures/CONTEXT-frota.md"
+        "evals/fixtures/us-402-skeleton-google-login.md",
+        "evals/fixtures/CONTEXT-fleet.md",
+        "evals/fixtures/refinement-no-code-en-US.md"
       ],
       "assertions": [
-        "A resposta classifica a US como ESQUELETO",
-        "Nenhum cenário Gherkin completo (Dado/Quando/Então) é escrito na primeira rodada",
-        "As perguntas pedem ao PO os cenários, oferecendo os que o texto sugere como inferência com base",
-        "A resposta espera o PO responder"
+        "The response classifies the US as SKELETON",
+        "No complete Gherkin scenario (Given/When/Then) is written in the first round",
+        "The questions ask the PO for the scenarios, offering the ones the text suggests as an inference with a cited base",
+        "The response waits for the PO to answer"
       ]
     },
     {
       "id": 3,
-      "prompt": "/refine-story evals/fixtures/517-nao-e-us-migrar-banco.md",
-      "expected_output": "Triagem NÃO É US: é uma task técnica. Explica em duas ou três linhas, sugere reclassificar como task, e para sem fazer perguntas de refinamento.",
+      "prompt": "/refine-story evals/fixtures/517-not-a-us-database-migration.md . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`.",
+      "expected_output": "NOT A US triage: it is a technical task. Explains it in two or three lines, recommends reclassifying it as a task, and stops without asking refinement questions.",
       "files": [
-        "evals/fixtures/517-nao-e-us-migrar-banco.md"
+        "evals/fixtures/517-not-a-us-database-migration.md",
+        "evals/fixtures/refinement-no-code-en-US.md"
       ],
       "assertions": [
-        "A resposta diz que o item não é uma User Story e nomeia o artefato real (task técnica)",
-        "A resposta sugere o tratamento (reclassificar como task) em poucas linhas",
-        "A resposta não inicia uma rodada de perguntas nem reescreve o item como narrativa"
+        "The response classifies the item as NOT A US and states it is a technical task",
+        "It recommends reclassifying the item as a task and mentions the `Status: not a US` trail",
+        "It does not open an examination round, and asks no refinement question",
+        "It does not write a narrative or acceptance criteria for the item"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "/refine-story evals/fixtures/us-245-silenciar-alertas.md . The workspace configuration is at evals/fixtures/refinement-no-code-pt-BR.md: read it as `docs/agents/refinement.md`. O glossário do produto está em evals/fixtures/CONTEXT-frota.md, leia como `CONTEXT.md`.",
+      "expected_output": "Same examination as case 1, conducted in Portuguese because the workspace declares `Language: pt-BR`: triage stated in a single line, round in the ❓ Q<n> format with **Recomendação:**, markers `[INFERÊNCIA: base]` and `[A CONFIRMAR: quem]`, and the recommendation for the role citing \"operador de despacho\" from the glossary. No duration value invented, and the response ends waiting for the PO.",
+      "files": [
+        "evals/fixtures/us-245-silenciar-alertas.md",
+        "evals/fixtures/CONTEXT-frota.md",
+        "evals/fixtures/refinement-no-code-pt-BR.md"
+      ],
+      "assertions": [
+        "The examination round is written in Portuguese, with **Recomendação:** instead of **Recommendation:**",
+        "The question about the role recommends \"operador de despacho\" and cites the glossary as its base",
+        "Rigor markers appear in their Portuguese form, such as `[INFERÊNCIA:` or `[A CONFIRMAR:`, with no English markers mixed in",
+        "The US is classified before any question, and AC2 and AC4 are recognized as task and Definition of Done",
+        "No numeric value for duration, limit, or SLA appears as an assertion",
+        "The response waits for the PO to answer"
       ]
     }
   ]

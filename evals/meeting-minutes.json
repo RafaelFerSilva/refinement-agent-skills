@@ -3,30 +3,55 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "/meeting-minutes evals/fixtures/transcricao-projeto-frota.md . Publique a ata em .scratch/projeto-frota-2026-04-14/ata.md.",
-      "expected_output": "Ata completa. Triagem ÍNTEGRA com o erro 'telimetria' sinalizado. Uma decisão (alertas no MVP) com DITO de Carlos e confirmação de Marcus. Tabela com A01 (telemetria, Priya, semana de 2026-04-20, Medium [EST], nota de substituição de Marcus), A02 (revisar documento de escopo, Carlos, [A DEFINIR] ou 'hoje' sem a circunstância pessoal) e A03 treinamento como [ACOMPANHAMENTO]. SAP como acordo presumido com destinatários. JSON com os objetos das ações reais, dueDate null para a semana sem dia fixo. Autoverificação OK. Questionário para Carlos e Marcus sobre o SAP, escrito ao lado da ata; discovery-input.md com os trechos de requisito.",
-      "files": ["evals/fixtures/transcricao-projeto-frota.md"],
+      "prompt": "/meeting-minutes evals/fixtures/transcript-fleet-project.md . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`. Publish the minutes to .scratch/ as the configuration defines.",
+      "expected_output": "INTACT triage in section 0, with `[POSSIBLE TRANSCRIPTION ERROR: \"telimetry\" -> \"telemetry\"]` and the glossary applied throughout the body. Speed alerts in the MVP recorded as a decision with STATED provenance. The telemetry requirement gathering is a single action item assigned to Priya, carrying a supersedence note for the commitment Marcus took at ~12min, with the deadline arithmetic exposed. The SAP integration lives in Presumed Agreements with ASSUMED provenance, never in Decisions. Driver training enters the table as [TRACKING] with no JSON object. The daughter's illness is omitted, and the commitment to review the scope document is recorded without the personal circumstance. Valid action items JSON, matching the table, and a self-audit line in section 8.",
+      "files": [
+        "evals/fixtures/transcript-fleet-project.md",
+        "evals/fixtures/refinement-no-code-en-US.md"
+      ],
       "assertions": [
-        "node scripts/grade-output.mjs <ata> --skill meeting-minutes passa em todas as checagens",
-        "A triagem registra [POSSÍVEL ERRO DE TRANSCRIÇÃO: telimetria → telemetria]",
-        "A decisão sobre alertas no MVP tem proveniência DITO de Carlos e confirmação de Marcus",
-        "A ação de telemetria tem uma única linha, responsável Priya, com nota [substitui: Marcus, ~12min]",
-        "A doença da filha de Carlos não aparece em nenhuma seção; o compromisso de revisar o documento de escopo aparece",
-        "A exclusão do SAP está em Acordos Presumidos, não em Decisões",
-        "O treinamento de motoristas é [ACOMPANHAMENTO] e não tem objeto no JSON",
-        "Existe discovery-input.md com os trechos de requisito organizados por falante",
-        "Existe um questionário para Carlos e Marcus sobre o acordo presumido do SAP, no formato de QUESTIONNAIRE.md, ao lado da ata"
+        "Section 0 records INTACT triage and the transcription error \"telimetry\" to \"telemetry\"",
+        "The speed alerts decision carries [STATED: with speaker and paraphrase",
+        "The telemetry gathering is a single action item assigned to Priya, with a supersedence note for the commitment Marcus took at ~12min",
+        "The deadline arithmetic from the meeting date is exposed in the notes of the action item",
+        "The SAP integration appears as a presumed agreement with [ASSUMED: provenance, and does not appear among the recorded decisions",
+        "Driver training appears as [TRACKING] and produces no object in the JSON",
+        "The daughter's illness does not appear in any section, while the commitment to review the scope document is recorded without the personal circumstance",
+        "The JSON parses, carries one object per real action in the table, and dueDate is ISO 8601 or null",
+        "Section 8 states the self-audit result",
+        "Running `node scripts/grade-output.mjs <published minutes> --skill meeting-minutes --lang en-US` passes every check"
       ]
     },
     {
       "id": 2,
-      "prompt": "/meeting-minutes modo ações evals/fixtures/transcricao-projeto-frota.md",
-      "expected_output": "Só as seções Tabela de Ações, Perguntas em Aberto e JSON, com as mesmas regras de proveniência e o aviso final.",
-      "files": ["evals/fixtures/transcricao-projeto-frota.md"],
+      "prompt": "/meeting-minutes actions mode evals/fixtures/transcript-fleet-project.md . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`.",
+      "expected_output": "Sections 3, 6, and 7 only: action items table, open questions, and JSON. No executive summary, no decisions, no presumed agreements sections.",
+      "files": [
+        "evals/fixtures/transcript-fleet-project.md",
+        "evals/fixtures/refinement-no-code-en-US.md"
+      ],
       "assertions": [
-        "A saída contém a tabela de ações, as perguntas em aberto e o JSON, e não contém resumo executivo nem decisões registradas",
-        "O JSON tem exatamente um objeto por ação real da tabela",
-        "O aviso final está presente"
+        "The output carries the action items table, open questions, and the JSON, and no other numbered section",
+        "Every table row carries [STATED: provenance",
+        "Driver training remains [TRACKING] and produces no object in the JSON",
+        "Running `node scripts/grade-output.mjs <published minutes> --skill meeting-minutes --lang en-US` passes every check"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/meeting-minutes evals/fixtures/transcricao-projeto-frota.md . The workspace configuration is at evals/fixtures/refinement-no-code-pt-BR.md: read it as `docs/agents/refinement.md`.",
+      "expected_output": "Same minutes as case 1, written in Portuguese because the workspace declares `Language: pt-BR`: provenance as `[DITO: falante, \"paráfrase\"]`, presumed agreements as `[PRESUMIDO: base]`, general intention as `[ACOMPANHAMENTO]`, and placeholders as `[A DEFINIR]`. The priority scale stays Highest, High, Medium, Low in both outputs.",
+      "files": [
+        "evals/fixtures/transcricao-projeto-frota.md",
+        "evals/fixtures/refinement-no-code-pt-BR.md"
+      ],
+      "assertions": [
+        "The minutes are written in Portuguese, with provenance markers [DITO: and [PRESUMIDO:",
+        "No English provenance marker ([STATED:, [ASSUMED) appears in the artifact",
+        "Driver training appears as [ACOMPANHAMENTO] and produces no object in the JSON",
+        "The SAP integration appears as a presumed agreement, and not among the recorded decisions",
+        "The priority scale in the table and in the JSON remains Highest, High, Medium, Low",
+        "Running `node scripts/grade-output.mjs <ata publicada> --skill meeting-minutes --lang pt-BR` passes every check"
       ]
     }
   ]

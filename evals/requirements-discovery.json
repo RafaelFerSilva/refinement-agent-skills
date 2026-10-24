@@ -3,28 +3,54 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "/requirements-discovery evals/fixtures/briefing-alertas-velocidade.md . Modo sem código; glossário em evals/fixtures/CONTEXT-frota.md.",
-      "expected_output": "Triagem UTILIZÁVEL ou PARCIALMENTE UTILIZÁVEL. Mapa em largura: domínio de alertas de velocidade com confiança, stakeholders Carlos (negócio) e Priya (técnico), um épico com complexidade justificada. Anti-padrões detectados: 'intuitivo' (resultado não verificável), 'qualquer dispositivo' (escopo infinito), 'rápido' (desempenho). SAP registrado como fora de escopo presumido ou [VALIDAR COM EQUIPE], não como decisão. Primeira rodada em largura com resposta recomendada e base; nenhum SLA inventado; espera o usuário.",
-      "files": ["evals/fixtures/briefing-alertas-velocidade.md", "evals/fixtures/CONTEXT-frota.md"],
+      "prompt": "/requirements-discovery evals/fixtures/briefing-speed-alerts.md . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`. Glossary at evals/fixtures/CONTEXT-fleet.md, read it as `CONTEXT.md`.",
+      "expected_output": "PARTIALLY USABLE triage, counting excerpts: the speeding alert structures a requirement, while \"intuitive for the more senior operators\" and \"any device\" do not. Breadth-first mapping with domains and confidence, stakeholders with type (Marcus enters with type \"source\", since the input is second-hand), and epics with complexity. \"Fast\" becomes an SLA question grounded on the \"Real time\" glossary entry, with no number invented. The tracker limitation enters as a constraint or dependency. The response ends with the first examination round, waiting for the PO.",
+      "files": [
+        "evals/fixtures/briefing-speed-alerts.md",
+        "evals/fixtures/CONTEXT-fleet.md",
+        "evals/fixtures/refinement-no-code-en-US.md"
+      ],
       "assertions": [
-        "A resposta diz a triagem do input em uma linha",
-        "Stakeholders Carlos e Priya aparecem com tipo (negócio, técnico)",
-        "'intuitivo' e 'qualquer dispositivo' são sinalizados como anti-padrões, com pergunta",
-        "O papel usado para o operador é 'operador de despacho', conforme o glossário, e não 'usuário'",
-        "A exclusão do SAP do MVP não é registrada como decisão",
-        "Nenhum número de latência ou SLA é afirmado para 'rápido'",
-        "A primeira rodada tem perguntas numeradas com resposta recomendada e espera o usuário"
+        "Triage is stated in a single line as PARTIALLY USABLE, with excerpt-by-excerpt rationale",
+        "Marcus appears in the stakeholders table with type \"source\", because the input is second-hand",
+        "\"fast\" becomes a latency question, citing the \"Real time\" glossary entry, with no SLA number asserted",
+        "\"intuitive\" and \"any device\" become questions instead of epics or criteria",
+        "The limitation of older trackers (no battery level, no accelerometer) is recorded as a constraint or dependency",
+        "Epics carry a complexity rating justified in a single line",
+        "The response waits for the PO to answer the first round"
       ]
     },
     {
       "id": 2,
-      "prompt": "/requirements-discovery evals/fixtures/briefing-inutilizavel.md",
-      "expected_output": "Triagem INUTILIZÁVEL. Diz que o input não permite estruturar histórias, lista três a cinco perguntas mínimas que destravariam a análise e para.",
-      "files": ["evals/fixtures/briefing-inutilizavel.md"],
+      "prompt": "/requirements-discovery evals/fixtures/briefing-unusable.md . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`.",
+      "expected_output": "UNUSABLE triage: no excerpt structures a requirement. States this with excerpt-by-excerpt rationale, lists 3 to 5 minimal questions with their recipient, writes one questionnaire for whoever provided the input, and stops without publishing epics or candidate stories.",
+      "files": [
+        "evals/fixtures/briefing-unusable.md",
+        "evals/fixtures/refinement-no-code-en-US.md"
+      ],
       "assertions": [
-        "A resposta classifica o input como INUTILIZÁVEL",
-        "A resposta lista entre três e cinco perguntas mínimas",
-        "Nenhuma história, épico ou domínio é produzido"
+        "The response classifies the input as UNUSABLE with excerpt-by-excerpt rationale",
+        "It lists between 3 and 5 minimal questions, each with a recipient",
+        "It writes a questionnaire for whoever provided the input",
+        "It publishes no epic and no candidate story",
+        "It invents no requirement from \"more modern\" or \"ready soon\""
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/requirements-discovery evals/fixtures/briefing-alertas-velocidade.md . The workspace configuration is at evals/fixtures/refinement-no-code-pt-BR.md: read it as `docs/agents/refinement.md`. O glossário está em evals/fixtures/CONTEXT-frota.md.",
+      "expected_output": "Same mapping as case 1, written in Portuguese because the workspace declares `Language: pt-BR`: triage in a single line, domains with confidence, stakeholders with Marcus as \"fonte\", epics with complexity, and the first round with **Recomendação:** per question. No SLA invented for \"rápido\".",
+      "files": [
+        "evals/fixtures/briefing-alertas-velocidade.md",
+        "evals/fixtures/CONTEXT-frota.md",
+        "evals/fixtures/refinement-no-code-pt-BR.md"
+      ],
+      "assertions": [
+        "Triage, mapping, and the examination round are written in Portuguese",
+        "The note-taker enters the stakeholders table with the type reserved for second-hand input",
+        "\"rápido\" becomes a latency question citing the \"Em tempo real\" glossary entry, with no SLA number asserted",
+        "Rigor markers appear in their Portuguese form, with no English markers mixed in",
+        "The response waits for the PO to answer the first round"
       ]
     }
   ]

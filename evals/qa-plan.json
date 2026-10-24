@@ -3,35 +3,56 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "/qa-plan evals/fixtures/us-318-encerrar-alerta.md . Modo sem código; glossário em evals/fixtures/CONTEXT-frota.md.",
-      "expected_output": "Triagem TESTÁVEL ou TESTÁVEL COM RESSALVAS, dita em uma linha, com a nota de que não há spec de /refine-story. Matriz com uma condição por motivo da lista (particionamento de equivalência), transição inválida (encerrar alerta já encerrado) como [INDEFINIDO → Pergunta n], autorização (quem não é operador de despacho), alerta criado a partir de leitura retroativa (fato do glossário) e idempotência. Perguntas numeradas numa sequência única com destinatário [PO] ou [DEV]; as de DEV (como a fila ativa é observável, registro do horário com fuso) separadas para o questionário ao time. Nenhum resultado esperado inventado. A rodada espera o PO.",
+      "prompt": "/qa-plan evals/fixtures/us-318-close-alert.md . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`. Glossary at evals/fixtures/CONTEXT-fleet.md. There is no refined US from /refine-story for this story.",
+      "expected_output": "Testability triage stated in a single line. Conditions matrix where every condition declares its origin: `[SPECIFIED: excerpt]` for what the criteria state, `[DERIVED: technique]` naming the technique (state transition for closing an already closed alert, equivalence partitioning over the reason list, negative testing for unauthorized closing), and `[UNDEFINED -> Question n]` where the criteria define no expected result. Questions numbered in a single sequence, each assigned to PO or DEV. First round asks the PO only about undefined business behavior. Notes that the US did not go through /refine-story.",
       "files": [
-        "evals/fixtures/us-318-encerrar-alerta.md",
-        "evals/fixtures/CONTEXT-frota.md"
+        "evals/fixtures/us-318-close-alert.md",
+        "evals/fixtures/CONTEXT-fleet.md",
+        "evals/fixtures/refinement-no-code-en-US.md"
       ],
       "assertions": [
-        "A resposta classifica a US como TESTÁVEL ou TESTÁVEL COM RESSALVAS e diz o critério usado",
-        "A matriz tem uma condição por motivo da lista, marcada como [DERIVADO: particionamento de equivalência]",
-        "Existe condição de encerrar um alerta já encerrado, com resultado [INDEFINIDO → Pergunta n] e técnica transição de estados",
-        "Existe condição ou pergunta sobre alerta originado de leitura retroativa, com base no CONTEXT.md",
-        "Todo [INDEFINIDO → Pergunta n] tem pergunta numerada n com destinatário [PO] ou [DEV], numa sequência única",
-        "Perguntas de DEV são separadas para questionário ao time de desenvolvimento, não respondidas por suposição",
-        "Nenhuma condição derivada aparece sem técnica nomeada",
-        "A resposta espera o PO responder as perguntas [PO] antes de publicar o plano"
+        "Testability triage is stated in a single line before the matrix",
+        "Every condition in the matrix declares one origin among [SPECIFIED, [DERIVED, and [UNDEFINED",
+        "Every [DERIVED condition names the test design technique that generated it",
+        "There is at least one condition derived from state transition, such as closing an alert that is already closed",
+        "Every [UNDEFINED condition points to a numbered question, and every question carries recipient PO or DEV",
+        "Architectural questions (persistence, concurrency, notification) are addressed to DEV, not to the PO",
+        "No expected result is asserted for conditions the criteria leave undefined",
+        "The response notes that the US did not go through /refine-story",
+        "Conditions, questions, and markers are in English, following `Language: en-US`"
       ]
     },
     {
       "id": 2,
-      "prompt": "/qa-plan evals/fixtures/us-231-exportar-pdf.md",
-      "expected_output": "Triagem NÃO TESTÁVEL: os quatro critérios não descrevem comportamento observável (subjetivo, task, subjetivo, DoD). Lista três a cinco perguntas mínimas e recomenda /refine-story. Para sem montar matriz.",
+      "prompt": "/qa-plan evals/fixtures/us-231-export-pdf.md . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`.",
+      "expected_output": "NOT TESTABLE triage: AC1 and AC3 carry subjective terms with no metric, AC2 is an implementation task, and AC4 is Definition of Done, so no criterion describes observable behavior. Explains what is missing, lists 3 to 5 minimal questions, recommends /refine-story, and stops without building a facade matrix.",
       "files": [
-        "evals/fixtures/us-231-exportar-pdf.md"
+        "evals/fixtures/us-231-export-pdf.md",
+        "evals/fixtures/refinement-no-code-en-US.md"
       ],
       "assertions": [
-        "A resposta classifica a US como NÃO TESTÁVEL",
-        "A resposta explica por que cada critério não é observável",
-        "A resposta lista entre três e cinco perguntas mínimas",
-        "A resposta recomenda /refine-story e não produz matriz de condições"
+        "The response classifies the US as NOT TESTABLE",
+        "It explains that AC1 and AC3 lack metrics, AC2 is a task, and AC4 is Definition of Done",
+        "It lists between 3 and 5 minimal questions",
+        "It recommends /refine-story and stops without publishing a conditions matrix",
+        "It invents no SLA for \"open fast\""
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/qa-plan evals/fixtures/us-318-encerrar-alerta.md . The workspace configuration is at evals/fixtures/refinement-no-code-pt-BR.md: read it as `docs/agents/refinement.md`. O glossário está em evals/fixtures/CONTEXT-frota.md.",
+      "expected_output": "Same derivation as case 1, written in Portuguese because the workspace declares `Language: pt-BR`: matrix with `[ESPECIFICADO: trecho]`, `[DERIVADO: técnica]`, and `[INDEFINIDO → Pergunta n]`, questions numbered in a single sequence with recipient PO or DEV, and the first round addressed to the PO.",
+      "files": [
+        "evals/fixtures/us-318-encerrar-alerta.md",
+        "evals/fixtures/CONTEXT-frota.md",
+        "evals/fixtures/refinement-no-code-pt-BR.md"
+      ],
+      "assertions": [
+        "The matrix and the questions are written in Portuguese",
+        "Origin markers appear in their Portuguese form: [ESPECIFICADO, [DERIVADO, and [INDEFINIDO, with no English markers mixed in",
+        "Every derived condition names the technique that generated it",
+        "Every [INDEFINIDO condition points to a numbered question with recipient PO or DEV",
+        "No expected result is asserted for conditions the criteria leave undefined"
       ]
     }
   ]

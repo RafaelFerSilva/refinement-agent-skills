@@ -1,118 +1,276 @@
 #!/usr/bin/env node
-// Asserções mecânicas sobre um artefato gerado por um fluxo. Serve de grader nos evals.
-// uso: node scripts/grade-output.mjs <artefato.md> --skill <refine-story|qa-plan|requirements-discovery|meeting-minutes> [--json]
+// Mechanical assertions over an artifact produced by a workflow. Serves as the grader in evals.
+// Grades en-US and pt-BR artifacts from a single language table: section names, verdicts, markers,
+// and Gherkin keywords are looked up by language. A section found in neither language fails the run
+// instead of silently passing the checks that depend on it.
+// usage: node scripts/grade-output.mjs <artifact.md> --skill <refine-story|qa-plan|requirements-discovery|meeting-minutes> [--lang <en-US|pt-BR>] [--json]
 import { readFileSync } from 'node:fs';
 
+const SKILLS = ['refine-story', 'qa-plan', 'requirements-discovery', 'meeting-minutes'];
+const LANGS = ['en-US', 'pt-BR'];
+const VALUED = ['--skill', '--lang'];
+
 const argv = process.argv.slice(2);
-const file = argv.find((a) => !a.startsWith('--') && argv[argv.indexOf(a) - 1] !== '--skill');
-const skill = argv[argv.indexOf('--skill') + 1];
+const flag = (name) => {
+  const i = argv.indexOf(`--${name}`);
+  return i === -1 ? null : argv[i + 1] ?? null;
+};
+const file = argv.find((a, i) => !a.startsWith('--') && !(i > 0 && VALUED.includes(argv[i - 1])));
+const skill = flag('skill');
+const langFlag = flag('lang');
 const asJson = argv.includes('--json');
-const SKILLS = ['refine-story', 'qa-plan', 'requirements-discovery', 'meeting-minutes', 'refinar-us', 'plano-qa', 'discovery-requisitos', 'ata-reuniao'];
-if (!file || !SKILLS.includes(skill)) {
-  console.error(`uso: node scripts/grade-output.mjs <artefato.md> --skill <${SKILLS.join('|')}> [--json]`);
+
+if (!file || !SKILLS.includes(skill) || (langFlag !== null && !LANGS.includes(langFlag))) {
+  console.error(`usage: node scripts/grade-output.mjs <artifact.md> --skill <${SKILLS.join('|')}> [--lang <${LANGS.join('|')}>] [--json]`);
   process.exit(2);
 }
+
 const text = readFileSync(file, 'utf8');
+
+// Language table. Everything localized by `Language:` in docs/agents/refinement.md lives here;
+// terms canonical in both languages (Status, Azure, PO, DEV, INVEST letters, priority scale) do not.
+const TABLE = {
+  'en-US': {
+    sections: {
+      openQuestions: ['Open Questions'],
+      invest: ['INVEST Scorecard'],
+      verdict: ['Verdict'],
+      matrix: ['Test Conditions Matrix'],
+      domains: ['Domains'],
+      epics: ['Epics'],
+      candidates: ['Candidate Stories'],
+      actionsTable: ['Action Items Table'],
+      decisions: ['Recorded Decisions'],
+      selfAudit: ['Self-Audit'],
+      summary: ['Executive Summary'],
+    },
+    verdicts: {
+      'refine-story': ['READY', 'REFINE', 'BLOCKED'],
+      'qa-plan': ['EXECUTABLE', 'PARTIAL', 'BLOCKED'],
+      'requirements-discovery': ['open map', 'in progress', 'completed', 'candidate'],
+      'meeting-minutes': ['draft'],
+    },
+    refine: 'REFINE',
+    tokens: ['[INFERENCE:', '[TO CONFIRM', '[STATED:', '[ASSUMED', '[SPECIFIED', '[DERIVED', '[UNDEFINED', '[TRACKING]', '[TO BE DEFINED', '[AMBIGUITY', '[DECOMPOSE', '[DIVERGENCE', '[ORPHAN', '[CONFLICT'],
+    gherkin: /^\s*(?:Given|When|Then)\b/gim,
+    legacyToConfirm: /\[TO CONFIRM WITH [^\]]+\]/,
+    toConfirm: /\[TO CONFIRM:[^\]]*\]/g,
+    toConfirmLabel: '[TO CONFIRM: whom]',
+    subjective: /^[ \t]*(?:Then|And)\s.*\b(?:correctly|properly|fast|quickly|friendly|intuitive|seamless|smooth)\b.*$/gim,
+    givenAction: /^[ \t]*Given\s+(?:that\s+)?(?:the|a|an)?\s*\w+\s+(?:clicks|triggers|sends|opens|selects|fills|submits|requests|exports)\b.*$/gim,
+    effort: /\b\d+\s*(?:to\s*\d+\s*)?(?:h|hours?|days?)\s+of\s+(?:development|effort|work)\b/i,
+    undefinedQuestion: /\[UNDEFINED\s*(?:->|-->|\u2192)\s*Question\s*(\d+)\]/g,
+    derivedNoTechnique: /\[DERIVED\s*:?\s*\]/g,
+    origin: /\[(?:SPECIFIED|DERIVED|UNDEFINED)/,
+    tracking: '[TRACKING]',
+    stated: '[STATED:',
+    assumed: '[ASSUMED',
+    pending: /^PENDING/,
+    confidence: /\b(?:High|Medium|Low)\b/,
+    complexity: /\|\s*(?:S|M|L|XL)\s*\|/,
+    selfAuditLabel: /Self-Audit:/i,
+  },
+  'pt-BR': {
+    sections: {
+      openQuestions: ['Perguntas em aberto'],
+      invest: ['Scorecard INVEST'],
+      verdict: ['Veredito'],
+      matrix: ['Matriz de condições de teste'],
+      domains: ['Domínios'],
+      epics: ['Épicos'],
+      candidates: ['Histórias candidatas'],
+      actionsTable: ['Tabela de ações'],
+      decisions: ['Decisões registradas'],
+      selfAudit: ['Autoverificação'],
+      summary: ['Resumo executivo'],
+    },
+    verdicts: {
+      'refine-story': ['PRONTA', 'REFINAR', 'BLOQUEADA'],
+      'qa-plan': ['EXECUTÁVEL', 'PARCIAL', 'BLOQUEADO'],
+      'requirements-discovery': ['mapa aberto', 'em andamento', 'concluído', 'candidata'],
+      'meeting-minutes': ['rascunho'],
+    },
+    refine: 'REFINAR',
+    tokens: ['[INFERÊNCIA:', '[A CONFIRMAR', '[DITO:', '[PRESUMIDO', '[ESPECIFICADO', '[DERIVADO', '[INDEFINIDO', '[ACOMPANHAMENTO]', '[A DEFINIR', '[AMBIGUIDADE', '[DECOMPOR', '[DIVERGÊNCIA', '[ÓRFÃO', '[CONFLITO'],
+    gherkin: /^\s*(?:Dado|Quando|Então)\b/gim,
+    legacyToConfirm: /\[A CONFIRMAR COM [^\]]+\]/,
+    toConfirm: /\[A CONFIRMAR:[^\]]*\]/g,
+    toConfirmLabel: '[A CONFIRMAR: quem]',
+    subjective: /^[ \t]*(?:Então|E)\s.*\b(?:corretamente|adequadamente|rápid[oa]|rapidamente|amigável|intuitiv[oa]|fluid[oa])\b.*$/gim,
+    givenAction: /^[ \t]*Dado\s+(?:que\s+)?(?:o|a|os|as|um|uma)?\s*\w+\s+(?:clica|aciona|envia|abre|seleciona|preenche|submete|exporta)\b.*$/gim,
+    effort: /\b\d+\s*(?:a\s*\d+\s*)?(?:h|horas?|dias?)\s+de\s+(?:desenvolvimento|esforço|trabalho)\b/i,
+    undefinedQuestion: /\[INDEFINIDO\s*(?:->|-->|\u2192)\s*Pergunta\s*(\d+)\]/g,
+    derivedNoTechnique: /\[DERIVADO\s*:?\s*\]/g,
+    origin: /\[(?:ESPECIFICADO|DERIVADO|INDEFINIDO)/,
+    tracking: '[ACOMPANHAMENTO]',
+    stated: '[DITO:',
+    assumed: '[PRESUMIDO',
+    pending: /^PENDENTE/,
+    confidence: /\b(?:Alta|Média|Baixa)\b/,
+    complexity: /\|\s*(?:P|M|G|GG)\s*\|/,
+    selfAuditLabel: /Autoverificação:/i,
+  },
+};
+
+const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const count = (needle) => text.split(needle).length - 1;
+
+// Content of a section (## to ####, optionally numbered) up to the next heading.
+function findSection(headings) {
+  for (const h of headings) {
+    const re = new RegExp(`^#{2,4}\\s+(?:\\d+\\.\\s+)?${escape(h)}[^\\n]*\\n([\\s\\S]*?)(?=^#{1,4}\\s|(?![\\s\\S]))`, 'im');
+    const m = text.match(re);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+function detect() {
+  const scores = {};
+  for (const l of LANGS) {
+    const t = TABLE[l];
+    let n = 0;
+    for (const headings of Object.values(t.sections)) {
+      for (const h of headings) if (new RegExp(`^#{1,4}\\s+(?:\\d+\\.\\s+)?${escape(h)}\\b`, 'im').test(text)) n += 2;
+    }
+    for (const v of Object.values(t.verdicts).flat()) if (new RegExp(`^Status:\\s*${escape(v)}\\b`, 'im').test(text)) n += 3;
+    n += (text.match(t.gherkin) || []).length;
+    for (const tok of t.tokens) n += count(tok);
+    scores[l] = n;
+  }
+  const best = scores['pt-BR'] > scores['en-US'] ? 'pt-BR' : 'en-US';
+  return { lang: best, scores, certain: scores[best] > 0 && scores['pt-BR'] !== scores['en-US'] };
+}
+
+const detected = detect();
+const lang = langFlag ?? detected.lang;
+const other = lang === 'en-US' ? 'pt-BR' : 'en-US';
+const T = TABLE[lang];
+const O = TABLE[other];
+
 const results = [];
 const check = (name, passed, evidence = '') => results.push({ text: name, passed: Boolean(passed), evidence });
 
-// Conteúdo de uma seção (## ou ###) até o próximo heading de nível 1 a 3.
-function section(title) {
-  const re = new RegExp(`^#{2,3}\\s+(?:\\d+\\.\\s+)?${title}[^\\n]*\\n([\\s\\S]*?)(?=^#{1,3}\\s|(?![\\s\\S]))`, 'im');
-  const m = text.match(re);
-  return m ? m[1] : '';
+// A section requested by a check must exist in the graded language. Missing in both languages, or
+// present only in the other one, is recorded here and reported as its own failing check.
+const sectionProblems = [];
+function section(key) {
+  const mine = findSection(T.sections[key]);
+  if (mine !== null) return mine;
+  const fallback = findSection(O.sections[key]);
+  sectionProblems.push(fallback !== null
+    ? `"${T.sections[key][0]}" found only as "${O.sections[key][0]}" (${other})`
+    : `"${T.sections[key][0]}" not found`);
+  return fallback ?? '';
 }
+
 const status = (text.match(/^Status:\s*(.+)$/m) || [])[1]?.trim() ?? '';
-
-check('aviso final presente', /⚠️/.test(text));
-check('linha Status presente', status !== '', status);
-const spNum = text.match(/story points?\s*:?\s*\**\s*\d+/i);
-check('sem story points numéricos', !spNum, spNum?.[0] ?? '');
-const effort = text.match(/\b\d+\s*(a\s*\d+\s*)?(h|horas?|dias?)\s+de\s+(desenvolvimento|esforço|trabalho)/i);
-check('sem estimativa de esforço em horas ou dias', !effort, effort?.[0] ?? '');
-const legacy = text.match(/\[A CONFIRMAR COM [^\]]+\]/);
-check('marcador [A CONFIRMAR: quem] no formato atual', !legacy, legacy?.[0] ?? '');
-check('sem travessão', !text.includes('\u2014'));
-const subjective = text.match(/^\s*(Então|E)\s.*\b(corretamente|adequadamente|rápid[oa]|rapidamente|amigável|intuitiv[oa]|fluid[oa])\b.*$/gim) || [];
-check('Então sem termos subjetivos', subjective.length === 0, subjective.join('\n'));
-
-const openQuestions = () => section('Perguntas em aberto').match(/^\s*\d+\.\s+.*$/gm) || [];
+const numbered = (body) => body.match(/^\s*\d+\.\s+.*$/gm) || [];
 const withoutRecipient = (qs) => qs.filter((q) => !/^\s*\d+\.\s+\[[^\]]+\]/.test(q));
 
+// Global checks
+check('final disclaimer present', /⚠️/.test(text));
+check('Status line present', status !== '', status);
+const spNum = text.match(/story points?\s*:?\s*\**\s*\d+/i);
+check('no numeric story points', !spNum, spNum?.[0] ?? '');
+const effort = text.match(T.effort);
+check('no effort estimate in hours or days', !effort, effort?.[0] ?? '');
+const legacy = text.match(T.legacyToConfirm);
+check(`${T.toConfirmLabel} marker in current format`, !legacy, legacy?.[0] ?? '');
+check('no em-dash', !text.includes('\u2014'));
+const subjective = text.match(T.subjective) || [];
+check('verifiable outcome without subjective terms', subjective.length === 0, subjective.join('\n'));
+const foreign = O.tokens.filter((tok) => count(tok) > 0);
+check(`markers consistent with ${lang}`, foreign.length === 0, foreign.length ? `${other} markers present: ${foreign.join(', ')}` : '');
+
+const verdicts = T.verdicts[skill];
+const verdictOk = verdicts.some((v) => new RegExp(`^${escape(v)}\\b`, 'i').test(status));
+// Minutes carry a draft marker rather than a verdict; the other workflows carry a verdict.
+const statusLabel = skill === 'meeting-minutes' ? 'Status is' : 'verdict is';
+check(`${statusLabel} ${verdicts.join(', ')}`, verdictOk, status);
+
 switch (skill) {
-  case 'refine-story':
-  case 'refinar-us': {
-    check('veredito é PRONTA, REFINAR ou BLOQUEADA', /^(PRONTA|REFINAR|BLOQUEADA)\b/.test(status), status);
-    const qs = openQuestions();
-    const semDest = withoutRecipient(qs);
-    check('toda pergunta em aberto tem destinatário [quem]', semDest.length === 0, semDest.join('\n'));
-    const confirmar = (text.match(/\[A CONFIRMAR: [^\]]+\]/g) || []).length;
-    check('lacunas [A CONFIRMAR] têm pergunta em aberto', confirmar === 0 || qs.length > 0, `${confirmar} marcadores, ${qs.length} perguntas`);
-    const dadoAcao = text.match(/^\s*Dado\s+(que\s+)?(o|a|os|as|um|uma)?\s*\w+\s+(clica|aciona|envia|abre|seleciona|preenche|submete)\b.*$/gim) || [];
-    check('Dado descreve estado, não ação', dadoAcao.length === 0, dadoAcao.join('\n'));
-    const invest = section('Scorecard INVEST');
-    check('scorecard INVEST com os seis critérios', ['Independent', 'Negotiable', 'Valuable', 'Estimable', 'Small', 'Testable'].every((c) => invest.includes(c)));
-    if (/^REFINAR/.test(status)) check('REFINAR aponta as perguntas que destravam', /REFINAR[^\n]*\d/.test(section('Veredito')), section('Veredito').trim());
+  case 'refine-story': {
+    const qs = numbered(section('openQuestions'));
+    const noRecipient = withoutRecipient(qs);
+    check('every open question has a recipient [whom]', noRecipient.length === 0, noRecipient.join('\n'));
+    const toConfirm = (text.match(T.toConfirm) || []).length;
+    check('gaps marked to confirm have an open question', toConfirm === 0 || qs.length > 0, `${toConfirm} markers, ${qs.length} questions`);
+    const givenAction = text.match(T.givenAction) || [];
+    check('Given describes state, not action', givenAction.length === 0, givenAction.join('\n'));
+    const invest = section('invest');
+    const criteria = ['Independent', 'Negotiable', 'Valuable', 'Estimable', 'Small', 'Testable'];
+    const missingCriteria = criteria.filter((c) => !invest.includes(c));
+    check('INVEST scorecard lists the six criteria', missingCriteria.length === 0, missingCriteria.join(', '));
+    if (new RegExp(`^${escape(T.refine)}`, 'i').test(status)) {
+      const verdict = section('verdict');
+      check('refine verdict points to the questions that unblock it', new RegExp(`${escape(T.refine)}[^\\n]*\\d`, 'i').test(verdict), verdict.trim().split('\n')[0]);
+    }
     break;
   }
-  case 'qa-plan':
-  case 'plano-qa': {
-    check('veredito é EXECUTÁVEL, PARCIAL ou BLOQUEADO', /^(EXECUTÁVEL|PARCIAL|BLOQUEADO)\b/.test(status), status);
-    const indef = [...text.matchAll(/\[INDEFINIDO\s*→\s*Pergunta\s*(\d+)\]/g)].map((m) => m[1]);
-    const numbered = new Set([...section('Perguntas em aberto').matchAll(/^\s*(\d+)\.\s+\[(PO|DEV)\]/gm)].map((m) => m[1]));
-    const missing = [...new Set(indef)].filter((n) => !numbered.has(n));
-    check('todo [INDEFINIDO] tem pergunta numerada com destinatário PO ou DEV', missing.length === 0, missing.length ? `faltam: ${missing.join(', ')}` : `${indef.length} indefinidos`);
-    const semTecnica = text.match(/\[DERIVADO\s*(:\s*)?\]/g) || [];
-    check('toda condição derivada nomeia a técnica', semTecnica.length === 0, semTecnica.join(', '));
-    const matriz = section('Matriz de condições de teste');
-    const rows = matriz.match(/^\|\s*\d+\s*\|.*$/gm) || [];
-    check('matriz tem condições', rows.length > 0, `${rows.length} condições`);
-    const semOrigem = rows.filter((r) => !/\[(ESPECIFICADO|DERIVADO|INDEFINIDO)/.test(r));
-    check('toda condição declara origem', semOrigem.length === 0, semOrigem.join('\n'));
+  case 'qa-plan': {
+    const undef = [...text.matchAll(T.undefinedQuestion)].map((m) => m[1]);
+    const assigned = new Set([...numbered(section('openQuestions')).join('\n').matchAll(/^\s*(\d+)\.\s+\[(?:PO|DEV)\]/gm)].map((m) => m[1]));
+    const missing = [...new Set(undef)].filter((n) => !assigned.has(n));
+    check('every undefined result has a numbered question for PO or DEV', missing.length === 0, missing.length ? `missing: ${missing.join(', ')}` : `${undef.length} undefined`);
+    const noTechnique = text.match(T.derivedNoTechnique) || [];
+    check('every derived condition names the technique', noTechnique.length === 0, noTechnique.join(', '));
+    const rows = section('matrix').match(/^\|\s*\d+\s*\|.*$/gm) || [];
+    check('matrix has conditions', rows.length > 0, `${rows.length} conditions`);
+    const noOrigin = rows.filter((r) => !T.origin.test(r));
+    check('every condition declares its origin', noOrigin.length === 0, noOrigin.join('\n'));
     break;
   }
-  case 'requirements-discovery':
-  case 'discovery-requisitos': {
-    check('domínios com confiança', /\b(Alta|Média|Baixa)\b/.test(section('Domínios')));
-    check('épicos com complexidade', /\|\s*(P|M|G|GG)\s*\|/.test(section('Épicos')));
-    check('histórias candidatas listadas', /issues\/\d{2}-/.test(section('Histórias candidatas')));
-    const semDest = withoutRecipient(openQuestions());
-    check('toda pergunta em aberto tem destinatário [quem]', semDest.length === 0, semDest.join('\n'));
+  case 'requirements-discovery': {
+    check('domains carry a confidence rating', T.confidence.test(section('domains')));
+    check('epics carry a complexity rating', T.complexity.test(section('epics')));
+    check('candidate stories listed', /issues\/\d{2}-/.test(section('candidates')));
+    const noRecipient = withoutRecipient(numbered(section('openQuestions')));
+    check('every open question has a recipient [whom]', noRecipient.length === 0, noRecipient.join('\n'));
     break;
   }
-  case 'meeting-minutes':
-  case 'ata-reuniao': {
+  case 'meeting-minutes': {
+    // "actions mode" writes the table, open questions, and JSON only: sections 2, 8 and the
+    // summary are absent by design, so the checks that read them do not apply.
+    const actionsMode = findSection(T.sections.summary) === null && findSection(O.sections.summary) === null
+      && findSection(T.sections.decisions) === null && findSection(O.sections.decisions) === null;
     const block = text.match(/```json\s*([\s\S]*?)```/);
     let actions = null;
     try { actions = JSON.parse(block?.[1] ?? ''); } catch { actions = null; }
-    check('JSON de ações válido', Array.isArray(actions));
-    const tabela = section('Tabela de ações');
-    const tableRows = tabela.match(/^\|\s*A\d+\s*\|.*$/gm) || [];
-    const realRows = tableRows.filter((r) => !r.includes('[ACOMPANHAMENTO]'));
+    check('action items JSON is valid', Array.isArray(actions));
+    const table = section('actionsTable');
+    const tableRows = table.match(/^\|\s*A\d+\s*\|.*$/gm) || [];
+    const realRows = tableRows.filter((r) => !r.includes(T.tracking));
     if (Array.isArray(actions)) {
-      check('uma ação real da tabela por objeto do JSON', realRows.length === actions.length, `${realRows.length} linhas reais, ${actions.length} objetos`);
-      check('dueDate em ISO 8601 ou null', actions.every((a) => a.dueDate === null || /^\d{4}-\d{2}-\d{2}$/.test(a.dueDate)));
-      check('priority na escala Highest/High/Medium/Low', actions.every((a) => ['Highest', 'High', 'Medium', 'Low'].includes(a.priority)));
-      check('assignee null tem PENDENTE na description', actions.every((a) => a.assignee !== null || /^PENDENTE/.test(a.description ?? '')));
-      const tablePrios = realRows.map((r) => (r.match(/\b(Highest|High|Medium|Low)\b/) || [])[1]);
-      const jsonPrios = actions.map((a) => a.priority);
-      check('prioridades idênticas entre tabela e JSON', JSON.stringify(tablePrios) === JSON.stringify(jsonPrios), `tabela ${tablePrios.join(',')} | json ${jsonPrios.join(',')}`);
-      check('nenhum PRESUMIDO no JSON', !(block?.[1] ?? '').includes('PRESUMIDO'));
+      check('one real table action per JSON object', realRows.length === actions.length, `${realRows.length} real rows, ${actions.length} objects`);
+      check('dueDate in ISO 8601 or null', actions.every((a) => a.dueDate === null || /^\d{4}-\d{2}-\d{2}$/.test(a.dueDate)));
+      check('priority on the Highest/High/Medium/Low scale', actions.every((a) => ['Highest', 'High', 'Medium', 'Low'].includes(a.priority)));
+      check('null assignee flagged as pending in the description', actions.every((a) => a.assignee !== null || T.pending.test(a.description ?? '')));
+      const tablePriorities = realRows.map((r) => (r.match(/\b(Highest|High|Medium|Low)\b/) || [])[1]);
+      const jsonPriorities = actions.map((a) => a.priority);
+      check('priorities identical between table and JSON', JSON.stringify(tablePriorities) === JSON.stringify(jsonPriorities), `table ${tablePriorities.join(',')} | json ${jsonPriorities.join(',')}`);
+      check('no presumed item inside the JSON', !(block?.[1] ?? '').includes(T.assumed));
     }
-    const semDito = tableRows.filter((r) => !r.includes('[DITO:'));
-    check('toda linha da tabela tem proveniência DITO', semDito.length === 0, semDito.join('\n'));
-    const decisoes = section('Decisões registradas');
-    check('decisões registradas só com DITO', !decisoes.includes('[PRESUMIDO') && (decisoes.trim() === '' || decisoes.includes('[DITO:')));
-    check('nenhum PRESUMIDO na tabela', !tabela.includes('[PRESUMIDO'));
-    check('autoverificação reportada', /Autoverificação:/i.test(section('Autoverificação')));
+    const noProvenance = tableRows.filter((r) => !r.includes(T.stated));
+    check('every table row carries stated provenance', noProvenance.length === 0, noProvenance.join('\n'));
+    check('no presumed item inside the table', !table.includes(T.assumed));
+    if (!actionsMode) {
+      const decisions = section('decisions');
+      check('recorded decisions carry stated provenance only', !decisions.includes(T.assumed) && (decisions.trim() === '' || decisions.includes(T.stated)));
+      check('self-audit reported', T.selfAuditLabel.test(section('selfAudit')));
+    }
     break;
   }
 }
 
+check(`sections present in ${lang}`, sectionProblems.length === 0, sectionProblems.join('; '));
+
 const passed = results.filter((r) => r.passed).length;
+const languageNote = langFlag ? `${lang} (from --lang)` : `${lang} (detected${detected.certain ? '' : ', weak signal'})`;
 if (asJson) {
-  console.log(JSON.stringify({ file, skill, pass_rate: passed / results.length, expectations: results }, null, 2));
+  console.log(JSON.stringify({ file, skill, language: lang, language_source: langFlag ? 'flag' : 'detected', pass_rate: passed / results.length, expectations: results }, null, 2));
 } else {
+  console.log(`language: ${languageNote}\n`);
   for (const r of results) console.log(`${r.passed ? 'PASS' : 'FAIL'}  ${r.text}${r.evidence ? `  (${r.evidence})` : ''}`);
   console.log(`\n${passed}/${results.length}`);
 }
