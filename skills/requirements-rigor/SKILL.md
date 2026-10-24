@@ -134,4 +134,4 @@ An open question whose recipient is outside the refinement session becomes a que
 
 ## Final notice
 
-Every published artifact concludes with a disclaimer stating it is an AI-generated preparation, and that final decisions on scope, value, and priority belong strictly to the PO and team. Each workflow provides its specific disclaimer text.
+Every published artifact concludes with a disclaimer stating it is an AI-generated preparation, and that final decisions on scope, value, and priority belong strictly to the PO and team. Each workflow provides its specific disclaimer text, in the configured language. An examination round is not a published artifact and carries no disclaimer: the disclaimer qualifies a finished artifact that someone may circulate, while a round is a question waiting for an answer.
