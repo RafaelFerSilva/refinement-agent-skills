@@ -434,6 +434,7 @@ Not part of the artifact. When `Language: pt-BR`, the headings above are written
 
 | Heading (en-US, default) | Heading (pt-BR) |
 | --- | --- |
+| `Status: draft` | `Status: rascunho` |
 | 0. Triage | 0. Triagem |
 | 1. Executive Summary | 1. Resumo executivo |
 | 2. Recorded Decisions (STATED only) | 2. Decisões registradas (apenas DITO) |
