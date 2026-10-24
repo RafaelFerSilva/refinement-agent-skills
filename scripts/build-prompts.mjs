@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Generates prompts/<flow>.md: the self-contained version of each workflow for chat and instruction-based agents.
 // Single source of truth are the skills; this file only composes and adapts. Do not edit prompts/ manually.
+// Every rule below is live: disabling one changes the generated output. A rule whose removal keeps
+// --check green is dead weight and goes, since it hides which rules the current skills depend on.
 // usage: node scripts/build-prompts.mjs [--check]
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
@@ -19,98 +21,54 @@ const dropSection = (text, heading) => text.replace(new RegExp(`\\n## ${heading}
 
 const RULES = [
   // Skill tool invocation for requirements-rigor
-  [/, and invoke the Skill tool for `requirements-rigor`/g, ', and apply the "Requirements rigor" section of this prompt'],
-  [/and invoke the Skill tool for `requirements-rigor`/g, 'and apply the "Requirements rigor" section of this prompt'],
   [/invoke the Skill tool for `requirements-rigor`/gi, 'apply the "Requirements rigor" section of this prompt'],
-  [/e chame a Skill tool para `requirements-rigor`/g, 'e aplique a seção "Requirements rigor" deste prompt'],
-  [/chame a Skill tool para `requirements-rigor`/gi, 'aplique a seção "Requirements rigor" deste prompt'],
 
   // Skill tool invocation for socratic-examination
-  [/Invoke the Skill tool for `socratic-examination` and follow its discipline:/g, 'Apply the "Socratic examination" section of this prompt and follow its discipline:'],
-  [/Invoke the Skill tool for `socratic-examination` and examine breadth first:/g, 'Apply the "Socratic examination" section of this prompt and examine breadth first:'],
-  [/Invoke the Skill tool for `socratic-examination`\./g, 'Apply the "Socratic examination" section of this prompt.'],
   [/Invoke the Skill tool for `socratic-examination`/g, 'Apply the "Socratic examination" section of this prompt'],
   [/Continue rounds of `socratic-examination`/g, 'Continue rounds of socratic examination'],
   [/Resolve it with `socratic-examination`/g, 'Resolve it with socratic examination'],
-  [/Chame a Skill tool para `socratic-examination` e siga a disciplina dela:/g, 'Apply the "Socratic examination" section of this prompt:'],
-  [/Chame a Skill tool para `socratic-examination`\./g, 'Apply the "Socratic examination" section of this prompt.'],
-  [/Chame a Skill tool para `socratic-examination`/g, 'Apply the "Socratic examination" section of this prompt'],
-  [/Continue as rodadas de `socratic-examination`/g, 'Continue rounds of socratic examination'],
-  [/Resolva-a com `socratic-examination`/g, 'Resolve it with socratic examination'],
 
   // ANTI-PATTERNS companion file
   [/\(read `ANTI-PATTERNS\.md` in `requirements-rigor` separately\)/g, '(see the "Anti-patterns" section of this prompt)'],
   [/\(read `ANTI-PATTERNS\.md` separately\)/g, '(see the "Anti-patterns" section of this prompt)'],
   [/anti-pattern from \[ANTI-PATTERNS\.md\]\(ANTI-PATTERNS\.md\)/g, 'anti-pattern from the "Anti-patterns" section of this prompt'],
   [/live in \[ANTI-PATTERNS\.md\]\(ANTI-PATTERNS\.md\)\. Read when scanning or auditing text; the Skill tool loads only this file, sibling files must be read separately\./g, 'live in the "Anti-patterns" section of this prompt.'],
-  [/\(leia o `ANTI-PADROES\.md` dela à parte; a Skill tool não o carrega\)/g, '(see the "Anti-patterns" section of this prompt)'],
-  [/\(leia o `ANTI-PATTERNS\.md` dela à parte; a Skill tool não o carrega\)/g, '(see the "Anti-patterns" section of this prompt)'],
-  [/\(leia o `ANTI-PADROES\.md` de `requirements-rigor` à parte\)/g, '(see the "Anti-patterns" section of this prompt)'],
-  [/\(leia o `ANTI-PATTERNS\.md` de `requirements-rigor` à parte\)/g, '(see the "Anti-patterns" section of this prompt)'],
-  [/anti-padrão de \[ANTI-PADROES\.md\]\(ANTI-PADROES\.md\)/g, 'anti-pattern from the "Anti-patterns" section of this prompt'],
-  [/estão em \[ANTI-PADROES\.md\]\(ANTI-PADROES\.md\)\. Leia ao varrer ou auditar um texto; a Skill tool carrega só este arquivo, o irmão precisa ser lido à parte\./g, 'live in the "Anti-patterns" section of this prompt.'],
 
   // QUESTIONNAIRE companion file
   [/following `QUESTIONNAIRE\.md` in `requirements-rigor`/g, 'following the "Questionnaire" section of this prompt'],
   [/following \[QUESTIONNAIRE\.md\]\(QUESTIONNAIRE\.md\)/g, 'following the "Questionnaire" section of this prompt'],
-  [/format of \[QUESTIONNAIRE\.md\]\(QUESTIONNAIRE\.md\)/g, 'format of the "Questionnaire" section of this prompt'],
-  [/no formato de `QUESTIONARIO\.md` de `requirements-rigor`/g, 'in the format of the "Questionnaire" section of this prompt'],
-  [/no formato de `QUESTIONNAIRE\.md` de `requirements-rigor`/g, 'in the format of the "Questionnaire" section of this prompt'],
-  [/no formato de \[QUESTIONARIO\.md\]\(QUESTIONARIO\.md\)/g, 'in the format of the "Questionnaire" section of this prompt'],
 
   // TEMPLATE companion file
   [/following the template at the end of \[TEMPLATE\.md\]\(TEMPLATE\.md\)/g, 'following the "Discovery input" format in the "Template" section of this prompt'],
   [/following \[TEMPLATE\.md\]\(TEMPLATE\.md\)/g, 'following the "Template" section of this prompt'],
   [/following `skills\/refine-story\/TEMPLATE\.md`/g, 'following the "Candidate story template" section of this prompt'],
-  [/no formato do fim de \[TEMPLATE\.md\]\(TEMPLATE\.md\)/g, 'in the format of the "Discovery input" format in the "Template" section of this prompt'],
-  [/no formato de \[TEMPLATE\.md\]\(TEMPLATE\.md\)/g, 'in the format of the "Template" section of this prompt'],
-  [/no formato de `skills\/refine-story\/TEMPLATE\.md`/g, 'in the format of the "Candidate story template" section of this prompt'],
 
   // TEST-DESIGN companion file
-  [/applicable techniques from \[TEST-DESIGN\.md\]\(TEST-DESIGN\.md\)/g, 'applicable techniques from the "Test design" section of this prompt'],
   [/\[TEST-DESIGN\.md\]\(TEST-DESIGN\.md\)/g, 'the "Test design" section of this prompt'],
-  [/as técnicas de TEST-DESIGN\.md/g, 'the techniques in the "Test design" section of this prompt'],
 
   // RULES companion file
-  [/Apply the rules from \[RULES\.md\]\(RULES\.md\)/g, 'Apply the rules from the "Synthesis rules" section of this prompt'],
-  [/rules from \[RULES\.md\]\(RULES\.md\)/g, 'rules from the "Synthesis rules" section of this prompt'],
   [/\[RULES\.md\]\(RULES\.md\)/g, 'the "Synthesis rules" section of this prompt'],
-  [/as regras de \[REGRAS\.md\]\(REGRAS\.md\)/g, 'the rules from the "Synthesis rules" section of this prompt'],
-  [/as regras de \[RULES\.md\]\(RULES\.md\)/g, 'the rules from the "Synthesis rules" section of this prompt'],
 
   // GLOSSARY & ADR companion files
   [/format of \[GLOSSARY\.md\]\(GLOSSARY\.md\)/g, 'format of the "Glossary format" section of this prompt'],
-  [/Format in \[ADR\.md\]\(ADR\.md\)\./g, 'Format in the "ADR format" section of this prompt.'],
   [/in \[ADR\.md\]\(ADR\.md\)/g, 'in the "ADR format" section of this prompt'],
-  [/no formato de \[GLOSSARIO\.md\]\(GLOSSARIO\.md\)/g, 'in the format of the "Glossary format" section of this prompt'],
-  [/Formato em \[ADR\.md\]\(ADR\.md\)\./g, 'Format in the "ADR format" section of this prompt.'],
 
   // Workspace / scratch / file delivery adapting
   [/the file exists at `\.scratch\/<project>-<YYYY-MM-DD>\/minutes\.md` \(or where configured in `docs\/agents\/refinement\.md`\), with final disclaimer\./g, 'the minutes were delivered in the response, with final disclaimer.'],
   [/spec and candidate stories exist at the path defined in `docs\/agents\/refinement\.md`, with final disclaimer\./g, 'spec and candidate stories were delivered in the response, with final disclaimer.'],
   [/file exists at path defined by `docs\/agents\/refinement\.md`, with `Status:` matching the verdict and final disclaimer present\./g, 'the refined US was delivered in the response, with `Status:` matching the verdict and final disclaimer present.'],
   [/file exists at path defined by `docs\/agents\/refinement\.md` with final disclaimer present\./g, 'the QA plan was delivered in the response, with final disclaimer present.'],
-  [/o arquivo existe em `\.scratch\/<projeto>-<AAAA-MM-DD>\/ata\.md`, ou onde `docs\/agents\/refinement\.md` definir, com o aviso final\./g, 'the minutes were delivered in the response, with final disclaimer.'],
-  [/spec e histórias existem no local que `docs\/agents\/refinement\.md` define, com o aviso final\./g, 'spec and candidate stories were delivered in the response, with final disclaimer.'],
-  [/o arquivo existe no local que `docs\/agents\/refinement\.md` define/g, 'the artifact was delivered in the response'],
-  [/ The slug follows conventions in `docs\/agents\/refinement\.md`\./g, ''],
-  [/ O slug segue `docs\/agents\/refinement\.md`\./g, ''],
   [/If `\.scratch\/<slug>\/` already exists for this US, inspect its contents: a previous session may have resolved questions, which you must not repeat\. The slug follows conventions in `docs\/agents\/refinement\.md`\. If `docs\/adr\/` or `\.scratch\/` are absent, proceed without warning\./g, 'If the PO pasted a previous artifact for this US, read it: a previous session may have resolved questions, which you must not repeat.'],
-  [/If `\.scratch\/<slug>\/` already exists for this US, inspect its contents: a previous session may have resolved questions, which you must not repeat\. If `docs\/adr\/` or `\.scratch\/` are absent, proceed without warning\./g, 'If the PO pasted a previous artifact for this US, read it: a previous session may have resolved questions, which you must not repeat.'],
   [/If `\.scratch\/<slug>\/spec\.md` exists from `\/refine-story`, start from it: decisions from that session already answer many questions\. Without this file, treat/g, 'If the PO pasted the refined US from `/refine-story`, start from it: decisions from that session already answer many questions. Without it, treat'],
   [/search workspace sources: glossary, previous stories in `\.scratch\/`, documents attached by the PO\. In code mode, dispatch a subagent to search the codebase for what the US asserts or assumes: does the rule exist\? is the limit implemented\? does the integration function\? A found fact becomes a recommended answer citing the source\./g, 'search what the PO provided: glossary, previous artifacts, attached documents. A found fact becomes a recommended answer citing the source.'],
   [/In code mode, dispatch a subagent to answer DEV questions by reading code: is notification synchronous or asynchronous\? is there a lock on approval\? does a mock exist for the external system\? /g, ''],
   [/Check glossary, previous stories in `\.scratch\/`, workspace documents, and in code mode, the codebase: does the mentioned integration already exist\? Is the threshold already implemented\?/g, 'Check glossary, previous artifacts, and documents provided by the PO: does the mentioned integration already exist? Is the threshold already implemented?'],
-  [/In no-code mode, search is restricted to workspace files without subagents; if nothing is found, state this in a single line at the top of round 1\./g, 'Search is restricted to what the PO provided; if nothing is found, state this in a single line at the top of round 1.'],
   [/In no-code mode, search is restricted to workspace files without subagents; if nothing is found/g, 'Search is restricted to what the PO provided; if nothing is found'],
   [/verify in workspace artifacts and, in code mode, against source code\./g, 'verify against artifacts and documents provided by the PO.'],
   [/A resolved domain term enters `CONTEXT\.md` immediately, in the format of the "Glossary format" section of this prompt; do not accumulate for the end\./g, 'A resolved domain term becomes a proposed entry in a "Glossary" block in the response, in the format of the "Glossary format" section of this prompt, in the same round it is resolved.'],
-  [/A resolved domain term enters `CONTEXT\.md` immediately, \(in the format of the "Glossary format" section of this prompt\); do not accumulate for the end\./g, 'A resolved domain term becomes a proposed entry in a "Glossary" block in the response, in the format of the "Glossary format" section of this prompt, in the same round it is resolved.'],
   [/Domain terms resolved are added to `CONTEXT\.md` immediately\./g, 'Domain terms resolved become proposed entries in a "Glossary" block in the response.'],
-  [/Record in `CONTEXT\.md` only what the PO resolves/g, 'Propose in the "Glossary" block only what the PO resolves'],
   [/record in `CONTEXT\.md` only what the PO resolves/g, 'propose in the "Glossary" block only what the PO resolves'],
   [/If the item lives in the workspace, add `Status: not a US` \(or `Status: não é US`\) and the rationale below the title to leave a trail\./g, 'Tell the PO to mark the item with `Status: not a US` (or `Status: não é US`) and the rationale to leave a trail.'],
-  [/Se o item vive no workspace, acrescente `Status: não é US` e o motivo abaixo do título, para deixar rastro\./g, 'Tell the PO to mark the item with `Status: not a US` (or `Status: não é US`) and the reason, to leave a trail.'],
   [/\$ARGUMENTS/g, 'what the PO provides in this conversation'],
 ];
 

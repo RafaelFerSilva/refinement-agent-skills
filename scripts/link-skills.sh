@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Linka skills/* nas pastas de skills do usuário (~/.claude/skills, ~/.agents/skills)
-# para usar as skills neste próprio repositório. Um git pull mantém os links atuais.
-# uso: scripts/link-skills.sh [--link|--unlink]
+# Links skills/* into the user skills folders (~/.claude/skills, ~/.agents/skills)
+# to use the skills inside this repository. A git pull keeps the links current.
+# usage: scripts/link-skills.sh [--link|--unlink]
 set -euo pipefail
 cd "$(dirname "$0")/.."
 SRC="$(pwd)/skills"
@@ -16,20 +16,20 @@ for dest in "${DESTS[@]}"; do
     case "$mode" in
       --link)
         if [ -e "$target" ] && [ ! -L "$target" ]; then
-          echo "pulado: $target existe e não é link" >&2
+          echo "skipped: $target exists and is not a link" >&2
           continue
         fi
         ln -sfn "${skill%/}" "$target"
-        echo "linkado: $target"
+        echo "linked: $target"
         ;;
       --unlink)
         if [ -L "$target" ]; then
           rm "$target"
-          echo "removido: $target"
+          echo "removed: $target"
         fi
         ;;
       *)
-        echo "uso: $0 [--link|--unlink]" >&2
+        echo "usage: $0 [--link|--unlink]" >&2
         exit 2
         ;;
     esac
