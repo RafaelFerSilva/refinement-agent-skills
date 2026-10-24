@@ -32,7 +32,7 @@ const RULES = [
   [/\(read `ANTI-PATTERNS\.md` in `requirements-rigor` separately\)/g, '(see the "Anti-patterns" section of this prompt)'],
   [/`ANTI-PATTERNS\.md` of `requirements-rigor` is a separate read and holds the type names the tags below use, so the scan starts there\./g, 'The "Anti-patterns" section of this prompt holds the type names the tags below use, so the scan starts there.'],
   [/anti-pattern from \[ANTI-PATTERNS\.md\]\(ANTI-PATTERNS\.md\)/g, 'anti-pattern from the "Anti-patterns" section of this prompt'],
-  [/live in \[ANTI-PATTERNS\.md\]\(ANTI-PATTERNS\.md\)\. Read when scanning or auditing text; the Skill tool loads only this file, sibling files must be read separately\./g, 'live in the "Anti-patterns" section of this prompt.'],
+  [/live in \[ANTI-PATTERNS\.md\]\(ANTI-PATTERNS\.md\), read when scanning or auditing a text\./g, 'live in the "Anti-patterns" section of this prompt.'],
 
   // QUESTIONNAIRE companion file
   [/following `QUESTIONNAIRE\.md` in `requirements-rigor`/g, 'following the "Questionnaire" section of this prompt'],

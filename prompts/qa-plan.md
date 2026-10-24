@@ -250,7 +250,22 @@ Format (pt-BR): `Cenário:` nome descritivo, `Dado` estado inicial, `Quando` um 
 | Approval | approved by, manager validation, upon authorization | Who approves, timeout window, what happens upon expiration |
 | Open-ended scope | all file formats, any device | Closed, explicit list |
 
-Complete anti-patterns, with examples, problems, and corrective actions, live in the "Anti-patterns" section of this prompt.
+The ten anti-pattern types, which are the `type` of the tag, named here so that tagging never waits on a second file:
+
+| Type (en-US, default) | Type (pt-BR) | Where it shows up |
+| --- | --- | --- |
+| passive voice without subject | voz passiva sem sujeito | any input |
+| unverifiable outcome | resultado não verificável | any input |
+| implicitly infinite scope | escopo implicitamente infinito | any input |
+| double requirement | requisito duplo | any input |
+| circular dependency | dependência circular | any input |
+| solution in place of problem | solução no lugar de problema | pre-written stories |
+| acceptance criterion that is a technical task | critério de aceite que é task | pre-written stories |
+| divergent narrative and criteria | narrativa e critérios divergentes | pre-written stories |
+| orphan criterion | critério órfão | pre-written stories |
+| definition of done disguised as criterion | definition of done disfarçada de critério | pre-written stories |
+
+The example, the problem, and the corrective action of each live in the "Anti-patterns" section of this prompt.
 
 ## Triage labels
 
