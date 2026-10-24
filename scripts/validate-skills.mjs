@@ -81,7 +81,9 @@ for (const name of skills) {
 
 function walk(dir, out = []) {
   for (const e of readdirSync(dir)) {
-    if (['.git', 'node_modules', '.scratch'].includes(e)) continue;
+    // Eval run outputs are generated artifacts, not repository prose: .gitignore keeps them out of the
+    // repository and the prose rules below do not apply to them.
+    if (['.git', 'node_modules', '.scratch'].includes(e) || e.endsWith('-workspace')) continue;
     const p = join(dir, e);
     if (statSync(p).isDirectory()) walk(p, out);
     else if (p.endsWith('.md')) out.push(p);
