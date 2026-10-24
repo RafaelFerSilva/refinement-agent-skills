@@ -20,7 +20,7 @@ There is no copy of the skills inside this repository for any CLI. To use the sk
 - `node scripts/validate-skills.mjs`: valid frontmatter with `name` matching the folder; `description` present and within the limit; `openai.yaml` present and consistent with `disable-model-invocation`; `plugin.json`, `README.md`, and `which-flow` knowing every skill; every Skill tool call pointing to a skill in `skills/`; no em-dash in the prose; `SKILL.md` under 500 lines; every file referenced by `evals/*.json` existing, with a configuration fixture in each case; every fixture in `evals/fixtures/artifacts/` passing the grader; `prompts/` identical to what the build would generate.
 - `claude plugin validate . --strict`: the plugin manifest.
 
-Run both before committing. There is no CI and no pre-commit hook yet; when there is, both commands go there.
+Run both before committing. `.github/workflows/ci.yml` runs the three Definition of Done commands on every push to `main`, every pull request, and on demand; the plugin step installs the Claude Code CLI, which validates the manifest locally, with no account and no API key. There is no pre-commit hook.
 
 ## Evals
 

@@ -1,0 +1,39 @@
+name: CI
+
+# The Definition of Done of AGENTS.md, enforced on every push and pull request.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Definition of Done
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Frontmatter, plugin manifest, router, README, prose, eval references,
+      # grader regression over evals/fixtures/artifacts/, and prompt freshness.
+      - name: Validate skills
+        run: node scripts/validate-skills.mjs
+
+      # Redundant with the check inside validate-skills.mjs, kept explicit so a
+      # stale prompts/ is named by its own failing step.
+      - name: Check generated prompts
+        run: node scripts/build-prompts.mjs --check
+
+      # Local manifest validation only: no account, no API key, no network call.
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@2
+
+      - name: Validate plugin manifest
+        run: claude plugin validate . --strict
