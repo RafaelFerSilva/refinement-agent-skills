@@ -51,3 +51,19 @@ Existing flows touched by this US, what could silently break, and which verifica
 <✅ EXECUTABLE PLAN | 🔶 PARTIALLY EXECUTABLE: P1 executable; <n> conditions await questions <list> and <m> await blocker removal <list> | ⛔ BLOCKED PLAN: <rationale>. Recommendation: <return to refinement | resolve infrastructure blockers first>>
 
 > ⚠️ This output provides the analytical baseline for a test plan, not the final test plan. Decisions on coverage, prioritization, and effort belong to the QA team, with validation from PO (undefined behaviors) and Dev (architecture and layers).
+
+## Section names in pt-BR
+
+Not part of the artifact. When `Language: pt-BR`, the headings above are written in this form, so that a later workflow reading this artifact finds the section it expects:
+
+| Heading (en-US, default) | Heading (pt-BR) |
+| --- | --- |
+| Testability Triage | Triagem de testabilidade |
+| Test Conditions Matrix | Matriz de condições de teste |
+| Risk Analysis | Análise de risco |
+| P1 Scenarios in Gherkin | Cenários P1 em Gherkin |
+| Automatability Audit | Auditoria de automatizabilidade |
+| Regression Impact | Impacto de regressão |
+| Examination Decisions | Decisões da sabatina |
+| Open Questions | Perguntas em aberto |
+| Coverage Verdict | Veredito de cobertura |

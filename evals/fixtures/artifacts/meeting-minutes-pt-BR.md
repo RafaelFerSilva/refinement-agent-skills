@@ -16,7 +16,7 @@ Projeto: MVP de telemetria da frota
 - Pendente de confirmação: integração SAP fora do MVP.
 - Treinamento de motoristas levantado como intenção, sem responsável.
 
-### 2. Decisões registradas (só DITO)
+### 2. Decisões registradas (apenas DITO)
 
 - **Decisão:** alertas de velocidade entram no MVP
   **Proveniência:** [DITO: Carlos, "tem que estar no MVP, sem isso não apresento ao board"] (confirmado por Marcus, "fechado")

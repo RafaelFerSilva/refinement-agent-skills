@@ -76,7 +76,7 @@ The boundary manifests differently depending on the stage:
 
 During examination, finding facts is the agent's job: glossary, previous stories, workspace documents, and in code mode, the codebase. A found fact does not become a question: it becomes a recommended answer with the cited source. Decisions belong to the PO. Without a basis to recommend, the recommended answer is "no recommendation", and when options exist, list them with the implication of each.
 
-Refinement language is determined by `Language:` (or `Idioma:`) in `docs/agents/refinement.md` (`en-US` or `pt-BR`), with `en-US` as default. When the language is `pt-BR`, examination, markers, narrative, Gherkin, triage labels, and verdicts adopt their Portuguese form.
+Refinement language is determined by `Language:` (or `Idioma:`) in `docs/agents/refinement.md` (`en-US` or `pt-BR`), with `en-US` as default. When the language is `pt-BR`, examination, markers, narrative, Gherkin, triage labels, and verdicts adopt their Portuguese form, and the artifact uses the pt-BR section headings listed at the end of the workflow `TEMPLATE.md`: a workflow that reads the artifact of another looks for those headings, so an ad hoc translation breaks the chain.
 
 ## Markers
 
@@ -427,3 +427,20 @@ Source: minutes at <path>
 
 > ⚠️ <same disclaimer as minutes>
 ```
+
+## Section names in pt-BR
+
+Not part of the artifact. When `Language: pt-BR`, the headings above are written in this form, so that a later workflow reading this artifact finds the section it expects:
+
+| Heading (en-US, default) | Heading (pt-BR) |
+| --- | --- |
+| 0. Triage | 0. Triagem |
+| 1. Executive Summary | 1. Resumo executivo |
+| 2. Recorded Decisions (STATED only) | 2. Decisões registradas (apenas DITO) |
+| 3. Action Items Table | 3. Tabela de ações |
+| 4. Presumed Agreements, to Confirm | 4. Acordos presumidos, a confirmar |
+| 5. Presumed Actions | 5. Ações presumidas |
+| 6. Open Questions | 6. Perguntas em aberto |
+| 7. Action Items in JSON | 7. Ações em JSON |
+| 8. Self-Audit | 8. Autoverificação |
+| Discovery Input | Insumo para discovery |

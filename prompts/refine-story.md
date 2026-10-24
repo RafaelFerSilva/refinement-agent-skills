@@ -185,7 +185,7 @@ The boundary manifests differently depending on the stage:
 
 During examination, finding facts is the agent's job: glossary, previous stories, workspace documents, and in code mode, the codebase. A found fact does not become a question: it becomes a recommended answer with the cited source. Decisions belong to the PO. Without a basis to recommend, the recommended answer is "no recommendation", and when options exist, list them with the implication of each.
 
-Refinement language is determined by `Language:` (or `Idioma:`) in `docs/agents/refinement.md` (`en-US` or `pt-BR`), with `en-US` as default. When the language is `pt-BR`, examination, markers, narrative, Gherkin, triage labels, and verdicts adopt their Portuguese form.
+Refinement language is determined by `Language:` (or `Idioma:`) in `docs/agents/refinement.md` (`en-US` or `pt-BR`), with `en-US` as default. When the language is `pt-BR`, examination, markers, narrative, Gherkin, triage labels, and verdicts adopt their Portuguese form, and the artifact uses the pt-BR section headings listed at the end of the workflow `TEMPLATE.md`: a workflow that reads the artifact of another looks for those headings, so an ad hoc translation breaks the chain.
 
 ## Markers
 
@@ -451,3 +451,19 @@ Scenario: <edge case>
 <✅ READY | 🔶 REFINE, unblocks with questions <n>, <m> | ⛔ BLOCKED: <rationale>>
 
 > ⚠️ This output is preparation for refinement, not a replacement. Decisions on scope, value, and priority belong strictly to the PO and team.
+
+## Section names in pt-BR
+
+Not part of the artifact. When `Language: pt-BR`, the headings above are written in this form, so that a later workflow reading this artifact finds the section it expects:
+
+| Heading (en-US, default) | Heading (pt-BR) |
+| --- | --- |
+| Narrative | Narrativa |
+| INVEST Scorecard | Scorecard INVEST |
+| Acceptance Criteria | Critérios de aceite |
+| Original Text Audit | Auditoria do texto original |
+| Examination Decisions | Decisões da sabatina |
+| Open Questions | Perguntas em aberto |
+| Notes | Notas |
+| Decomposition Proposal | Proposta de decomposição |
+| Verdict | Veredito |

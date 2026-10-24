@@ -99,3 +99,20 @@ Source: minutes at <path>
 
 > ⚠️ <same disclaimer as minutes>
 ```
+
+## Section names in pt-BR
+
+Not part of the artifact. When `Language: pt-BR`, the headings above are written in this form, so that a later workflow reading this artifact finds the section it expects:
+
+| Heading (en-US, default) | Heading (pt-BR) |
+| --- | --- |
+| 0. Triage | 0. Triagem |
+| 1. Executive Summary | 1. Resumo executivo |
+| 2. Recorded Decisions (STATED only) | 2. Decisões registradas (apenas DITO) |
+| 3. Action Items Table | 3. Tabela de ações |
+| 4. Presumed Agreements, to Confirm | 4. Acordos presumidos, a confirmar |
+| 5. Presumed Actions | 5. Ações presumidas |
+| 6. Open Questions | 6. Perguntas em aberto |
+| 7. Action Items in JSON | 7. Ações em JSON |
+| 8. Self-Audit | 8. Autoverificação |
+| Discovery Input | Insumo para discovery |

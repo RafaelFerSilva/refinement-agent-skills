@@ -62,3 +62,23 @@ One `flowchart TD` in Mermaid per epic, up to 10 nodes: actors as start and end 
 - `issues/01-<slug>.md`: As <role>, I want <capability>. INVEST: <PASS across all | FAIL on <letters>>
 
 > ⚠️ This output is an analytical draft. It requires human review before entering a sprint. Validate: technical feasibility, compliance, and unmapped dependencies.
+
+## Section names in pt-BR
+
+Not part of the artifact. When `Language: pt-BR`, the headings above are written in this form, so that a later workflow reading this artifact finds the section it expects:
+
+| Heading (en-US, default) | Heading (pt-BR) |
+| --- | --- |
+| Target Outcome | Resultado alvo |
+| Partial Processing | Processamento parcial |
+| Domains | Domínios |
+| Stakeholders | Stakeholders |
+| Epics | Épicos |
+| Examination Decisions | Decisões da sabatina |
+| Pending Decisions | Decisões pendentes |
+| Not Yet Specified | Ainda não especificado |
+| Open Questions | Perguntas em aberto |
+| Undeclared Dependencies | Dependências não declaradas |
+| Out of Scope | Fora de escopo |
+| Primary Flow by Epic | Fluxo principal por épico |
+| Candidate Stories | Histórias candidatas |

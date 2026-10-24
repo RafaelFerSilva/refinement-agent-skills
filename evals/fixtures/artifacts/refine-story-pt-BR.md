@@ -47,7 +47,7 @@ Cenário: janela de silenciamento expira
 1. [PO] Qual é a janela máxima de silenciamento em minutos? -> sem isso a janela não é testável (questionário: nenhum)
 2. [DEV] Um alerta que chega durante a janela é descartado ou enfileirado? -> define o estado esperado após a expiração (questionário: questionario-dev.md)
 
-## Observações
+## Notas
 
 - Story points: [A CALIBRAR NO PLANNING] regras da janela ainda abertas
 - Dependências: ingestão de telemetria [INFERÊNCIA: alertas derivam de telemetria conforme CONTEXT.md]
