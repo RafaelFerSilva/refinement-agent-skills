@@ -42,7 +42,7 @@ Quick test: "if an attendee reads this line and says 'I never said that', can I 
 3. **Extract.** Apply the rules from the "Synthesis rules" section of this prompt: retraction and supersedence, action item granularity, priority with provenance, what counts as a decision.
    Completed when: every decision and action item carries STATED provenance, and presumptions live strictly in sections 4 or 5.
 
-4. **Write minutes** following the "Template" section of this prompt. In "actions mode", write sections 3, 6, and 7 only.
+4. **Write minutes** following the "Template" section of this prompt. In "actions mode", write sections 0, 3, 6, 7, and 8 only: the narrative sections are what that mode drops, while triage qualifies how the table reads (a degraded transcript or a corrected term changes what its rows mean) and the self-audit is what proves the table and the JSON agree, which in this mode is the entire deliverable.
    Completed when: the minutes were delivered in the response, with final disclaimer.
 
 5. **Self-audit** and report in a single line in section 8: every real action in the table has a matching JSON object and no JSON object exists outside the table; every row and decision carries STATED; no ASSUMED leaked into table or decisions; priorities match between table and JSON; JSON dates are ISO or null.
@@ -54,6 +54,10 @@ Quick test: "if an attendee reads this line and says 'I never said that', can I 
 ## Final notice
 
 > ⚠️ These minutes are an AI-generated draft derived from a transcript. They require attendee validation before circulating as an official record, particularly Presumed Agreements, which were not explicitly verbalized and require confirmation.
+
+In a pt-BR workspace:
+
+> ⚠️ Esta ata é um rascunho gerado por IA a partir da transcrição. Requer validação dos participantes antes de circular como registro oficial, em especial os Acordos Presumidos, que não foram verbalizados e precisam de confirmação explícita.
 
 # Requirements rigor
 

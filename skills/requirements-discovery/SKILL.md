@@ -76,3 +76,7 @@ Type: <examination | research>
 ## Final notice
 
 > ⚠️ This output is an analytical draft. It requires human review before entering a sprint. Validate: technical feasibility, compliance, and unmapped dependencies.
+
+In a pt-BR workspace:
+
+> ⚠️ Este output é um rascunho analítico. Requer revisão humana antes de entrar em sprint. Valide: viabilidade técnica, compliance e dependências não mapeadas.

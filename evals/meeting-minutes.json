@@ -25,13 +25,13 @@
     {
       "id": 2,
       "prompt": "/meeting-minutes actions mode evals/fixtures/transcript-fleet-project.md . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`.",
-      "expected_output": "Sections 3, 6, and 7 only: action items table, open questions, and JSON. No executive summary, no decisions, no presumed agreements sections.",
+      "expected_output": "Sections 0, 3, 6, 7 and 8 only: triage, action items table, open questions, JSON, and self-audit. None of the narrative sections (1 executive summary, 2 recorded decisions, 4 presumed agreements, 5 presumed actions).",
       "files": [
         "evals/fixtures/transcript-fleet-project.md",
         "evals/fixtures/refinement-no-code-en-US.md"
       ],
       "assertions": [
-        "The output carries the action items table, open questions, and the JSON, and no other numbered section",
+        "The output carries sections 0, 3, 6, 7 and 8, and none of the narrative sections 1, 2, 4 and 5",
         "Every table row carries [STATED: provenance",
         "Driver training remains [TRACKING] and produces no object in the JSON",
         "Running `node scripts/grade-output.mjs <published minutes> --skill meeting-minutes --lang en-US` passes every check"

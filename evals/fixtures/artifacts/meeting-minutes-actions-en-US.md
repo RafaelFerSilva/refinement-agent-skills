@@ -5,6 +5,10 @@ Azure: none
 Date: 2026-04-14 | Duration: 52 | Attendees: Marcus: consultant, Carlos: operations director, Priya: IT
 Project: fleet telemetry MVP
 
+### 0. Triage
+
+INTACT. [POSSIBLE TRANSCRIPTION ERROR: "telimetry" -> "telemetry", per glossary, 2 occurrences]. Glossary applied: telemetry.
+
 ### 3. Action Items Table
 
 | ID | Action | Assignee | Deadline | Priority | Provenance | Notes |
@@ -41,5 +45,9 @@ Project: fleet telemetry MVP
   }
 ]
 ```
+
+### 8. Self-Audit
+
+Self-Audit: OK. 2 real table actions, 2 JSON objects, tracking item excluded, priorities identical.
 
 > ⚠️ These minutes are an AI-generated draft derived from a transcript. They require attendee validation before circulating as an official record, particularly Presumed Agreements, which were not explicitly verbalized and require confirmation.

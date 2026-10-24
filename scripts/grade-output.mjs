@@ -254,10 +254,11 @@ switch (skill) {
     break;
   }
   case 'meeting-minutes': {
-    // "actions mode" writes the table, open questions, and JSON only: sections 2, 8 and the
-    // summary are absent by design, so the checks that read them do not apply.
+    // "actions mode" writes sections 0, 3, 6, 7 and 8: the narrative sections are the ones it
+    // drops, so only the check that reads recorded decisions does not apply there.
     const actionsMode = findSection(T.sections.summary) === null && findSection(O.sections.summary) === null
       && findSection(T.sections.decisions) === null && findSection(O.sections.decisions) === null;
+    checkTriage();
     const block = text.match(/```json\s*([\s\S]*?)```/);
     let actions = null;
     try { actions = JSON.parse(block?.[1] ?? ''); } catch { actions = null; }
@@ -279,11 +280,10 @@ switch (skill) {
     check('every table row carries stated provenance', noProvenance.length === 0, noProvenance.join('\n'));
     check('no presumed item inside the table', !table.includes(T.assumed));
     if (!actionsMode) {
-      checkTriage();
       const decisions = section('decisions');
       check('recorded decisions carry stated provenance only', !decisions.includes(T.assumed) && (decisions.trim() === '' || decisions.includes(T.stated)));
-      check('self-audit reported', T.selfAuditLabel.test(section('selfAudit')));
     }
+    check('self-audit reported', T.selfAuditLabel.test(section('selfAudit')));
     break;
   }
 }

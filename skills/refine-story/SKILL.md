@@ -65,3 +65,7 @@ AC2 and AC4 do not trigger questions: AC2 is an implementation task whose enable
 Every published artifact concludes with:
 
 > ⚠️ This output is preparation for refinement, not a replacement. Decisions on scope, value, and priority belong strictly to the PO and team.
+
+In a pt-BR workspace:
+
+> ⚠️ Este output é preparação para o refinamento, não o substitui. A decisão sobre escopo, valor e prioridade é do PO e do time.

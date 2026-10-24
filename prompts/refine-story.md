@@ -71,6 +71,10 @@ Every published artifact concludes with:
 
 > ⚠️ This output is preparation for refinement, not a replacement. Decisions on scope, value, and priority belong strictly to the PO and team.
 
+In a pt-BR workspace:
+
+> ⚠️ Este output é preparação para o refinamento, não o substitui. A decisão sobre escopo, valor e prioridade é do PO e do time.
+
 # Socratic examination
 
 Interview the PO until a shared understanding is reached, with no silent decisions on either side. Treat the subject as a **decision tree**: each decision unlocks the decisions that depend on it.

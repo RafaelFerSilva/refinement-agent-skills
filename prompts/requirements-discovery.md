@@ -82,6 +82,10 @@ Type: <examination | research>
 
 > ⚠️ This output is an analytical draft. It requires human review before entering a sprint. Validate: technical feasibility, compliance, and unmapped dependencies.
 
+In a pt-BR workspace:
+
+> ⚠️ Este output é um rascunho analítico. Requer revisão humana antes de entrar em sprint. Valide: viabilidade técnica, compliance e dependências não mapeadas.
+
 # Socratic examination
 
 Interview the PO until a shared understanding is reached, with no silent decisions on either side. Treat the subject as a **decision tree**: each decision unlocks the decisions that depend on it.
