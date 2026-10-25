@@ -22,6 +22,21 @@ Flat directory, where the file name declares the language of the material: Engli
 
 Every case carries a workspace configuration fixture in `files`, `refinement-no-code-en-US.md` or `refinement-no-code-pt-BR.md`, read in place of `docs/agents/refinement.md`. Without it the workflow stops asking for `/configure-refinement`, and the case grades the stop instead of the examination. The validator rejects a case that provides none.
 
+### Scripted Product Owner answers
+
+`po-answers-245-<language>.md` holds the answers a PO gives to the round `refine-story` opens over the US-245 fixture of that language: `po-answers-245-en-US.md` answers `us-245-silence-alerts.md`. They are what lets a run reach synthesis; without them the session stops at the round, which is why the assertions of the examination cases end at "waits for the PO".
+
+The protocol:
+
+- The fixture belongs to whoever drives the run, a person or a subagent playing the PO. The session under test receives the answer lines of the subjects it asked about, never the file: a session that reads the file reads ahead to subjects it has not asked about, and the round stops being a measurement of what it decided to ask.
+- Answers are matched **by subject**, never by question number. Numbering varies between runs, so a fixture keyed to `Q3` would only fit the run it was written against.
+- A question no subject covers gets the fixture's **Anything else** reply. An improvised answer makes the run unattributable: a divergence in the artifact can no longer be told apart from a divergence in the input.
+- Two subjects per question, or one subject answering two questions, is normal. Reply with the lines of each, and keep the lines unchanged when a later round reopens a subject.
+- Copy the fixtures the case names into the run workspace, and point the session at the copies. A session driven to synthesis records resolved terms in `CONTEXT.md`, which here is a copy of `CONTEXT-fleet.md` or `CONTEXT-frota.md`: run it against the fixture in place and the next run starts from a glossary the previous one wrote, which is the comparability the repeat runs depend on.
+- Record whether the session opened the answers file. It sits in the directory the prompt points the session at, and a session that reads ahead to subjects it has not asked about makes "waits for the PO" and "no number invented" pass for the wrong reason, with nothing in the recorded session to show it.
+
+What the answers are built to exercise, and what to read the published artifact against: the retroactive reading is refused and routed to the engineering team, which has to surface as `[TO CONFIRM: engineering team]` plus a questionnaire rather than as a resolved rule; the window, what it suppresses, and the shared silencing have no basis in the story text, so they have to be carried as decisions the PO made and not as `[INFERENCE: base]`; and no number the answers do not state, starting with a duration, may appear as an assertion.
+
 `fixtures/artifacts/` holds published artifacts, one per workflow and language, named `<skill>[-actions]-<en-US|pt-BR>.md`. They are the grader's own regression: `scripts/validate-skills.mjs` grades every one of them in the language its name declares and fails if any check fails. A new rule in the grader starts here, with the fixture that exercises it.
 
 ## What is evaluated
