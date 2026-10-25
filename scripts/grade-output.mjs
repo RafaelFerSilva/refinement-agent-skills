@@ -202,7 +202,10 @@ const effort = text.match(T.effort);
 check('no effort estimate in hours or days', !effort, effort?.[0] ?? '');
 const legacy = text.match(T.legacyToConfirm);
 check(`${T.toConfirmLabel} marker in current format`, !legacy, legacy?.[0] ?? '');
-check('no em-dash', !text.includes('\u2014'));
+// No dash check here. The rule against em-dashes is house style for this repository's prose, carried
+// by scripts/validate-skills.mjs over committed files, and the package never states it to the agent
+// writing an artifact in a workspace. Grading a published artifact against an unstated rule failed
+// pt-BR syntheses for ordinary Portuguese prose and told a user nothing they could act on.
 const subjective = text.match(T.subjective) || [];
 check('verifiable outcome without subjective terms', subjective.length === 0, subjective.join('\n'));
 const foreign = O.tokens.filter((tok) => count(tok) > 0);

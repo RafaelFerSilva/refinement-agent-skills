@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // Validates the package: frontmatter, plugin manifest, router, README, prose, and grader regression.
 // usage: node scripts/validate-skills.mjs
-import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync, statSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -211,6 +212,26 @@ if (!existsSync(cmpExample)) {
     const got = (cmp.comparison ?? []).map((c) => [c.with_rate, c.baseline_rate, c.verdict]);
     const want = [[1, 0, 'bought'], [1, 1, 'already followed'], [0, 0, 'neither']];
     if (JSON.stringify(got) !== JSON.stringify(want)) fail(`aggregate-runs.mjs --baseline over the fixture pair reports ${JSON.stringify(got)}, expected ${JSON.stringify(want)}`);
+  }
+}
+
+// The no dash rule is house style for this repository and not a property the package demands of what
+// a workspace publishes (ticket 16). The walk above holds the repository half. This holds the other:
+// the grader does not fail an artifact for the character. The case cannot live in
+// evals/fixtures/artifacts/, because a committed fixture carrying the character would break the very
+// rule this check draws the boundary of, so it is built here from the clean fixture and thrown away.
+const dashFixture = join(artifactsDir, 'refine-story-pt-BR.md');
+if (!existsSync(dashFixture)) {
+  fail(`${dashFixture.slice(root.length + 1)} missing: the grader has nothing to build the dash case from, and the boundary between repository style and what the package grades goes unchecked`);
+} else {
+  const tmp = mkdtempSync(join(tmpdir(), 'refinement-skills-dash-'));
+  try {
+    const withDash = join(tmp, 'refine-story-pt-BR.md');
+    writeFileSync(withDash, `${readFileSync(dashFixture, 'utf8')}\nNota do validador: um travess\u00e3o \u2014 no corpo do artefato.\n`);
+    const run = spawnSync(process.execPath, [join(root, 'scripts', 'grade-output.mjs'), withDash, '--skill', 'refine-story', '--lang', 'pt-BR'], { encoding: 'utf8' });
+    if (run.status !== 0) fail(`grade-output.mjs fails an artifact over a dash, which is repository style and not a rule the package states: ${(run.stdout || '').split('\n').filter((l) => l.startsWith('FAIL')).join(', ')}`);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
   }
 }
 
