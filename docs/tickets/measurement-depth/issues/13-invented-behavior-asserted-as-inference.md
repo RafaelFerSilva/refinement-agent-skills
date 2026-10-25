@@ -1,6 +1,6 @@
 # 13: Behavior the PO never stated is asserted in Then clauses under an inference marker
 
-Status: needs-triage
+Status: ready-for-agent
 Blocked by: none
 Type: task
 Origin: 2026-10-25 (commit 7c8fe9e)
@@ -25,3 +25,7 @@ Two aggravating details. The marker lives in Notes while the behavior lives in t
 ## What a fix has to decide
 
 Whether an inference whose base is a necessity argument is an inference at all, and whether a marker in Notes may license an assertion inside a criterion. The second half looks like the sharper rule: behavior that only an inference supports belongs inside the scenario that asserts it, where the reader automating it sees the marker.
+
+## Comments
+
+- 2026-10-25 Triaged: ready-for-agent, second of the three rule changes. The defect needs no further evidence: the artifact asserts a countdown nobody specified, and `requirements-rigor` already says an inference cites a sentence and a Gherkin conversion adds no behavior, so the package contradicts itself rather than lacking a rule. The narrow half is the one to try first, since it is a placement rule rather than a judgment call: behavior that only an inference supports carries its marker inside the scenario that asserts it, where whoever automates the criterion sees it. Measure with the `refine-story` cases that reach synthesis, in both languages.

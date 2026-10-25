@@ -1,6 +1,6 @@
 # 16: The grader fails an artifact for a rule no skill states
 
-Status: needs-triage
+Status: ready-for-agent
 Blocked by: none
 Type: task
 Origin: 2026-10-25 (commit 9c3d0fe)
@@ -32,3 +32,9 @@ The asymmetry between languages is what surfaced it. The en-US run produced no e
 ## What a fix has to decide
 
 Whether the rule belongs to the artifact at all. Two readings, and they point opposite ways. If the no-dash rule is house style for this repository's prose, the grader check is the thing that is wrong, and it should not apply to an artifact published in a user's workspace. If it is a property the package wants in what it publishes, then it belongs where the artifact is written, stated once in `requirements-rigor` and reachable from both languages, which is a rule change needing its own preflight and its own measurement.
+
+## Comments
+
+- 2026-10-25 Triaged: ready-for-agent, with the direction settled by the user: the no dash rule is house style for this repository, not a property the package demands of what it publishes. So the grader stops applying `no em-dash` to a published artifact, and the rule keeps holding where it belongs, over the repository's own files through `scripts/validate-skills.mjs`, which already walks them.
+  - What this means for the fixtures in `evals/fixtures/artifacts/`: they are repository files, so the prose rule still reaches them through the validator's own walk, and losing the grader check there costs nothing.
+  - Watch for the regression this opens: the check was the only thing failing the pt-BR artifact of ticket 03, so after the change that artifact grades 15 of 15, and the eval that reported a difference between the languages stops reporting one. Record that in the ticket when it lands, otherwise a later reader will think the gap closed by itself.

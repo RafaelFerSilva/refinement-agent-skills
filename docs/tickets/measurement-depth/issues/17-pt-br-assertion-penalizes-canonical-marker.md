@@ -1,6 +1,6 @@
 # 17: A pt-BR assertion penalizes the package for following ADR 0005
 
-Status: needs-triage
+Status: ready-for-agent
 Blocked by: none
 Type: task
 Origin: 2026-10-25 (commit d51bde6)
@@ -27,3 +27,7 @@ So the assertion in `evals/refine-story.json` case 4 reads as if every bracketed
 ## What a fix has to decide
 
 Whether to name the canonical exceptions inside the assertion, which is the smallest change and keeps the rule it was written to protect, or to drop the assertion in favour of the grader check that already covers marker language. The first reading looks right: the assertion exists because pt-BR runs once mixed `[INFERENCE:` into Portuguese artifacts, and that failure mode is still worth catching.
+
+## Comments
+
+- 2026-10-25 Triaged: ready-for-agent, and first in the queue. Smallest change of the six, no rule moves, and it unblocks honest measurement in pt-BR: while the assertion stands, every pt-BR run that does the right thing is scored as doing the wrong one, which contaminates ticket 13's measurement and any repeat run of case 4. The direction is already settled by ADR 0005, so the work is naming the canonical exceptions inside the assertion rather than deciding anything.

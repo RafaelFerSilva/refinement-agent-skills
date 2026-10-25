@@ -1,6 +1,6 @@
 # 14: A PO answer that contradicts the glossary is recorded without the challenge the primitive requires
 
-Status: needs-triage
+Status: ready-for-agent
 Blocked by: none
 Type: task
 Origin: 2026-10-25 (commit 7c8fe9e)
@@ -26,3 +26,7 @@ The failure is quiet. The artifact reads as if the report always carried alerts,
 ## What a fix has to decide
 
 Whether the challenge rule fires only on a term the PO names, which is how the current wording reads, or also on an answer that widens a term the glossary already defines, which is the case here. Either way the glossary write is the detectable moment: a new entry that contradicts an existing one is the artifact of the miss.
+
+## Comments
+
+- 2026-10-25 Triaged: ready-for-agent, first of the three rule changes, because it is the narrowest and its failure has a detectable moment: a new glossary entry that contradicts an entry already there. The decision the ticket leaves open, whether the challenge fires only on a term the PO names or also on an answer that widens a term the glossary defines, is inside the doctrine of `socratic-examination` and does not need the user to arbitrate it. Doing this one first also keeps it clear of ticket 12, which would change round shape.

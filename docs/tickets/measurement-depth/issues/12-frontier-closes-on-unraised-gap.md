@@ -1,6 +1,6 @@
 # 12: The frontier is declared empty while a gap the glossary points at was never raised
 
-Status: needs-triage
+Status: ready-for-agent
 Blocked by: none
 Type: task
 Origin: 2026-10-25 (commit 7c8fe9e)
@@ -34,4 +34,4 @@ Whether completeness of the frontier is checkable at all, and where it would liv
 ## Comments
 
 - 2026-10-25 Corroborated by the pt-BR run of ticket 03, same package commit, same model, different language. That session ran two rounds, raised the audit trail and the re-silencing of an already silenced vehicle on its own, and routed the automatic return to the engineering team with a questionnaire. It still never asked about the retroactive reading, whose glossary entry (`Leitura`: "Pode chegar retroativa quando o rastreador fica sem sinal") is the pt-BR twin of the one quoted above. Two runs, two languages, the same gap unraised, against one run on another model that raised it.
-
+- 2026-10-25 Triaged: ready-for-agent, and last of the three rule changes. The defect is real and corroborated in two languages, but how often it happens is unknown, and a rule changed against a behavior seen twice is a guess. The apparatus to settle that landed in ticket 04: measure `refine-story` case 1 over repeat runs and count how many raise the retroactive reading, then decide. A fix that bars a verdict after one round would also change the shape of every round, which would invalidate a measurement of tickets 13 and 14 taken mid flight, so this one goes after them.
