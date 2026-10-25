@@ -30,12 +30,34 @@ Run both before committing, because the local run is currently the only one that
 
 `scripts/grade-output.mjs <artifact> --skill <name> [--lang <en-US|pt-BR>]` runs the mechanical assertions and serves as the grader, in both languages; without `--lang` it detects the language of the artifact. `evals/fixtures/artifacts/<skill>[-actions]-<language>.md` are published artifacts that serve as the grader's own regression: the validator grades every one of them and fails if any check fails. See `evals/README.md`.
 
+## What a synthesis grade covers
+
+`grade-output.mjs` reads the shape of a published artifact, and shape is most of what it can read: the sections present in the graded language, markers in the right syntax and the right language, the verdict drawn from that workflow's vocabulary, `Given` as state rather than action, the six INVEST rows, the final notice, and the absence of story points and effort in hours. On top of that each workflow adds a few structural ties: in `refine-story`, a recipient on every open question and a question behind every `[TO CONFIRM:`; in `qa-plan`, the open question ledger read against the matrix in both directions; in `meeting-minutes`, the action table against its JSON twin, provenance on every row, and the self-audit line.
+
+How many checks that comes to, counted over each committed fixture, which is what `validate-skills.mjs` grades and compares against this table:
+
+| Artifact fixture | Checks |
+| --- | --- |
+| `refine-story-en-US` | 14 |
+| `refine-story-pt-BR` | 14 |
+| `qa-plan-en-US` | 16 |
+| `qa-plan-pt-BR` | 16 |
+| `requirements-discovery-en-US` | 13 |
+| `requirements-discovery-pt-BR` | 13 |
+| `meeting-minutes-en-US` | 21 |
+| `meeting-minutes-pt-BR` | 21 |
+| `meeting-minutes-actions-en-US` | 20 |
+
+A few checks are conditional, so another artifact of the same workflow can draw one fewer: the `refine-story` fixtures carry a REFINE verdict and draw the check that it names the questions unblocking it, while a READY artifact never reaches that check and grades out of 13. A count is therefore a property of an artifact, not of a workflow, and the number a run reports should be read with that in mind.
+
 ## What the harness does not check
 
 Knowing where the mechanical layer stops keeps a green run from being read as more than it is.
 
 - Whether a `[SPECIFIED: excerpt]` citation states the outcome in words or is merely compatible with it. Comparing a citation against the source text is judgment, so no grader check covers it, and the eval suites cover it by reading, with a grading subagent or a person. What the grader does catch is the detectable half: a result an open question unblocks, read from the `unblocks #n` slot of the ledger against the matrix, in both directions.
 - Anything a workflow does not publish. `grade-output.mjs` reads a published artifact, and an examination round publishes nothing, so a round is covered by the eval assertions alone.
+- Whether anything in the artifact is true. A grade says the shape holds, never that a criterion traces to something the PO said, that a verdict matches what the answers support, or that a glossary written during the session agrees with itself. The first end to end run of the package, recorded in ticket 02 of `docs/tickets/measurement-depth/`, published a User Story that graded clean while asserting a user interface element nobody specified, closing its examination over an edge case the glossary points at, and leaving the glossary contradicting itself. All three are visible by reading and invisible to every check above. A green grade is the floor of an artifact's quality, not a verdict on it.
+- Prose style. The repository forbids the em-dash in committed files, enforced over every `.md` by `validate-skills.mjs`, and the grader deliberately does not carry that rule into a published artifact: it is house style here, never stated to the agent writing in a workspace, and a pt-BR synthesis failed for ordinary Portuguese prose until it was removed. The boundary itself is guarded, by a check that builds the case and requires the grader to pass it.
 - Whether a rule change holds across the package. After changing a rule, rerun the cases that exercise it, and the whole suite only when the change touches more than one workflow; a single rule is settled by two or three targeted cases, and the suite costs around a million tokens.
 
 ## Self-containment

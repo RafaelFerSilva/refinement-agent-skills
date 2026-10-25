@@ -153,6 +153,7 @@ else if (!readFileSync(bridge, 'utf8').includes('@../AGENTS.md')) fail('.claude/
 
 // Grader regression: every artifact fixture passes its own grader, in the language its name declares.
 const artifactsDir = join(root, 'evals', 'fixtures', 'artifacts');
+const checkCounts = new Map();
 let graded = 0;
 if (!existsSync(artifactsDir)) {
   fail('evals/fixtures/artifacts missing: the grader has no regression');
@@ -164,9 +165,34 @@ if (!existsSync(artifactsDir)) {
     if (!m) { fail(`evals/fixtures/artifacts/${f}: name outside the <skill>[-actions]-<en-US|pt-BR>.md pattern`); continue; }
     const [, graderSkill, lang] = m;
     if (!skills.includes(graderSkill)) { fail(`evals/fixtures/artifacts/${f}: ${graderSkill} does not exist in skills/`); continue; }
-    const run = spawnSync(process.execPath, [join(root, 'scripts', 'grade-output.mjs'), join(artifactsDir, f), '--skill', graderSkill, '--lang', lang], { encoding: 'utf8' });
+    const run = spawnSync(process.execPath, [join(root, 'scripts', 'grade-output.mjs'), join(artifactsDir, f), '--skill', graderSkill, '--lang', lang, '--json'], { encoding: 'utf8' });
+    let report = null;
+    try { report = JSON.parse(run.stdout); } catch { report = null; }
     if (run.status === 0) graded++;
-    else fail(`evals/fixtures/artifacts/${f}: grader failed\n       ${(run.stdout || run.stderr || '').split('\n').filter((l) => l.startsWith('FAIL')).join('\n       ')}`);
+    else fail(`evals/fixtures/artifacts/${f}: grader failed\n       ${(report?.expectations ?? []).filter((e) => !e.passed).map((e) => `FAIL  ${e.text}`).join('\n       ') || (run.stderr || '').trim()}`);
+    if (report) checkCounts.set(f.replace(/\.md$/, ''), report.expectations.length);
+  }
+}
+
+// How many checks each fixture draws is documented in harness.md, so that a reader of a green run
+// knows the size of what passed. A count in prose goes stale the moment a check is added or removed,
+// which is the defect this section exists to describe, one level up, so the numbers are compared here.
+const harnessFile = join(root, 'docs', 'agents', 'harness.md');
+if (!existsSync(harnessFile)) {
+  fail('docs/agents/harness.md missing: the record of what the mechanical layer covers is the one thing a green run is read against');
+} else {
+  const harness = readFileSync(harnessFile, 'utf8');
+  const documented = new Map([...harness.matchAll(/^\|\s*`([a-z0-9-]+-(?:en-US|pt-BR))`\s*\|\s*(\d+)\s*\|/gim)].map((m) => [m[1], Number(m[2])]));
+  for (const [fixture, count] of checkCounts) {
+    if (!documented.has(fixture)) fail(`docs/agents/harness.md does not say how many checks ${fixture} draws, and it draws ${count}`);
+    else if (documented.get(fixture) !== count) fail(`docs/agents/harness.md says ${fixture} draws ${documented.get(fixture)} checks, and it draws ${count}`);
+  }
+  // Only a documented fixture that is not on disk is stale documentation. One whose grading never
+  // reported is a broken grader, already failed above, and blaming the documentation for it sends the
+  // reader to the wrong file.
+  const onDisk = new Set(existsSync(artifactsDir) ? readdirSync(artifactsDir).filter((f) => f.endsWith('.md')).map((f) => f.replace(/\.md$/, '')) : []);
+  for (const fixture of documented.keys()) {
+    if (!onDisk.has(fixture)) fail(`docs/agents/harness.md documents a check count for ${fixture}, which is not an artifact fixture`);
   }
 }
 
