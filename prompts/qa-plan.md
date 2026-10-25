@@ -105,7 +105,9 @@ Format of a round in pt-BR:
 
 Blocking questions first. Numbering is continuous across rounds: round 2 continues where round 1 ended, allowing the final artifact to reference questions unambiguously.
 
-Each answer reshapes the tree: resolved decisions advance the frontier and unlock dependent questions. Recalculate the frontier and ask the next round. Examination ends when the frontier is empty, or when the PO requests closing with current information. Do not synthesize before that point.
+Each answer reshapes the tree: resolved decisions advance the frontier and unlock dependent questions. Recalculate the frontier and ask the next round. Examination ends when the frontier is empty, or when the PO requests closing with current information.
+
+One pass separates the end of examination from synthesis. Re-read `CONTEXT.md`, where the workspace has one, against two things: the answers this session collected, and the entries as they read when the session opened. A claim that widens a term already defined is an open question, and so is an entry this session rewrote rather than added, because a definition that changes meaning is a decision the PO makes and not a record of one. Each one found goes to the PO as a final round, phrased as the challenge below, or, when the PO has already closed the session, stays as `[TO CONFIRM: PO]` (or `[A CONFIRMAR: PO]`) beside the entry it would have changed, which stays as it was. Synthesize only when the pass leaves nothing unasked and nothing unmarked.
 
 ## Facts and decisions
 
