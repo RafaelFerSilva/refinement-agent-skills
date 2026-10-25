@@ -28,6 +28,14 @@ Run both before committing, because the local run is currently the only one that
 
 `scripts/grade-output.mjs <artifact> --skill <name> [--lang <en-US|pt-BR>]` runs the mechanical assertions and serves as the grader, in both languages; without `--lang` it detects the language of the artifact. `evals/fixtures/artifacts/<skill>[-actions]-<language>.md` are published artifacts that serve as the grader's own regression: the validator grades every one of them and fails if any check fails. See `evals/README.md`.
 
+## What the harness does not check
+
+Knowing where the mechanical layer stops keeps a green run from being read as more than it is.
+
+- Whether a `[SPECIFIED: excerpt]` citation states the outcome in words or is merely compatible with it. Comparing a citation against the source text is judgment, so no grader check covers it, and the eval suites cover it by reading, with a grading subagent or a person. What the grader does catch is the detectable half: a result an open question unblocks, read from the `unblocks #n` slot of the ledger against the matrix, in both directions.
+- Anything a workflow does not publish. `grade-output.mjs` reads a published artifact, and an examination round publishes nothing, so a round is covered by the eval assertions alone.
+- Whether a rule change holds across the package. After changing a rule, rerun the cases that exercise it, and the whole suite only when the change touches more than one workflow; a single rule is settled by two or three targeted cases, and the suite costs around a million tokens.
+
 ## Self-containment
 
 No skill from outside. The validator checks that every Skill tool call in the `SKILL.md` files points to a skill of this package; a call to an unknown name fails.
