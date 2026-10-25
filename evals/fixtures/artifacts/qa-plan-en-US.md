@@ -46,9 +46,9 @@ The alert panel listing filters by status, so closure affects panel counters. Ve
 
 ## Open Questions
 
-1. [PO] What happens when closing an alert that is already closed? -> defines expected result of condition 3 (questionnaire: none)
-2. [PO] Which roles besides dispatch operator can close an alert? -> defines condition 4 (questionnaire: none)
-3. [DEV] Is there a lock on alert closure? -> defines condition 5 and its layer (questionnaire: questionnaire-dev.md)
+1. [PO] What happens when closing an alert that is already closed? -> unblocks #3 (questionnaire: none)
+2. [PO] Which roles besides dispatch operator can close an alert? -> unblocks #4 (questionnaire: none)
+3. [DEV] Is there a lock on alert closure? -> unblocks #5, and settles its layer (questionnaire: questionnaire-dev.md)
 
 ## Coverage Verdict
 

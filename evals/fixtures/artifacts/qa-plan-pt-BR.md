@@ -46,9 +46,9 @@ A listagem do painel de alertas filtra por status, então o encerramento afeta o
 
 ## Perguntas em aberto
 
-1. [PO] O que acontece ao encerrar um alerta já encerrado? -> define o resultado esperado da condição 3 (questionário: nenhum)
-2. [PO] Quais papéis além do operador de despacho podem encerrar um alerta? -> define a condição 4 (questionário: nenhum)
-3. [DEV] Existe lock no encerramento do alerta? -> define a condição 5 e sua camada (questionário: questionario-dev.md)
+1. [PO] O que acontece ao encerrar um alerta já encerrado? -> destrava #3 (questionário: nenhum)
+2. [PO] Quais papéis além do operador de despacho podem encerrar um alerta? -> destrava #4 (questionário: nenhum)
+3. [DEV] Existe lock no encerramento do alerta? -> destrava #5, e define sua camada (questionário: questionario-dev.md)
 
 ## Veredito de cobertura
 

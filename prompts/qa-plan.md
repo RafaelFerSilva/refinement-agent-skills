@@ -31,7 +31,7 @@ Deriving unwritten conditions is the essence of QA, provided it follows establis
 
 The layer qualifies the pair, condition and expected result, and the two halves may sit in different layers: a condition derived from boundary analysis whose outcome the text does state carries `[DERIVED: technique]` as its origin and `[SPECIFIED: excerpt]` on the result. What `[SPECIFIED]` claims on a result is strict: the cited excerpt states that outcome in words. An excerpt merely compatible with the outcome does not specify it, and an outcome nobody wrote is `[UNDEFINED -> Question n]` however obvious it looks.
 
-A result that an open question asks about is never also asserted. Asking what happens and answering it in the same plan hands the reader two answers with nothing to choose between them, and it is the undefined half that is true: the question exists because the specification is silent.
+A result that an open question asks about is never also asserted. Asking what happens and answering it in the same plan hands the reader two answers with nothing to choose between them, and it is the undefined half that is true: the question exists because the specification is silent. The open questions section is where this becomes checkable rather than a matter of care: each question lists the conditions whose expected result waits on its answer, so the two lists are read against each other, and a condition a question names carries `[UNDEFINED -> Question n]` in its result. A question that settles a layer, an automation blocker or the regression impact says so instead of listing a condition, because those leave the result alone.
 
 Quick test: "which technique generated this condition, from which excerpt does it stem, and does that excerpt state the outcome I wrote?" If any of the three cannot be answered, the condition stays with its result undefined, or leaves the plan.
 
@@ -45,7 +45,7 @@ Quick test: "which technique generated this condition, from which excerpt does i
    Completed when: triage is declared.
 
 3. **Derive conditions.** For each criterion, apply applicable techniques from the "Test design" section of this prompt, avoiding forcing inapplicable techniques, and review silent angles, reporting only applicable ones. Build the matrix: condition, origin, expected result or `[UNDEFINED -> Question n]`, priority, layer. Undefined conditions remain in the matrix: visible future coverage is far better than hidden gaps. Number questions in a single sequence across PO and DEV combined, so `[UNDEFINED -> Question n]` resolves unambiguously. Every number the matrix points to is written out as a question with its recipient, DEV questions included, even though those never enter the PO round: a pointer to a question that exists only as a promise of a questionnaire leaves the reader of the matrix with no way to learn what is undefined. Priority rationales (half-line per condition) go in a list within the risk analysis section, not inside the table.
-   Completed when: every condition has a declared origin, every `[UNDEFINED]` has an assigned question number, every number in the sequence exists as a written question carrying recipient PO or DEV, and no asserted result answers a question the plan itself asks.
+   Completed when: every condition has a declared origin, every `[UNDEFINED]` has an assigned question number, every number in the sequence exists as a written question carrying recipient PO or DEV, and the condition numbers the questions list match, one for one, the conditions whose result is undefined.
 
 4. **Search for facts before asking.** Separate questions by recipient. **PO**: undefined business behavior. **DEV**: architecture, observability, testing layer, isolation of external dependencies, time control, test data provisioning, API error response, persistence after failure, technical idempotency. A found fact becomes an expected result or defined layer, with source citation. Search is restricted to what the PO provided; if nothing is found, state this in a single line at the top of round 1.
    Completed when: each question is marked as answered by a source or open, with assigned recipient.
@@ -527,7 +527,7 @@ Existing flows touched by this US, what could silently break, and which verifica
 
 ## Open Questions
 
-1. [PO|DEV] <question> -> <what it unblocks in plan> (questionnaire: <path or none>)
+1. [PO|DEV] <question> -> unblocks #<n>, #<n>: the conditions whose expected result waits on this answer, or "no result" when the answer settles a layer, an automation blocker or the regression impact instead (questionnaire: <path or none>)
 
 ## Coverage Verdict
 
@@ -549,4 +549,5 @@ Not part of the artifact. When `Language: pt-BR`, the headings above are written
 | Regression Impact | Impacto de regressão |
 | Examination Decisions | Decisões da sabatina |
 | Open Questions | Perguntas em aberto |
+| unblocks #n | destrava #n |
 | Coverage Verdict | Veredito de cobertura |

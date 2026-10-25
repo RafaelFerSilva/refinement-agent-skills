@@ -67,6 +67,7 @@ const TABLE = {
     givenAction: /^[ \t]*Given\s+(?:that\s+)?(?:the|a|an)?\s*\w+\s+(?:clicks|triggers|sends|opens|selects|fills|submits|requests|exports)\b.*$/gim,
     effort: /\b\d+\s*(?:to\s*\d+\s*)?(?:h|hours?|days?)\s+of\s+(?:development|effort|work)\b/i,
     undefinedQuestion: /\[UNDEFINED\s*(?:->|-->|\u2192)\s*Question\s*(\d+)\]/g,
+    unblocks: /unblocks\s+((?:#\d+[\s,and]*)+)/i,
     derivedNoTechnique: /\[DERIVED\s*:?\s*\]/g,
     origin: /\[(?:SPECIFIED|DERIVED|UNDEFINED)/,
     tracking: '[TRACKING]',
@@ -114,6 +115,7 @@ const TABLE = {
     givenAction: /^[ \t]*Dado\s+(?:que\s+)?(?:o|a|os|as|um|uma)?\s*\w+\s+(?:clica|aciona|envia|abre|seleciona|preenche|submete|exporta)\b.*$/gim,
     effort: /\b\d+\s*(?:a\s*\d+\s*)?(?:h|horas?|dias?)\s+de\s+(?:desenvolvimento|esforço|trabalho)\b/i,
     undefinedQuestion: /\[INDEFINIDO\s*(?:->|-->|\u2192)\s*Pergunta\s*(\d+)\]/g,
+    unblocks: /destrava\s+((?:#\d+[\s,e]*)+)/i,
     derivedNoTechnique: /\[DERIVADO\s*:?\s*\]/g,
     origin: /\[(?:ESPECIFICADO|DERIVADO|INDEFINIDO)/,
     tracking: '[ACOMPANHAMENTO]',
@@ -243,6 +245,30 @@ switch (skill) {
     check('matrix has conditions', rows.length > 0, `${rows.length} conditions`);
     const noOrigin = rows.filter((r) => !T.origin.test(r));
     check('every condition declares its origin', noOrigin.length === 0, noOrigin.join('\n'));
+    // The ledger names the conditions whose result waits on an answer, and the matrix points back at
+    // the question. Read in both directions: a plan that asserts one of those results answers a
+    // question it also asks, and an undefined result nobody lists leaves the ledger incomplete.
+    const undefinedIn = new RegExp(T.undefinedQuestion.source, 'i');
+    const resultOf = new Map();
+    for (const r of rows) {
+      const cells = r.split('|').slice(1, -1).map((c) => c.trim());
+      if (cells.length >= 4) resultOf.set(cells[0], cells[3]);
+    }
+    const listedBy = new Map();
+    for (const q of numbered(section('openQuestions'))) {
+      const qn = (q.match(/^\s*(\d+)\./) || [])[1];
+      const m = q.match(T.unblocks);
+      if (!qn || !m) continue;
+      for (const n of m[1].match(/\d+/g) || []) listedBy.set(n, qn);
+    }
+    const asserted = [...listedBy.keys()]
+      .filter((n) => resultOf.has(n) && !undefinedIn.test(resultOf.get(n)))
+      .map((n) => `#${n} asserted: ${resultOf.get(n)}`);
+    const unlisted = [...resultOf.entries()]
+      .filter(([n, result]) => undefinedIn.test(result) && listedBy.get(n) !== (result.match(undefinedIn) || [])[1])
+      .map(([n, result]) => `#${n} points at question ${(result.match(undefinedIn) || [])[1]}, which does not list it`);
+    check('conditions a question unblocks keep an undefined result', asserted.length === 0, asserted.join(' | '));
+    check('every undefined result is listed by the question it points at', unlisted.length === 0, unlisted.join(' | '));
     break;
   }
   case 'requirements-discovery': {

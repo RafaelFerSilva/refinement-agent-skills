@@ -44,7 +44,7 @@ Existing flows touched by this US, what could silently break, and which verifica
 
 ## Open Questions
 
-1. [PO|DEV] <question> -> <what it unblocks in plan> (questionnaire: <path or none>)
+1. [PO|DEV] <question> -> unblocks #<n>, #<n>: the conditions whose expected result waits on this answer, or "no result" when the answer settles a layer, an automation blocker or the regression impact instead (questionnaire: <path or none>)
 
 ## Coverage Verdict
 
@@ -66,4 +66,5 @@ Not part of the artifact. When `Language: pt-BR`, the headings above are written
 | Regression Impact | Impacto de regressão |
 | Examination Decisions | Decisões da sabatina |
 | Open Questions | Perguntas em aberto |
+| unblocks #n | destrava #n |
 | Coverage Verdict | Veredito de cobertura |

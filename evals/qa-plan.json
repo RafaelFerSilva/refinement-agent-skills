@@ -19,7 +19,8 @@
         "Architectural questions (persistence, concurrency, notification) are addressed to DEV, not to the PO",
         "No expected result is asserted for conditions the criteria leave undefined",
         "The response notes that the US did not go through /refine-story",
-        "Conditions, questions, and markers are in English, following `Language: en-US`"
+        "Conditions, questions, and markers are in English, following `Language: en-US`",
+        "Each question that unblocks a result lists the conditions as `unblocks #n`, and every condition so listed keeps `[UNDEFINED -> Question n]` as its result"
       ]
     },
     {
@@ -53,7 +54,8 @@
         "Origin markers appear in their Portuguese form: [ESPECIFICADO, [DERIVADO, and [INDEFINIDO, with no English markers mixed in",
         "Every derived condition names the technique that generated it",
         "Every [INDEFINIDO condition points to a numbered question with recipient PO or DEV",
-        "No expected result is asserted for conditions the criteria leave undefined"
+        "No expected result is asserted for conditions the criteria leave undefined",
+        "Cada pergunta que destrava um resultado lista as condições como `destrava #n`, e toda condição assim listada mantém `[INDEFINIDO → Pergunta n]` como resultado"
       ]
     }
   ]
