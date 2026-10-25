@@ -6,7 +6,7 @@
 
 ## What this repository is
 
-**refinement-skills** is an agent skills package for software requirements refinement in en-US and pt-BR: from meeting transcripts to QA test plans, driven by socratic examination. It is not the workspace where User Stories are analyzed; it is installed into target workspaces. Package vocabulary lives in `CONTEXT.md`; architectural decisions in `docs/adr/`.
+**refinement-skills** is an agent skills package for software requirements refinement in en-US and pt-BR: from meeting transcripts to QA test plans, driven by socratic examination. It is not the workspace where User Stories are analyzed; it is installed into target workspaces. Package vocabulary lives in `CONTEXT.md`; architectural decisions in `docs/adr/`, in the format of `skills/socratic-examination/ADR.md`. A skill installed from outside this repository may assume other homes for the two, a `GLOSSARY.md` at the root for instance; here these are the ones that hold, and project instructions outrank a skill's assumption.
 
 - **Skill source:** `skills/<name>/SKILL.md`, one folder per skill, no buckets. Each folder contains `agents/openai.yaml` with Codex metadata.
 - **Self-contained:** every skill invoked across workflows lives directly under `skills/`. No external third-party package dependencies, nor references to one.
@@ -28,6 +28,10 @@
 ## Writing style
 
 Every step concludes with a checkable, rigorous completion criterion. References used only by specific branches live in sibling files linked from `SKILL.md`; what every branch requires stays inline. Any sentence that does not change agent behavior is pruned. State the desired behavior instead of forbidding the undesired one. Keep each meaning in a single place.
+
+## How this package is built
+
+The package is built with the engineering skills installed as the `mattpocock-skills` plugin: a decision becomes a spec and tickets, and `/implement` is overridden locally in `.claude/skills/implement/SKILL.md` so that it runs the ticket preflight in `docs/agents/ticket-preflight.md` first, and ends on the Definition of Done above instead of a test suite this repository does not have. Those skills are the toolchain that builds the package, not a dependency of it: nothing under `skills/` references them, and the self-containment invariant is about the package.
 
 ## Dogfooding and evals
 
