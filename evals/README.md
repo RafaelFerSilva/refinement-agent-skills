@@ -30,17 +30,21 @@ A case is measured over several runs, each run graded exactly as it is today, an
 
 **An assertion holds when it passes in at least 80% of the runs.** At three runs that means all three; at five, four of five. The threshold is a property of the measurement, not of a case: a case that needs a looser one is a case whose assertion is not yet sharp enough to measure.
 
-Per run files live in the layout the workspace already uses, one directory per run:
+Per run files live in the layout the workspace already uses, one directory per configuration and one per run:
 
 ```
 <case>/with_skill/run-<n>/outputs/response.md
 <case>/with_skill/run-<n>/grading.json
+<case>/no_skill/run-<n>/...
 ```
+
+`no_skill` is the baseline: the same prompt and the same fixtures, with no skill loaded and the Skill tool unused. It answers what the package adds rather than whether it works. A baseline comparison is measured at **three runs per configuration**, including the `with_skill` side and including cases that would otherwise get five, because a comparison costs two configurations at once; the cost of that choice is that a rate of two thirds on either side is a direction, not a number to quote. Two things keep it honest. The prompts must be identical between configurations, including any localization of fixture paths. And the baseline still reads the workspace configuration, which names markers, verdicts and Gherkin keywords, so what it measures is the model plus the configuration, not a bare model: the gap it shows is the floor of what the package adds, not the ceiling.
 
 `grading.json` keeps the shape the viewer reads, `{expectations: [{text, passed, evidence}], summary: {...}}`, and the `--json` output of `grade-output.mjs` is accepted as it stands. Then:
 
 ```bash
 node scripts/aggregate-runs.mjs <case directory> [--threshold 0.8] [--json]
+node scripts/aggregate-runs.mjs <case>/with_skill --baseline <case>/no_skill
 ```
 
 It reports the pass rate of each run, the rate of each assertion across runs with the runs it failed in named, and one verdict: `held` only when every assertion meets the threshold, exit code 0, otherwise `not held` and exit 1.
@@ -51,7 +55,9 @@ Three details decide what the numbers mean:
 - Each run is scored against every assertion the case declares, not only the ones its own grading file lists. A grading file that skips an assertion lowers the run that skipped it, instead of reporting it as a perfect run over a shorter list.
 - An assertion absent from a run counts as not held there and is named as absent, and an assertion listed more than once in one run is named too, because a grading file that skips or contradicts itself is not evidence that the assertion passed.
 
-`evals/fixtures/runs/aggregate-example/` holds three grading files whose aggregate is known, one assertion holding in every run, one in a third, one in two thirds. `scripts/validate-skills.mjs` aggregates them and fails if the numbers move, which is the aggregation's own regression.
+With `--baseline`, each assertion is also reported as bought by the package, already followed without it, lost, or held by neither, which is what names the rules worth questioning: an assertion the baseline already holds is a candidate for pruning, and an assertion the package loses is a defect in the package or in the assertion.
+
+`evals/fixtures/runs/aggregate-example/` holds three grading files whose aggregate is known, one assertion holding in every run, one in a third, one in two thirds. `scripts/validate-skills.mjs` aggregates them and fails if the numbers move, which is the aggregation's own regression. `evals/fixtures/runs/compare-example/` does the same for the comparison, with one assertion the package buys, one the model already follows, and one neither holds.
 
 ## Fixtures
 

@@ -3,7 +3,9 @@
 // One run cannot separate a fix from variance, so a case is measured over several runs and each
 // assertion is held or not held against a threshold. Reads both grading shapes already in use:
 // the viewer's {expectations, summary} and the --json output of scripts/grade-output.mjs.
-// usage: node scripts/aggregate-runs.mjs <case directory | grading.json ...> [--threshold <0..1>] [--json]
+// With --baseline, the same case measured in another configuration is read too and each assertion is
+// reported as bought by the package, already followed without it, lost, or held by neither.
+// usage: node scripts/aggregate-runs.mjs <case directory | grading.json ...> [--baseline <directory>] [--threshold <0..1>] [--json]
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { join, basename, dirname } from 'node:path';
 
@@ -20,10 +22,19 @@ const thresholdIndex = argv.indexOf('--threshold');
 const thresholdGiven = thresholdIndex !== -1;
 const thresholdArg = thresholdGiven ? argv[thresholdIndex + 1] : String(DEFAULT_THRESHOLD);
 const threshold = Number(thresholdArg);
-const targets = argv.filter((a, i) => !a.startsWith('--') && !(thresholdGiven && i === thresholdIndex + 1));
+const baselineIndex = argv.indexOf('--baseline');
+const baselineGiven = baselineIndex !== -1;
+const baselineArg = baselineGiven ? argv[baselineIndex + 1] : null;
+const valueOf = (i) => (thresholdGiven && i === thresholdIndex + 1) || (baselineGiven && i === baselineIndex + 1);
+const targets = argv.filter((a, i) => !a.startsWith('--') && !valueOf(i));
 
+const usage = 'usage: node scripts/aggregate-runs.mjs <case directory | grading.json ...> [--baseline <directory>] [--threshold <0..1>] [--json]';
 if (!targets.length || thresholdArg === undefined || thresholdArg.startsWith('--') || !Number.isFinite(threshold) || threshold <= 0 || threshold > 1) {
-  console.error('usage: node scripts/aggregate-runs.mjs <case directory | grading.json ...> [--threshold <0..1>] [--json]');
+  console.error(usage);
+  process.exit(2);
+}
+if (baselineGiven && (baselineArg === undefined || baselineArg.startsWith('--'))) {
+  console.error(usage);
   process.exit(2);
 }
 
@@ -56,9 +67,10 @@ function gradingFiles(target) {
   return runs.sort((a, b) => a.order - b.order).map((r) => r.file);
 }
 
-const files = targets.flatMap(gradingFiles);
+function aggregate(where) {
+const files = where.flatMap(gradingFiles);
 if (!files.length) {
-  console.error(`error: no grading.json found under ${targets.join(', ')}`);
+  console.error(`error: no grading.json found under ${where.join(', ')}`);
   process.exit(2);
 }
 
@@ -117,8 +129,8 @@ for (const run of runs) {
 const meeting = assertions.filter((a) => a.meets_threshold).length;
 const passRateOverRuns = runs.reduce((sum, r) => sum + r.pass_rate, 0) / runs.length;
 const verdict = meeting === assertions.length ? 'held' : 'not held';
-const result = {
-  case: basename(targets[0].replace(/\/+$/, '')),
+return {
+  case: basename(where[0].replace(/\/+$/, '')),
   runs: runs.length,
   threshold,
   verdict,
@@ -128,6 +140,43 @@ const result = {
   run_pass_rates: runs.map((r) => ({ run: r.run, passed: r.passed, total: r.total, pass_rate: r.pass_rate, file: r.file })),
   assertions,
 };
+}
+
+const result = aggregate(targets);
+const assertions = result.assertions;
+const { verdict, assertions_meeting_threshold: meeting, pass_rate_over_runs: passRateOverRuns } = result;
+
+// An assertion held in one configuration and not the other is the whole point of a baseline: what the
+// package buys, and what the model already does without it. An assertion absent from the baseline
+// grading is reported as not measured there rather than as a difference.
+if (baselineGiven) {
+  const baseline = aggregate([baselineArg]);
+  result.baseline = baseline;
+  // Every assertion either side graded gets a line. One graded on one side only is reported as such
+  // rather than dropped: an assertion the baseline holds and the package was never graded on is
+  // exactly what this comparison exists to surface.
+  const texts = [...assertions.map((a) => a.text)];
+  for (const b of baseline.assertions) if (!texts.includes(b.text)) texts.push(b.text);
+  result.comparison = texts.map((text) => {
+    const a = assertions.find((x) => x.text === text);
+    const b = baseline.assertions.find((x) => x.text === text);
+    const verdictOf = () => {
+      if (!a) return 'not measured with the skill';
+      if (!b) return 'not measured in the baseline';
+      if (a.meets_threshold && !b.meets_threshold) return 'bought';
+      if (a.meets_threshold && b.meets_threshold) return 'already followed';
+      if (!a.meets_threshold && b.meets_threshold) return 'lost';
+      return 'neither';
+    };
+    return {
+      text,
+      with_rate: a ? a.rate : null,
+      baseline_rate: b ? b.rate : null,
+      delta: a && b ? a.rate - b.rate : null,
+      verdict: verdictOf(),
+    };
+  });
+}
 
 const pct = (n) => `${Math.round(n * 100)}%`;
 if (asJson) {
@@ -145,5 +194,18 @@ if (asJson) {
     console.log(`${a.meets_threshold ? 'HELD    ' : 'NOT HELD'} ${a.held}/${a.runs}  ${a.text}${where ? `  (${where})` : ''}`);
   }
   console.log(`\n${verdict}: ${meeting}/${assertions.length} assertions at or above ${pct(threshold)}, pass rate over runs ${pct(passRateOverRuns)}`);
+  if (result.comparison) {
+    const b = result.baseline;
+    console.log(`\nbaseline: ${b.case}, ${b.runs} runs, ${b.assertions_meeting_threshold}/${b.assertions_total} assertions at or above ${pct(threshold)}, pass rate over runs ${pct(b.pass_rate_over_runs)}\n`);
+    const label = { bought: 'BOUGHT  ', 'already followed': 'ALREADY ', lost: 'LOST    ', neither: 'NEITHER ', 'not measured in the baseline': 'UNKNOWN ', 'not measured with the skill': 'UNKNOWN ' };
+    for (const c of result.comparison) {
+      const mine = c.with_rate === null ? 'not measured' : pct(c.with_rate);
+      const base = c.baseline_rate === null ? 'not measured' : pct(c.baseline_rate);
+      console.log(`${label[c.verdict]} with ${mine} vs baseline ${base}  ${c.text}`);
+    }
+    const bought = result.comparison.filter((c) => c.verdict === 'bought').length;
+    const already = result.comparison.filter((c) => c.verdict === 'already followed').length;
+    console.log(`\n${bought} bought by the package, ${already} already followed without it, ${result.comparison.length - bought - already} held by neither or lost`);
+  }
 }
 process.exit(verdict === 'held' ? 0 : 1);

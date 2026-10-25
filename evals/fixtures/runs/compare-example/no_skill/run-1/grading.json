@@ -1,0 +1,25 @@
+{
+  "expectations": [
+    {
+      "text": "assertion the package buys",
+      "passed": false,
+      "evidence": "fixture"
+    },
+    {
+      "text": "assertion the model already follows",
+      "passed": true,
+      "evidence": "fixture"
+    },
+    {
+      "text": "assertion neither configuration holds",
+      "passed": false,
+      "evidence": "fixture"
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "total": 3,
+    "pass_rate": 1.0
+  }
+}

@@ -165,6 +165,24 @@ if (!existsSync(aggExample)) {
   }
 }
 
+// Baseline comparison: the fixture pair in evals/fixtures/runs/compare-example/ has one assertion the
+// package buys, one the model already follows without it, and one neither configuration holds.
+const cmpExample = join(root, 'evals', 'fixtures', 'runs', 'compare-example');
+if (!existsSync(cmpExample)) {
+  fail('evals/fixtures/runs/compare-example missing: the baseline comparison has no regression');
+} else {
+  const run = spawnSync(process.execPath, [join(root, 'scripts', 'aggregate-runs.mjs'), join(cmpExample, 'with_skill'), '--baseline', join(cmpExample, 'no_skill'), '--threshold', '0.8', '--json'], { encoding: 'utf8' });
+  let cmp = null;
+  try { cmp = JSON.parse(run.stdout); } catch { cmp = null; }
+  if (!cmp) {
+    fail(`aggregate-runs.mjs --baseline did not emit JSON over evals/fixtures/runs/compare-example: ${(run.stderr || run.stdout || '').trim().split('\n')[0]}`);
+  } else {
+    const got = (cmp.comparison ?? []).map((c) => [c.with_rate, c.baseline_rate, c.verdict]);
+    const want = [[1, 0, 'bought'], [1, 1, 'already followed'], [0, 0, 'neither']];
+    if (JSON.stringify(got) !== JSON.stringify(want)) fail(`aggregate-runs.mjs --baseline over the fixture pair reports ${JSON.stringify(got)}, expected ${JSON.stringify(want)}`);
+  }
+}
+
 const built = spawnSync(process.execPath, [join(root, 'scripts', 'build-prompts.mjs'), '--check'], { encoding: 'utf8' });
 if (built.status !== 0) fail((built.stderr || built.stdout).trim());
 
