@@ -33,6 +33,22 @@ Every step concludes with a checkable, rigorous completion criterion. References
 
 The package is built with the engineering skills installed as the `mattpocock-skills` plugin: a decision becomes a spec and tickets, and `/implement` is overridden locally in `.claude/skills/implement/SKILL.md` so that it runs the ticket preflight in `docs/agents/ticket-preflight.md` first, and ends on the Definition of Done above instead of a test suite this repository does not have. Those skills are the toolchain that builds the package, not a dependency of it: nothing under `skills/` references them, and the self-containment invariant is about the package.
 
+## Agent skills
+
+Construction configuration carries a `build-` prefix, because two of these filenames without it are names the package itself writes into a target workspace, and one repository cannot hold both meanings.
+
+### Issue tracker
+
+Specs and tickets live as versioned markdown under `docs/tickets/<feature-slug>/`. See `docs/agents/build-issue-tracker.md`.
+
+### Triage labels
+
+The five canonical roles, as `Status:` strings inside each ticket. See `docs/agents/build-triage-labels.md`.
+
+### Domain docs
+
+Single context: the glossary is `CONTEXT.md` and the ADRs are in `docs/adr/`. See `docs/agents/build-domain.md`.
+
 ## Dogfooding and evals
 
 `scripts/link-skills.sh` links `skills/*` into `~/.claude/skills` and `~/.agents/skills` to dogfood skills within this repository. Evals live in `evals/`, following the Anthropic `skill-creator` format; `scripts/grade-output.mjs` runs automated assertions on artifacts. The complete harness layer is documented in `docs/agents/harness.md`.

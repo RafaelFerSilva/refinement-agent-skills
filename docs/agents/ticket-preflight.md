@@ -7,7 +7,7 @@ Why this package needs it: its evidence is dated by construction. A rule that be
 ## Required steps
 
 1. **Read the ticket and its surroundings.**
-   - Read the whole ticket, including `## Comments`, the feature `spec.md`, and the `Blocked by:` line.
+   - Read the whole ticket at `docs/tickets/<feature-slug>/issues/<NN>-<slug>.md`, including `## Comments`, the feature `spec.md`, and the `Blocked by:` line.
    - Completed when: the ticket is open for work and every ticket in `Blocked by:` is resolved. Otherwise go to step 5 with the outcome **blocked**.
 
 2. **Read the documents that govern the area.**
@@ -59,4 +59,4 @@ Why this package needs it: its evidence is dated by construction. A rule that be
 | **needs a decision** | A product or vocabulary decision is missing and is not the agent's to arbitrate | Do not code. Hand the ticket back to the user with the question stated plainly |
 | **blocked** | A ticket in `Blocked by:` is not resolved | Do not code. Say which blocking ticket has to land first |
 
-Ticket status names and the place tickets live come from the issue tracker configured for this repository. `/setup-matt-pocock-skills` has not been run here yet, so until it is, say where the ticket lives when you cite it, and use the status vocabulary the ticket file itself already uses.
+Where tickets live is in [`build-issue-tracker.md`](build-issue-tracker.md) and the status vocabulary is in [`build-triage-labels.md`](build-triage-labels.md).
