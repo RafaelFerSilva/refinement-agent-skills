@@ -1,0 +1,8 @@
+{
+  "expectations": [
+    { "text": "assertion that always holds", "passed": true, "evidence": "run 1" },
+    { "text": "assertion that holds once in three", "passed": true, "evidence": "run 1" },
+    { "text": "assertion that holds twice in three", "passed": true, "evidence": "run 1" }
+  ],
+  "summary": { "passed": 3, "failed": 0, "total": 3, "pass_rate": 1 }
+}

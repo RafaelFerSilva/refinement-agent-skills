@@ -16,6 +16,43 @@ The grader evaluates artifacts in en-US and pt-BR: section names, verdicts, mark
 
 `--json` emits the `grading.json` format the `skill-creator` viewer expects (`text`, `passed`, `evidence`), with the graded language in `language`.
 
+## Repeat runs and the threshold
+
+One run of a case says what happened once. The sessions recorded in ADR 0005 moved the same behavior from zero of five runs to three of three, so a single sample cannot separate a fix from variance, and a suite of single samples reports a lucky run as a fixed defect.
+
+A case is measured over several runs, each run graded exactly as it is today, and the case reports a pass rate over runs. How many runs depends on what grades the case:
+
+| What grades the case | Runs | Why |
+| --- | --- | --- |
+| The mechanical grader alone, over a published artifact | 3 | The checks are deterministic given the artifact, so the variance measured is the session's, not the grader's |
+| Assertions read by a grading subagent or a person | 5 | Reading adds its own variance on top of the session's, and one miss in five has to be distinguishable from a rule that does not hold |
+| A driven session, where a PO fixture answers rounds | 3 | Each run costs a full session plus the driving, so the number is a budget decision, recorded as such |
+
+**An assertion holds when it passes in at least 80% of the runs.** At three runs that means all three; at five, four of five. The threshold is a property of the measurement, not of a case: a case that needs a looser one is a case whose assertion is not yet sharp enough to measure.
+
+Per run files live in the layout the workspace already uses, one directory per run:
+
+```
+<case>/with_skill/run-<n>/outputs/response.md
+<case>/with_skill/run-<n>/grading.json
+```
+
+`grading.json` keeps the shape the viewer reads, `{expectations: [{text, passed, evidence}], summary: {...}}`, and the `--json` output of `grade-output.mjs` is accepted as it stands. Then:
+
+```bash
+node scripts/aggregate-runs.mjs <case directory> [--threshold 0.8] [--json]
+```
+
+It reports the pass rate of each run, the rate of each assertion across runs with the runs it failed in named, and one verdict: `held` only when every assertion meets the threshold, exit code 0, otherwise `not held` and exit 1.
+
+Three details decide what the numbers mean:
+
+- A run is a `run-<n>` directory holding a grading file, ordered by that number. A grading file sitting beside them, which is what a single run measurement of the same case leaves behind, is not counted as one more run.
+- Each run is scored against every assertion the case declares, not only the ones its own grading file lists. A grading file that skips an assertion lowers the run that skipped it, instead of reporting it as a perfect run over a shorter list.
+- An assertion absent from a run counts as not held there and is named as absent, and an assertion listed more than once in one run is named too, because a grading file that skips or contradicts itself is not evidence that the assertion passed.
+
+`evals/fixtures/runs/aggregate-example/` holds three grading files whose aggregate is known, one assertion holding in every run, one in a third, one in two thirds. `scripts/validate-skills.mjs` aggregates them and fails if the numbers move, which is the aggregation's own regression.
+
 ## Fixtures
 
 Flat directory, where the file name declares the language of the material: English names hold en-US material (`us-245-silence-alerts.md`, `CONTEXT-fleet.md`), Portuguese names hold pt-BR material (`us-245-silenciar-alertas.md`, `CONTEXT-frota.md`).

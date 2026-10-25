@@ -138,6 +138,33 @@ if (!existsSync(artifactsDir)) {
   }
 }
 
+// Repeat run aggregation: the fixture set in evals/fixtures/runs/ has a known aggregate, so the
+// aggregation has a regression of its own. One assertion holds in every run, one in a third of them,
+// one in two thirds, which at a threshold of 0.66 separates what holds from what does not.
+const aggExample = join(root, 'evals', 'fixtures', 'runs', 'aggregate-example');
+if (!existsSync(aggExample)) {
+  fail('evals/fixtures/runs/aggregate-example missing: the repeat run aggregation has no regression');
+} else {
+  const run = spawnSync(process.execPath, [join(root, 'scripts', 'aggregate-runs.mjs'), aggExample, '--threshold', '0.66', '--json'], { encoding: 'utf8' });
+  let agg = null;
+  try { agg = JSON.parse(run.stdout); } catch { agg = null; }
+  if (!agg) {
+    fail(`aggregate-runs.mjs did not emit JSON over evals/fixtures/runs/aggregate-example: ${(run.stderr || run.stdout || '').trim().split('\n')[0]}`);
+  } else {
+    const round = (n) => Math.round(n * 1000) / 1000;
+    const got = {
+      runs: agg.runs,
+      verdict: agg.verdict,
+      meeting: agg.assertions_meeting_threshold,
+      rates: (agg.assertions ?? []).map((a) => round(a.rate)),
+      meets: (agg.assertions ?? []).map((a) => a.meets_threshold),
+      overall: round(agg.pass_rate_over_runs),
+    };
+    const want = { runs: 3, verdict: 'not held', meeting: 2, rates: [1, 0.333, 0.667], meets: [true, false, true], overall: 0.667 };
+    if (JSON.stringify(got) !== JSON.stringify(want)) fail(`aggregate-runs.mjs over the fixture set reports ${JSON.stringify(got)}, expected ${JSON.stringify(want)}`);
+  }
+}
+
 const built = spawnSync(process.execPath, [join(root, 'scripts', 'build-prompts.mjs'), '--check'], { encoding: 'utf8' });
 if (built.status !== 0) fail((built.stderr || built.stdout).trim());
 

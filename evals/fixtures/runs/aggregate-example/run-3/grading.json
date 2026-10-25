@@ -1,0 +1,12 @@
+{
+  "file": "an artifact graded by scripts/grade-output.mjs, whose --json shape has no summary block",
+  "skill": "refine-story",
+  "language": "en-US",
+  "language_source": "flag",
+  "pass_rate": 0.3333333333333333,
+  "expectations": [
+    { "text": "assertion that always holds", "passed": true, "evidence": "run 3" },
+    { "text": "assertion that holds once in three", "passed": false, "evidence": "run 3: did not hold" },
+    { "text": "assertion that holds twice in three", "passed": false, "evidence": "run 3: did not hold" }
+  ]
+}
