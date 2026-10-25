@@ -46,22 +46,21 @@ function parse(text) {
     for (let j = i + 1; j < lines.length; j++) {
       const l = lines[j];
       if (l.trim() === '' || l.startsWith('#')) break;
-      body.push(l.trim());
+      body.push(l.trim().replace(/\s+/g, ' '));
     }
     const term = m[1].trim();
     const key = term.toLowerCase();
     if (entries.has(key)) { duplicated.push(term); continue; }
-    entries.set(key, { term, display: `${term}${m[2].trim() ? ` ${m[2].trim()}` : ''}`, body: body.join(' ').replace(/\s+/g, ' ').trim() });
+    // GLOSSARY.md splits an entry into the definition and the `_Avoid_` line, and names where a
+    // confirm marker goes. The two parts are compared apart: a sentence added to the definition is
+    // read as added text, and every `_Avoid_:` line, a second one included, is read as the synonyms.
+    const isAvoid = (l) => l.startsWith('_Avoid_:');
+    const avoid = body.filter(isAvoid).join(' ');
+    const definition = body.filter((l) => !isAvoid(l)).join(' ').trim();
+    entries.set(key, { term, display: `${term}${m[2].trim() ? ` ${m[2].trim()}` : ''}`, body: body.join(' ').trim(), definition, avoid });
   }
   return { entries, duplicated };
 }
-// The definition is what a term means; the `_Avoid_` line is the synonyms it rules out. Both carry
-// meaning, and they are compared apart so that a sentence added to one is not read as a change to
-// the other.
-const split = (body) => {
-  const i = body.search(/_Avoid_:/);
-  return i === -1 ? { definition: body, avoid: '' } : { definition: body.slice(0, i).trim(), avoid: body.slice(i).trim() };
-};
 
 const beforeText = readFileSync(beforeFile, 'utf8');
 const afterText = readFileSync(afterFile, 'utf8');
@@ -83,10 +82,8 @@ if (beforeDuplicated.length) {
 // carrying the marker. A marker on some other sentence of a rewritten definition does not exempt it.
 const CONFIRM = /\[(?:TO CONFIRM|A CONFIRMAR):/;
 const flaggedNotRewritten = (b, a) => {
-  const bs = split(b.body);
-  const as = split(a.body);
-  if (bs.avoid !== as.avoid || !as.definition.includes(bs.definition)) return false;
-  return CONFIRM.test(as.definition.replace(bs.definition, ''));
+  if (b.avoid !== a.avoid || !a.definition.includes(b.definition)) return false;
+  return CONFIRM.test(a.definition.replace(b.definition, ''));
 };
 const removed = [];
 const rewritten = [];

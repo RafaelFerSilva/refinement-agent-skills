@@ -19,3 +19,4 @@ Rules:
 - Only terms belonging to this product domain. General software concepts do not belong, even if widely used in the product.
 - Group under subheadings when natural clusters emerge; flat list otherwise.
 - Create the file the first time a term is resolved, not before.
+- A widening the PO has not settled is a sentence carrying `[TO CONFIRM: whom]` (or `[A CONFIRMAR: quem]`) added to the definition, with the definition and the `_Avoid_` line kept as they are.

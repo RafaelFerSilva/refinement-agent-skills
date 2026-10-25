@@ -262,28 +262,35 @@ if (!existsSync(dashFixture)) {
   }
 }
 
-// Glossary diff regression: five glossaries read against the fixture they started from. Three were
+// Glossary diff regression: seven glossaries read against the fixture they started from. Three were
 // left by the measured runs of ticket 18: one only added terms, one appended a confirm marker to an
 // entry and kept its definition, one rewrote an entry silently. Two were built from the review of
 // the check: one defines a term twice, one rewrites a definition and parks a confirm marker on an
-// unrelated sentence of it. The check has to pass the first two and fail each of the other three
-// for its own reason, otherwise the column ticket 18 counted by hand is not the column this reads.
+// unrelated sentence of it. One more came from a pt-BR run of ticket 13 that appended its marker
+// below the _Avoid_ line, which the first version read as a change to the synonyms. One more was
+// built after that fix: a marked sentence beside a second _Avoid_ line, which the fix let through.
+// The check has to pass the three legitimate ones and fail each of the other four for its own
+// reason, otherwise the column ticket 18 counted by hand is not the column this reads.
 const glossaryDir = join(root, 'evals', 'fixtures', 'glossary');
-const glossaryBefore = join(root, 'evals', 'fixtures', 'CONTEXT-fleet.md');
+const fleet = join(root, 'evals', 'fixtures', 'CONTEXT-fleet.md');
+const frota = join(root, 'evals', 'fixtures', 'CONTEXT-frota.md');
+// name, the glossary it started from, the exit code, and the shape the fixture was taken for.
 const glossaryCases = [
-  ['after-clean.md', 0, (r) => r.added.length > 0 && r.flagged.length === 0],
-  ['after-flagged.md', 0, (r) => r.flagged.length === 1],
-  ['after-widened.md', 1, (r) => r.rewritten.length === 1 && r.expectations.some((e) => !e.passed && e.text.includes('rewritten without a confirm marker'))],
-  ['after-duplicated.md', 1, (r) => r.duplicated.length === 1 && r.expectations.some((e) => !e.passed && e.text.includes('more than once'))],
-  ['after-laundered.md', 1, (r) => r.rewritten.length === 1 && r.flagged.length === 0],
+  ['after-clean.md', fleet, 0, (r) => r.added.length > 0 && r.flagged.length === 0],
+  ['after-flagged.md', fleet, 0, (r) => r.flagged.length === 1],
+  ['after-flagged-below-avoid-pt-BR.md', frota, 0, (r) => r.flagged.length === 1 && r.rewritten.length === 0],
+  ['after-widened.md', fleet, 1, (r) => r.rewritten.length === 1 && r.expectations.some((e) => !e.passed && e.text.includes('rewritten without a confirm marker'))],
+  ['after-duplicated.md', fleet, 1, (r) => r.duplicated.length === 1 && r.expectations.some((e) => !e.passed && e.text.includes('more than once'))],
+  ['after-laundered.md', fleet, 1, (r) => r.rewritten.length === 1 && r.flagged.length === 0],
+  ['after-second-avoid.md', fleet, 1, (r) => r.rewritten.length === 1 && r.flagged.length === 0],
 ];
-if (!existsSync(glossaryDir) || !existsSync(glossaryBefore)) {
-  fail('evals/fixtures/glossary or evals/fixtures/CONTEXT-fleet.md missing: the glossary diff has no regression');
+if (!existsSync(glossaryDir) || !existsSync(fleet) || !existsSync(frota)) {
+  fail('evals/fixtures/glossary, evals/fixtures/CONTEXT-fleet.md or evals/fixtures/CONTEXT-frota.md missing: the glossary diff has no regression');
 } else {
-  for (const [name, status, shape] of glossaryCases) {
+  for (const [name, before, status, shape] of glossaryCases) {
     const after = join(glossaryDir, name);
     if (!existsSync(after)) { fail(`evals/fixtures/glossary/${name} missing: the glossary diff regression is incomplete`); continue; }
-    const run = spawnSync(process.execPath, [join(root, 'scripts', 'diff-glossary.mjs'), glossaryBefore, after, '--json'], { encoding: 'utf8' });
+    const run = spawnSync(process.execPath, [join(root, 'scripts', 'diff-glossary.mjs'), before, after, '--json'], { encoding: 'utf8' });
     let report = null;
     try { report = JSON.parse(run.stdout); } catch { report = null; }
     if (!report) fail(`diff-glossary.mjs did not emit JSON over evals/fixtures/glossary/${name}: ${(run.stderr || run.stdout || '').trim().split('\n')[0]}`);

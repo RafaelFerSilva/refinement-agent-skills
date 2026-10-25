@@ -168,6 +168,7 @@ Rules:
 - Only terms belonging to this product domain. General software concepts do not belong, even if widely used in the product.
 - Group under subheadings when natural clusters emerge; flat list otherwise.
 - Create the file the first time a term is resolved, not before.
+- A widening the PO has not settled is a sentence carrying `[TO CONFIRM: whom]` (or `[A CONFIRMAR: quem]`) added to the definition, with the definition and the `_Avoid_` line kept as they are.
 
 # ADR format
 
@@ -193,7 +194,7 @@ Shared reference for the `/refine-story`, `/qa-plan`, `/requirements-discovery`,
 
 **Invention** is any value, name, system, rule, or behavior without backing in the source material, even when considered "best practice" or "obvious for this type of feature". Common cases: SLA numbers, limits, volumes, percentages, error messages, retry policies, tool names, and protocols.
 
-Quick test: "can I point to the sentence or source that supports this?" Yes: inference, cite the base. No: question, or placeholder when there is no one to ask.
+Quick test: "can I point to the sentence or source that supports this?" Yes: inference, cite the base. No: question, or placeholder when there is no one to ask. A conclusion that the product would need something in order to work, when no sentence describes that something, is a design decision and not an inference: it goes to the PO as a question, or into the artifact as `[TO CONFIRM: whom]`.
 
 The boundary manifests differently depending on the stage:
 
@@ -260,6 +261,7 @@ Format (pt-BR): `Cenário:` nome descritivo, `Dado` estado inicial, `Quando` um 
 - `Then` / `Então` is verifiable by automation: number, state, or observable condition. "Correctly", "properly", "fast", or any subjective term fails.
 - A missing number that would make `Then` / `Então` verifiable receives `[TO CONFIRM: whom]` in place of the number.
 - Converting prose criteria to Gherkin preserves the exact described behavior, without adding behavior.
+- Behavior that only an inference supports carries its `[INFERENCE: base]` on the `Then` / `Então` line that asserts it, so that whoever automates the criterion reads the base with the behavior. Behavior the PO stated carries no marker: it is a decision, and the decisions section is where it is recorded. A marker elsewhere in the artifact licenses nothing a scenario asserts.
 - Missing edge cases become questions for the PO. The text often hints at them: offer them in questions as `[INFERENCE: base]`.
 
 **Self-audit**: before delivering any scenario, re-read each against the first four rules and correct violations. In long outputs, these rules are the most frequently violated.
