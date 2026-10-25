@@ -30,3 +30,8 @@ The cost is not the missing question. It is that `READY` is published over it, a
 ## What a fix has to decide
 
 Whether completeness of the frontier is checkable at all, and where it would live: a sweep of the glossary entries the story touches before declaring the frontier empty, in `socratic-examination`, or a verdict rule in `requirements-rigor` that bars `READY` when a round count of one closed a story the audit flagged in more than one criterion. Both are rule changes, so both need their own preflight and their own measurement.
+
+## Comments
+
+- 2026-10-25 Corroborated by the pt-BR run of ticket 03, same package commit, same model, different language. That session ran two rounds, raised the audit trail and the re-silencing of an already silenced vehicle on its own, and routed the automatic return to the engineering team with a questionnaire. It still never asked about the retroactive reading, whose glossary entry (`Leitura`: "Pode chegar retroativa quando o rastreador fica sem sinal") is the pt-BR twin of the one quoted above. Two runs, two languages, the same gap unraised, against one run on another model that raised it.
+

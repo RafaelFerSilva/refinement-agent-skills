@@ -24,7 +24,7 @@ Every case carries a workspace configuration fixture in `files`, `refinement-no-
 
 ### Scripted Product Owner answers
 
-`po-answers-245-<language>.md` holds the answers a PO gives to the round `refine-story` opens over the US-245 fixture of that language: `po-answers-245-en-US.md` answers `us-245-silence-alerts.md`. They are what lets a run reach synthesis; without them the session stops at the round, which is why the assertions of the examination cases end at "waits for the PO".
+`po-answers-245-<language>.md` holds the answers a PO gives to the round `refine-story` opens over the US-245 fixture of that language: `po-answers-245-en-US.md` answers `us-245-silence-alerts.md`, and `po-answers-245-pt-BR.md` answers `us-245-silenciar-alertas.md`, subject for subject. They are what lets a run reach synthesis; without them the session stops at the round, which is why the assertions of the examination cases end at "waits for the PO".
 
 The protocol:
 
