@@ -203,7 +203,8 @@ const aggExample = join(root, 'evals', 'fixtures', 'runs', 'aggregate-example');
 if (!existsSync(aggExample)) {
   fail('evals/fixtures/runs/aggregate-example missing: the repeat run aggregation has no regression');
 } else {
-  const run = spawnSync(process.execPath, [join(root, 'scripts', 'aggregate-runs.mjs'), aggExample, '--threshold', '0.66', '--json'], { encoding: 'utf8' });
+  // --grading is passed with its default so that the flag path, and not only the default path, is the one this known aggregate goes through.
+  const run = spawnSync(process.execPath, [join(root, 'scripts', 'aggregate-runs.mjs'), aggExample, '--grading', 'grading.json', '--threshold', '0.66', '--json'], { encoding: 'utf8' });
   let agg = null;
   try { agg = JSON.parse(run.stdout); } catch { agg = null; }
   if (!agg) {
@@ -258,6 +259,36 @@ if (!existsSync(dashFixture)) {
     if (run.status !== 0) fail(`grade-output.mjs fails an artifact over a dash, which is repository style and not a rule the package states: ${(run.stdout || '').split('\n').filter((l) => l.startsWith('FAIL')).join(', ')}`);
   } finally {
     rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
+// Glossary diff regression: five glossaries read against the fixture they started from. Three were
+// left by the measured runs of ticket 18: one only added terms, one appended a confirm marker to an
+// entry and kept its definition, one rewrote an entry silently. Two were built from the review of
+// the check: one defines a term twice, one rewrites a definition and parks a confirm marker on an
+// unrelated sentence of it. The check has to pass the first two and fail each of the other three
+// for its own reason, otherwise the column ticket 18 counted by hand is not the column this reads.
+const glossaryDir = join(root, 'evals', 'fixtures', 'glossary');
+const glossaryBefore = join(root, 'evals', 'fixtures', 'CONTEXT-fleet.md');
+const glossaryCases = [
+  ['after-clean.md', 0, (r) => r.added.length > 0 && r.flagged.length === 0],
+  ['after-flagged.md', 0, (r) => r.flagged.length === 1],
+  ['after-widened.md', 1, (r) => r.rewritten.length === 1 && r.expectations.some((e) => !e.passed && e.text.includes('rewritten without a confirm marker'))],
+  ['after-duplicated.md', 1, (r) => r.duplicated.length === 1 && r.expectations.some((e) => !e.passed && e.text.includes('more than once'))],
+  ['after-laundered.md', 1, (r) => r.rewritten.length === 1 && r.flagged.length === 0],
+];
+if (!existsSync(glossaryDir) || !existsSync(glossaryBefore)) {
+  fail('evals/fixtures/glossary or evals/fixtures/CONTEXT-fleet.md missing: the glossary diff has no regression');
+} else {
+  for (const [name, status, shape] of glossaryCases) {
+    const after = join(glossaryDir, name);
+    if (!existsSync(after)) { fail(`evals/fixtures/glossary/${name} missing: the glossary diff regression is incomplete`); continue; }
+    const run = spawnSync(process.execPath, [join(root, 'scripts', 'diff-glossary.mjs'), glossaryBefore, after, '--json'], { encoding: 'utf8' });
+    let report = null;
+    try { report = JSON.parse(run.stdout); } catch { report = null; }
+    if (!report) fail(`diff-glossary.mjs did not emit JSON over evals/fixtures/glossary/${name}: ${(run.stderr || run.stdout || '').trim().split('\n')[0]}`);
+    else if (run.status !== status) fail(`diff-glossary.mjs exits ${run.status} over evals/fixtures/glossary/${name}, expected ${status}`);
+    else if (!shape(report)) fail(`diff-glossary.mjs over evals/fixtures/glossary/${name} reports a shape other than the one the fixture was taken for: ${JSON.stringify({ added: report.added.length, flagged: report.flagged, rewritten: report.rewritten, duplicated: report.duplicated })}`);
   }
 }
 

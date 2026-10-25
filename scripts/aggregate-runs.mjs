@@ -5,7 +5,9 @@
 // the viewer's {expectations, summary} and the --json output of scripts/grade-output.mjs.
 // With --baseline, the same case measured in another configuration is read too and each assertion is
 // reported as bought by the package, already followed without it, lost, or held by neither.
-// usage: node scripts/aggregate-runs.mjs <case directory | grading.json ...> [--baseline <directory>] [--threshold <0..1>] [--json]
+// With --grading <name>, the per run file read is <name> instead of grading.json, which is how a
+// second grader over the same runs, scripts/diff-glossary.mjs for instance, aggregates on its own.
+// usage: node scripts/aggregate-runs.mjs <case directory | grading file ...> [--baseline <directory>] [--grading <name>] [--threshold <0..1>] [--json]
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { join, basename, dirname } from 'node:path';
 
@@ -25,15 +27,27 @@ const threshold = Number(thresholdArg);
 const baselineIndex = argv.indexOf('--baseline');
 const baselineGiven = baselineIndex !== -1;
 const baselineArg = baselineGiven ? argv[baselineIndex + 1] : null;
-const valueOf = (i) => (thresholdGiven && i === thresholdIndex + 1) || (baselineGiven && i === baselineIndex + 1);
+const gradingIndex = argv.indexOf('--grading');
+const gradingGiven = gradingIndex !== -1;
+const gradingName = gradingGiven ? argv[gradingIndex + 1] : 'grading.json';
+// The flags that take a value, in one list, so that a flag added later cannot leak its value into
+// the targets by being left out of a per flag condition. A valued flag given twice is an error
+// rather than a silent pick of one of the two values.
+const VALUED = ['--threshold', '--baseline', '--grading'];
+const repeated = VALUED.filter((f) => argv.indexOf(f) !== -1 && argv.indexOf(f) !== argv.lastIndexOf(f));
+const valueOf = (i) => i > 0 && VALUED.includes(argv[i - 1]);
 const targets = argv.filter((a, i) => !a.startsWith('--') && !valueOf(i));
 
-const usage = 'usage: node scripts/aggregate-runs.mjs <case directory | grading.json ...> [--baseline <directory>] [--threshold <0..1>] [--json]';
-if (!targets.length || thresholdArg === undefined || thresholdArg.startsWith('--') || !Number.isFinite(threshold) || threshold <= 0 || threshold > 1) {
+const usage = 'usage: node scripts/aggregate-runs.mjs <case directory | grading file ...> [--baseline <directory>] [--grading <name>] [--threshold <0..1>] [--json]';
+if (repeated.length || !targets.length || thresholdArg === undefined || thresholdArg.startsWith('--') || !Number.isFinite(threshold) || threshold <= 0 || threshold > 1) {
   console.error(usage);
   process.exit(2);
 }
 if (baselineGiven && (baselineArg === undefined || baselineArg.startsWith('--'))) {
+  console.error(usage);
+  process.exit(2);
+}
+if (gradingGiven && (gradingName === undefined || gradingName.startsWith('--') || gradingName.includes('/'))) {
   console.error(usage);
   process.exit(2);
 }
@@ -55,13 +69,13 @@ function gradingFiles(target) {
       const p = join(dir, entry);
       if (!statSync(p).isDirectory()) continue;
       const n = entry.match(/^run-(\d+)$/);
-      if (n && existsSync(join(p, 'grading.json'))) runs.push({ order: Number(n[1]), file: join(p, 'grading.json') });
+      if (n && existsSync(join(p, gradingName))) runs.push({ order: Number(n[1]), file: join(p, gradingName) });
       else if (depth > 0) walk(p, depth - 1);
     }
   };
   walk(target, 2);
   if (!runs.length) {
-    const single = join(target, 'grading.json');
+    const single = join(target, gradingName);
     if (existsSync(single)) return [single];
   }
   return runs.sort((a, b) => a.order - b.order).map((r) => r.file);
@@ -70,7 +84,7 @@ function gradingFiles(target) {
 function aggregate(where) {
 const files = where.flatMap(gradingFiles);
 if (!files.length) {
-  console.error(`error: no grading.json found under ${where.join(', ')}`);
+  console.error(`error: no ${gradingName} found under ${where.join(', ')}`);
   process.exit(2);
 }
 
