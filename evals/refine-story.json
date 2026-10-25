@@ -65,7 +65,7 @@
       "assertions": [
         "The examination round is written in Portuguese, with **Recomendação:** instead of **Recommendation:**",
         "The question about the role recommends \"operador de despacho\" and cites the glossary as its base",
-        "Rigor markers appear in their Portuguese form, such as `[INFERÊNCIA:` or `[A CONFIRMAR:`, with no English markers mixed in",
+        "Rigor markers appear in their Portuguese form, such as `[INFERÊNCIA:` or `[A CONFIRMAR:`, with no English markers mixed in, except `[INVEST-FAIL:` and `[MANUAL-ONLY]`, which ADR 0005 keeps canonical in both languages",
         "The response classifies the US as ANALISÁVEL before any question, and AC2 and AC4 are recognized as task and Definition of Done",
         "No numeric value for duration, limit, or SLA appears as an assertion",
         "The response waits for the PO to answer"

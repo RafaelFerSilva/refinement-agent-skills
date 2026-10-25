@@ -51,7 +51,7 @@
       "assertions": [
         "Testability triage is stated in a single line as TESTÁVEL or TESTÁVEL COM RESSALVAS, with no en-US label",
         "The matrix and the questions are written in Portuguese",
-        "Origin markers appear in their Portuguese form: [ESPECIFICADO, [DERIVADO, and [INDEFINIDO, with no English markers mixed in",
+        "Origin markers appear in their Portuguese form: [ESPECIFICADO, [DERIVADO, and [INDEFINIDO, with no English markers mixed in, except `[INVEST-FAIL:` and `[MANUAL-ONLY]`, which ADR 0005 keeps canonical in both languages",
         "Every derived condition names the technique that generated it",
         "Every [INDEFINIDO condition points to a numbered question with recipient PO or DEV",
         "No expected result is asserted for conditions the criteria leave undefined",

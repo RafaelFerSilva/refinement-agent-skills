@@ -49,7 +49,7 @@
         "Triage is stated in a single line as UTILIZÁVEL or PARCIALMENTE UTILIZÁVEL, and mapping and the examination round are written in Portuguese",
         "The note-taker enters the stakeholders table with the type reserved for second-hand input",
         "\"rápido\" becomes a latency question citing the \"Em tempo real\" glossary entry, with no SLA number asserted",
-        "Rigor markers appear in their Portuguese form, with no English markers mixed in",
+        "Rigor markers appear in their Portuguese form, with no English markers mixed in, except `[INVEST-FAIL:` and `[MANUAL-ONLY]`, which ADR 0005 keeps canonical in both languages",
         "The response waits for the PO to answer the first round"
       ]
     }

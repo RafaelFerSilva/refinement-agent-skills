@@ -112,6 +112,37 @@ for (const f of readdirSync(join(root, 'evals')).filter((f) => f.endsWith('.json
   }
 }
 
+// An assertion that demands markers in their pt-BR form has to name the ones ADR 0005 keeps canonical
+// in both languages, or it fails an artifact for following the package. The grader cannot catch this,
+// since reading an assertion is judgment, so the check is on the wording. It is lexical, and that is
+// its limit: it recognizes an assertion that asks for markers in Portuguese or in their pt-BR form,
+// or that rejects markers in English wholesale, and an assertion that demands the same thing in words
+// nobody has used yet escapes it. Add the phrasing here when one does.
+const CANONICAL_MARKERS = ['INVEST-FAIL', 'MANUAL-ONLY'];
+const DEMANDS_PT_MARKERS = [
+  /no English markers? mixed in/i,
+  /markers?[^.]{0,80}\b(?:Portuguese|pt-BR) forms?\b/i,
+  /\b(?:Portuguese|pt-BR) forms?\b[^.]{0,80}markers?/i,
+  /markers?\s+(?:are|is|appear|appears|must be|stay|stays)\b[^.]{0,60}\bin Portuguese\b/i,
+  /\bno\b[^.]{0,40}markers?\b[^.]{0,40}\bin English\b/i,
+  /\bno English\b[^.]{0,40}markers?/i,
+];
+// Two things stay outside the guard. An assertion that names the English markers it rejects is bounded
+// by that list and cannot catch a canonical one by accident. And an assertion where it is the artifact
+// rather than the markers that is said to be in Portuguese is not a demand about markers at all.
+const ENUMERATES_ENGLISH_MARKERS = /\[(?:STATED|ASSUMED|INFERENCE|TO CONFIRM|AMBIGUITY|ANTI-PATTERN|DECOMPOSE|DIVERGENCE|ORPHAN|CONFLICT|SPECIFIED|DERIVED|UNDEFINED|TRACKING)/;
+for (const f of readdirSync(join(root, 'evals')).filter((f) => f.endsWith('.json'))) {
+  let suite = null;
+  try { suite = JSON.parse(readFileSync(join(root, 'evals', f), 'utf8')); } catch { continue; }
+  for (const c of suite.evals ?? []) {
+    for (const a of c.assertions ?? []) {
+      if (!DEMANDS_PT_MARKERS.some((re) => re.test(a)) || ENUMERATES_ENGLISH_MARKERS.test(a)) continue;
+      const missing = CANONICAL_MARKERS.filter((m) => !a.includes(m));
+      if (missing.length) fail(`evals/${f}: case ${c.id} asks for markers in their pt-BR form without naming the canonical ${missing.join(' and ')}, which ADR 0005 keeps in both languages`);
+    }
+  }
+}
+
 // Claude Code bridge: lives in .claude/, imports AGENTS.md, and never sits at the plugin root,
 // where `claude plugin validate` warns that it is not loaded as context.
 const bridge = join(root, '.claude', 'CLAUDE.md');
