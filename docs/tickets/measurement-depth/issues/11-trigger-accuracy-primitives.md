@@ -1,6 +1,6 @@
 # 11: Measure the triggering of the two model-invoked primitives
 
-Status: claimed
+Status: resolved
 Blocked by: none
 Type: task
 Origin: 2026-10-25 (commit 81547f6)
@@ -56,5 +56,12 @@ requirements-rigor    20/20 queries   should fire 10/10 (30/30 runs)   near miss
 
   - The two over triggers went from 3 of 3 to 0 of 3 and the refinement minutes query that must fire stayed at 3 of 3, so the exclusion cost no recall. Because the new wording names the two shapes that failed, the review asked whether 20 of 20 was overfitted to the set. A held out pair answers it, added after the fix and never seen by it: minutes of a backlog grooming session that settled two rules fire 3 of 3, and minutes of an all hands that settles nothing fire 0 of 3. Neither meeting is named in the description, so what generalizes is the rule and not the two examples.
   - What this does not establish. One wave of three runs per query, on a clean flip rather than a marginal move, but still one wave. The measurement runs one planted copy of one description against the built in skills alone, so it says nothing about how either primitive competes inside a workspace where the six workflows and other plugins are installed, which is the configuration a user actually has; wave 1 ran in that noisier configuration and is void for the concurrency reason, so the question is open. And it says nothing about what either skill does once loaded: triggering is the gate, and every assertion about the behavior behind it lives in the eval suites.
-  - **Outstanding, and why the ticket is not resolved.** Criterion 2 asks for the loop's per iteration scores, and the only scores the loop has produced are void. A valid wave means running it serially: five iterations over twenty two queries at three runs is around three hundred sessions per skill, against the sixty that one scoring pass costs. That is a spend decision rather than an implementation step, so it is left to the user: accept the serial scoring pass above as the measurement and resolve the ticket, or authorize a serial loop wave per skill.
+  - **The loop, run serially, one wave per skill.** Authorized as a spend decision after the serial scoring pass, and far cheaper than feared: each wave cost about seven minutes and one iteration, because the loop exits as soon as no train query fails. Both skills passed everything on the first iteration and the loop proposed nothing:
+
+```
+loop serial  requirements-rigor    iteration 1   train 14/14   test 8/8   exit all_passed
+loop serial  socratic-examination  iteration 1   train 12/12   test 8/8   exit all_passed
+```
+
+  - At run level that is 42 of 42 runs correct on the train split of `requirements-rigor` and 36 of 36 on that of `socratic-examination`, with 24 of 24 on each held out split, precision and recall both 100%. `best_description` came back equal to the description on disk in both cases, so the two descriptions in the package are the best measured, by a wave of the loop and not by a scoring pass alone. All three acceptance criteria are met and the ticket is resolved.
   - Per run files live in the git ignored workspace tree, under `refinement-skills-workspace/trigger-serial/`, `trigger-after/`, `trigger-head2head/` and the two void waves, so the numbers above are quoted here rather than linked.
