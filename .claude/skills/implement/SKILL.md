@@ -4,6 +4,8 @@ description: "Implement a piece of work on this package based on a spec or set o
 disable-model-invocation: true
 ---
 
+If the user passes a ticket reference, fetch it from the issue tracker in [`docs/agents/build-issue-tracker.md`](../../../docs/agents/build-issue-tracker.md) and state its title before starting. If the reference is ambiguous, ask.
+
 Before writing anything, run the ticket preflight in [`docs/agents/ticket-preflight.md`](../../../docs/agents/ticket-preflight.md): re-verify the ticket against the package as it stands and against the documents that govern the area, then record the outcome in the ticket. Start only when the recorded outcome allows it.
 
 Implement the work described by the user in the spec or tickets.
@@ -26,7 +28,7 @@ Run the Definition of Done from `AGENTS.md`: `node scripts/validate-skills.mjs`,
 
 For a behavioral change, measure it. Rerun the eval cases that exercise the rule, two or three of them, in both languages when the rule is localized; the full suite only when the change touches more than one workflow. Report the before and after, and say plainly when a fix is not demonstrated: a single passing run does not separate a fix from variance, which is why the series in ADR 0005 was measured rather than asserted.
 
-Then call the Skill tool with `code-review` on the work.
+Then read and follow [`code-review`](../code-review/SKILL.md) on the work.
 
 ## Committing
 

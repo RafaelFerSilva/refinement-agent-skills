@@ -31,7 +31,7 @@ Every step concludes with a checkable, rigorous completion criterion. References
 
 ## How this package is built
 
-The package is built with the engineering skills installed as the `mattpocock-skills` plugin: a decision becomes a spec and tickets, and `/implement` is overridden locally in `.claude/skills/implement/SKILL.md` so that it runs the ticket preflight in `docs/agents/ticket-preflight.md` first, and ends on the Definition of Done above instead of a test suite this repository does not have. Those skills are the toolchain that builds the package, not a dependency of it: nothing under `skills/` references them, and the self-containment invariant is about the package.
+The package is built with the engineering skills derived from `mattpocock/skills` and maintained locally in both `.claude/skills/` (Claude Code) and `.agents/skills/` (Antigravity), with zero global dependency: a decision becomes a spec and tickets, and `/implement` and `/implement-spec` run the ticket preflight in `docs/agents/ticket-preflight.md` first and end on the Definition of Done above instead of a test suite this repository does not have. Those skills are the toolchain that builds the package, not a dependency of it: nothing under `skills/` references them, and the self-containment invariant is about the package.
 
 ## Agent skills
 
@@ -51,4 +51,4 @@ Single context: the glossary is `CONTEXT.md` and the ADRs are in `docs/adr/`. Se
 
 ## Dogfooding and evals
 
-`scripts/link-skills.sh` links `skills/*` into `~/.claude/skills` and `~/.agents/skills` to dogfood skills within this repository. Evals live in `evals/`, following the Anthropic `skill-creator` format; `scripts/grade-output.mjs` runs automated assertions on artifacts. The complete harness layer is documented in `docs/agents/harness.md`.
+`scripts/link-skills.sh` links `skills/*` into `~/.claude/skills`, `~/.agents/skills`, and `~/.gemini/config/skills` to dogfood skills within this repository. Evals live in `evals/`, following the Anthropic `skill-creator` format; `scripts/grade-output.mjs` runs automated assertions on artifacts. The complete harness layer is documented in `docs/agents/harness.md`.

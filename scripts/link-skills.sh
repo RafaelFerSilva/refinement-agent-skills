@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Links skills/* into the user skills folders (~/.claude/skills, ~/.agents/skills)
+# Links skills/* into the user skills folders (~/.claude/skills, ~/.agents/skills, ~/.gemini/config/skills)
 # to use the skills inside this repository. A git pull keeps the links current.
 # usage: scripts/link-skills.sh [--link|--unlink]
 set -euo pipefail
 cd "$(dirname "$0")/.."
 SRC="$(pwd)/skills"
-DESTS=("$HOME/.claude/skills" "$HOME/.agents/skills")
+DESTS=("$HOME/.claude/skills" "$HOME/.agents/skills" "$HOME/.gemini/config/skills")
 mode="${1:---link}"
 
 for dest in "${DESTS[@]}"; do
