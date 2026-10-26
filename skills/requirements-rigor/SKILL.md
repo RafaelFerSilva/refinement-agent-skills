@@ -1,6 +1,6 @@
 ---
 name: requirements-rigor
-description: "Vocabulary and rigor rules for requirements artifacts. Use when auditing or writing a User Story, acceptance criterion, test condition, or meeting minutes, and whenever deciding if an assertion is an inference or an invention, flagging a gap, evaluating INVEST, converting criteria to Gherkin, or determining readiness verdicts."
+description: "Vocabulary and rigor rules for requirements artifacts: a User Story, an acceptance criterion, a test condition, or the minutes of a meeting where requirements were discussed. Use when auditing or writing one of those, and whenever deciding if an assertion is an inference or an invention, flagging a gap, evaluating INVEST, converting criteria to Gherkin, or determining readiness verdicts. Minutes that settle no requirement, of a one to one or a retrospective, are a different job."
 ---
 
 # Requirements rigor

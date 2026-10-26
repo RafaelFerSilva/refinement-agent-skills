@@ -1,0 +1,90 @@
+[
+  {
+    "query": "can you look over this user story before I put it in the sprint? 'As a user I want the system to be fast and secure so that it works properly.' It's for the RouteWise dispatch app, ticket RW-412 in Jira. Something feels off but I can't say what.",
+    "should_trigger": true
+  },
+  {
+    "query": "I have acceptance criteria written as bullet points in docs/stories/us-318-close-alert.md and the QA lead wants them in Given/When/Then. Convert them without adding anything the PO didn't say.",
+    "should_trigger": true
+  },
+  {
+    "query": "The PO says this story is ready for planning. Narrative plus 4 criteria in backlog/us-245.md. Is it actually READY or does it need another refinement round? Give me a verdict I can defend in the meeting.",
+    "should_trigger": true
+  },
+  {
+    "query": "preciso de uma avaliação INVEST dessa história antes do planning de quinta: 'Como gestor de frota quero ver relatórios e exportar em PDF para que eu consiga analisar os dados'. tá no arquivo backlog/us-231.md",
+    "should_trigger": true
+  },
+  {
+    "query": "writing test conditions for the speed-alert feature from the story in us-402.md. Half of what I'm writing is stuff I'm assuming from how the old system worked, not from the story. How should I mark what's assumed versus what the story actually says?",
+    "should_trigger": true
+  },
+  {
+    "query": "here are the minutes I drafted from yesterday's refinement call with the fleet team (notes/2026-10-24-refinement.md). before I send them to the PO, check whether the requirements I captured are stated verifiably and whether I invented any of the decisions.",
+    "should_trigger": true
+  },
+  {
+    "query": "Our criteria say 'the report loads quickly' and 'all file formats are supported'. The dev team keeps asking what that means. Rewrite the story's criteria so QA can automate them, and tell me what questions I need to take back to the product owner.",
+    "should_trigger": true
+  },
+  {
+    "query": "a narrativa dessa US fala em silenciar alertas por veículo mas os critérios de aceite testam silenciar por rota. como registro essa divergência na história sem decidir pelo PO? arquivo stories/us-245-silenciar-alertas.md",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm a new BA on the payments squad. Given a Confluence export of 12 user stories in ./export/, flag which ones have gaps a developer would have to guess at: missing numbers, vague roles, criteria that are really technical tasks.",
+    "should_trigger": true
+  },
+  {
+    "query": "is 'Given the user clicks save, When the record is stored, Then it works correctly' a valid Gherkin scenario for this acceptance criterion? my teammate says it's fine, i think the Given is wrong and the Then isn't testable",
+    "should_trigger": true
+  },
+  {
+    "query": "review the diff in src/alerts/silence.ts from PR #412 for bugs and style problems before I merge it",
+    "should_trigger": false
+  },
+  {
+    "query": "write the meeting minutes for our 1:1 from these notes: we talked about Joao's promotion timeline, the vacation calendar for december, and the offsite venue. keep it short, send-ready",
+    "should_trigger": false
+  },
+  {
+    "query": "write a jest unit test for the calculateSilenceWindow(start, duration) function in src/alerts/window.ts, cover the zero duration and negative duration edge cases",
+    "should_trigger": false
+  },
+  {
+    "query": "we use Gherkin feature files with cucumber-js. the step definitions in features/steps/alerts.steps.ts are failing with 'undefined step' after I renamed a step. fix the glue code",
+    "should_trigger": false
+  },
+  {
+    "query": "monta um planejamento de sprint pra 2 semanas com essas 8 tarefas já estimadas em pontos (tá no sprint.csv), distribuindo por dev e considerando as férias da Ana",
+    "should_trigger": false
+  },
+  {
+    "query": "I need to write the actual implementation for story US-318: add a 'close alert' endpoint in the Express API, update the Prisma schema with a closedAt column, and wire the button in the React dashboard",
+    "should_trigger": false
+  },
+  {
+    "query": "explain what INVEST stands for in agile and give me one example per letter, I have a scrum master interview tomorrow",
+    "should_trigger": false
+  },
+  {
+    "query": "my manager asked for a one-paragraph status update on the fleet alerts epic for the steering committee: what shipped, what's at risk, what's next. here are the ticket statuses from this week",
+    "should_trigger": false
+  },
+  {
+    "query": "generate 50 rows of realistic test data for the alerts table: vehicle_id, speed_kmh, threshold, triggered_at. CSV please, speeds between 60 and 140",
+    "should_trigger": false
+  },
+  {
+    "query": "faz a ata da reunião de retrospectiva do time: o que foi bom (deploy sem incidente), o que foi ruim (muitas reuniões), ações (reduzir a daily pra 10 min). transcrição em retro.txt",
+    "should_trigger": false
+  },
+  {
+    "query": "we did a backlog grooming session yesterday and I typed up what we agreed about the retention rule and the export limits (notes/grooming-2026-10-20.md). check that what I captured is stated verifiably and that I did not record decisions nobody actually made.",
+    "should_trigger": true
+  },
+  {
+    "query": "write up the minutes of yesterday's all hands: headcount update, the office move in January, and the Q4 OKR recap. keep it to one page and make it readable by people who missed it",
+    "should_trigger": false
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "query": "I'm the PO for the fleet alerts product. Before I write the story for silencing alerts, interview me about it. Ask me everything a dev would need and don't let me get away with vague answers.",
+    "should_trigger": true
+  },
+  {
+    "query": "grill me on the scope of the 'export report to PDF' feature. I think I know what I want but every time we refine it the team finds holes. one question at a time is fine, or batches, your call",
+    "should_trigger": true
+  },
+  {
+    "query": "quero ser sabatinado sobre a decisão de encerrar alertas automaticamente depois de 24h. faz as perguntas que um QA e um dev fariam e anota os termos que a gente fechar no CONTEXT.md",
+    "should_trigger": true
+  },
+  {
+    "query": "act as the refinement facilitator: take the story in backlog/us-245-silence-alerts.md and run a question round with me as the product owner. Check the glossary in CONTEXT.md first so you don't ask me things that are already defined.",
+    "should_trigger": true
+  },
+  {
+    "query": "we keep disagreeing about what 'active alert' means on the dispatch team. walk me through questions until we have a definition we can both live with, then record it in the glossary",
+    "should_trigger": true
+  },
+  {
+    "query": "antes de eu levar essa história pro time, me faz as perguntas que faltam. ela tá em stories/us-318-encerrar-alerta.md e o glossário em CONTEXT.md. eu respondo como PO",
+    "should_trigger": true
+  },
+  {
+    "query": "I have a product decision to make: should the speed threshold be per vehicle or per route? Don't decide for me. Ask me the questions that expose what I haven't thought about, and tell me what you'd recommend based on what's in docs/.",
+    "should_trigger": true
+  },
+  {
+    "query": "run a requirements interview with me about the new driver onboarding flow. I'm the stakeholder. stop when you've got nothing left to ask and summarize the decisions",
+    "should_trigger": true
+  },
+  {
+    "query": "examine this scope statement with me like a skeptical senior engineer would: 'Phase 1 covers alert silencing for all vehicle types and all alert categories.' I'm the PO, I'll answer.",
+    "should_trigger": true
+  },
+  {
+    "query": "Before we finalize US-402 (Google login), question me on the edge cases. Look at previous stories in .scratch/ first so you only ask about what's not already settled.",
+    "should_trigger": true
+  },
+  {
+    "query": "write 10 interview questions I can ask candidates for a senior product owner role, focused on backlog prioritization and stakeholder management",
+    "should_trigger": false
+  },
+  {
+    "query": "summarize the decisions in this refinement meeting transcript (transcript-fleet-project.md) and list the open questions as a table",
+    "should_trigger": false
+  },
+  {
+    "query": "answer these questions from the PO about the alerts story: 1) can we silence per route? 2) what happens after 24h? use what's in the codebase in src/alerts/ to answer",
+    "should_trigger": false
+  },
+  {
+    "query": "escreve a história de usuário de silenciar alertas com critérios de aceite em Gherkin. Eu já decidi tudo: janela de 2h, por veículo, só o gestor pode silenciar. não precisa me perguntar nada",
+    "should_trigger": false
+  },
+  {
+    "query": "quiz me on Kubernetes networking concepts for my CKA exam, socratic style, don't give me the answers straight away",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm preparing a FAQ for the alerts feature. generate the questions users are likely to ask and answer them from the docs in docs/features/alerts.md",
+    "should_trigger": false
+  },
+  {
+    "query": "help me decide between PostgreSQL and MongoDB for the alerts service. list the trade-offs with numbers where you can, I'll pick",
+    "should_trigger": false
+  },
+  {
+    "query": "faz uma retrospectiva com o time: eu colo as respostas do formulário (retro.csv) e você agrupa por tema e sugere 3 ações",
+    "should_trigger": false
+  },
+  {
+    "query": "my PO sent me a list of 14 questions about the API contract for the alerts endpoint. draft answers from the OpenAPI spec in api/openapi.yaml and flag the ones the spec doesn't cover",
+    "should_trigger": false
+  },
+  {
+    "query": "write a survey (Google Forms style, 8 questions, Likert scale) to collect feedback from dispatchers about the new alert screen",
+    "should_trigger": false
+  }
+]

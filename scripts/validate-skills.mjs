@@ -12,6 +12,10 @@ const skillsDir = join(root, 'skills');
 const errors = [];
 const fail = (m) => errors.push(m);
 
+// AGENTS.md forbids both the em-dash and the en-dash in repository prose, and the trigger queries
+// are prose too, so both checks ask the same question here rather than each carrying its own idea of a dash.
+const hasDash = (text) => /[\u2013\u2014]/.test(text);
+
 function frontmatter(text, skillName) {
   const m = text.match(/^---\n([\s\S]*?)\n---\n/);
   if (!m) return null;
@@ -67,6 +71,39 @@ const listed = (plugin.skills || []).map((p) => p.replace(/^\.\/skills\//, '')).
 for (const s of skills) if (!listed.includes(s)) fail(`plugin.json does not list ${s}`);
 for (const s of listed) if (!skills.includes(s)) fail(`plugin.json lists ${s}, which does not exist`);
 
+// Trigger sets: a model-invoked skill fires on its description alone, so each one carries a trigger
+// eval set in the shape the skill-creator loop reads, half should-fire and half near misses.
+const triggersDir = join(root, 'evals', 'triggers');
+for (const name of skills) {
+  if (userInvoked.has(name)) continue;
+  const file = join(triggersDir, `${name}.json`);
+  if (!existsSync(file)) { fail(`${name}: model-invoked without a trigger set at evals/triggers/${name}.json`); continue; }
+  let set = null;
+  try { set = JSON.parse(readFileSync(file, 'utf8')); } catch (e) { fail(`evals/triggers/${name}.json: invalid JSON (${e.message})`); continue; }
+  if (!Array.isArray(set)) { fail(`evals/triggers/${name}.json: not an array of {query, should_trigger}`); continue; }
+  const malformed = set.filter((e) => typeof e?.query !== 'string' || !e.query.trim() || typeof e?.should_trigger !== 'boolean');
+  if (malformed.length) fail(`evals/triggers/${name}.json: ${malformed.length} entries without a query string and a boolean should_trigger`);
+  const fire = set.filter((e) => e?.should_trigger === true).length;
+  const nearMiss = set.filter((e) => e?.should_trigger === false).length;
+  // Ten a side is the convention in evals/README.md, and the near misses are the half that earns the set:
+  // a count on each side separately is what keeps a lopsided set from passing on its total.
+  if (fire < 10 || nearMiss < 10) fail(`evals/triggers/${name}.json: ${fire} should fire and ${nearMiss} should not, each side needs at least 10`);
+  const seen = new Set();
+  for (const e of set) {
+    if (typeof e?.query !== 'string') continue;
+    if (seen.has(e.query)) fail(`evals/triggers/${name}.json: duplicate query "${e.query.slice(0, 50)}"`);
+    seen.add(e.query);
+    if (hasDash(e.query)) fail(`evals/triggers/${name}.json: query contains an em-dash or en-dash: "${e.query.slice(0, 50)}"`);
+  }
+}
+if (existsSync(triggersDir)) {
+  for (const f of readdirSync(triggersDir).filter((f) => f.endsWith('.json')).sort()) {
+    const name = f.replace(/\.json$/, '');
+    if (!skills.includes(name)) fail(`evals/triggers/${f}: ${name} does not exist in skills/`);
+    else if (userInvoked.has(name)) fail(`evals/triggers/${f}: ${name} is user-invoked and does not fire on description`);
+  }
+}
+
 const readme = readFileSync(join(root, 'README.md'), 'utf8');
 for (const s of skills) if (!readme.includes(`skills/${s}/SKILL.md`)) fail(`README.md does not link ${s}`);
 const router = readFileSync(join(skillsDir, 'which-flow', 'SKILL.md'), 'utf8');
@@ -94,7 +131,7 @@ function walk(dir, out = []) {
 for (const file of walk(root)) {
   const rel = file.slice(root.length + 1);
   const text = readFileSync(file, 'utf8');
-  if (text.includes('\u2014')) fail(`${rel}: contains an em-dash`);
+  if (hasDash(text)) fail(`${rel}: contains an em-dash or en-dash`);
   if (text.charCodeAt(0) === 0xfeff || text.includes('\r')) fail(`${rel}: BOM or CRLF`);
 }
 
