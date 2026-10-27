@@ -17,7 +17,7 @@ The diagram below shows how each skill connects across the refinement lifecycle,
 ```mermaid
 flowchart TD
     subgraph Setup["0. Workspace Setup (run once)"]
-        CFG["/configure-refinement"] --> CFG_OUT["docs/agents/refinement.md<br/>• Mode: com-codigo or sem-codigo<br/>• Language: en-US (default) or pt-BR"]
+        CFG["/configure-refinement"] --> CFG_OUT["docs/agents/refinement.md<br/>• Mode: with-code or without-code<br/>• Language: en-US (default) or pt-BR"]
     end
 
     subgraph Router["Router"]
@@ -89,7 +89,7 @@ Recommendation: no recommendation (the text provides no baseline for SLA numbers
 
 ### Operating Modes
 
-| | Without Code (`sem-codigo`) | With Code (`com-codigo`) |
+| | Without Code (`without-code`) | With Code (`with-code`) |
 | --- | --- | --- |
 | Target Audience | Product Owners, business analysts, QA engineers | Engineering teams with repository access |
 | Source of Truth | `CONTEXT.md`, previous stories, documents in `docs/` | All workspace files plus source code via subagent |
@@ -154,7 +154,7 @@ Open your AI coding assistant inside your target project and run:
 ```
 
 The interactive skill guides you through:
-1. **Operating mode:** `com-codigo` (agent inspects source code) or `sem-codigo` (technical questions become questionnaires).
+1. **Operating mode:** `with-code` (agent inspects source code) or `without-code` (technical questions become questionnaires); legacy `com-codigo` and `sem-codigo` remain accepted on read.
 2. **Language:** `en-US` (default) or `pt-BR`.
 3. **Issue tracker:** base URL and prefix for task cards (Azure DevOps, Jira, GitHub Issues, etc.).
 4. **Generated files:**

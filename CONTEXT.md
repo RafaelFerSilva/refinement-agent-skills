@@ -97,7 +97,7 @@ The repository where the package is installed and User Stories are analyzed. Con
 _Avoid_: project (ambiguous with product), analysis repo
 
 **Mode**:
-How the workspace resolves factual questions. **With code** (`com-codigo`): the agent inspects product code directly. **Without code** (`sem-codigo`): the PO is the source of facts, and architecture questions are routed to the dev team via questionnaires.
+How the workspace resolves factual questions, defined by `Mode:` in `docs/agents/refinement.md`. **With code** (`with-code`, or `com-codigo`): the agent inspects product code directly. **Without code** (`without-code`, or `sem-codigo`): the PO is the source of facts, and architecture questions are routed to the dev team via questionnaires.
 _Avoid_: scenario, profile, environment
 
 **Language**:

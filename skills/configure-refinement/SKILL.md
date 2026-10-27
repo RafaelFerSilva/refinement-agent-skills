@@ -11,12 +11,12 @@ Write the workspace-level configuration that `/refine-story`, `/qa-plan`, `/requ
 ## Steps
 
 1. **Explore.** Inspect existing files before making assumptions: `AGENTS.md` and `CLAUDE.md` in the root, `CONTEXT.md`, `docs/agents/refinement.md` and `docs/agents/issue-tracker.md` (previous outputs of this skill), `.scratch/`, and signals of source code: `package.json`, `pyproject.toml`, `src/`, `go.mod`, or anything a team compiles or executes.
-   If `docs/agents/issue-tracker.md` already exists from another convention, preserve it: verify only that it specifies where to publish. If `CLAUDE.md` is merely a bridge with `@AGENTS.md`, the primary instruction file is `AGENTS.md`.
-   Completed when: you know whether the workspace is already configured, the likely mode, the likely language (`en-US` or `pt-BR`), whether a glossary exists, whether the tracker exists, and which instruction file to edit.
+   If `docs/agents/issue-tracker.md` already exists from another convention, preserve it: verify only that it specifies where to publish. If `docs/agents/refinement.md` already exists, accept both the canonical mode tokens (`with-code`, `without-code`) and the legacy tokens (`com-codigo`, `sem-codigo`) on read. If `CLAUDE.md` is merely a bridge with `@AGENTS.md`, the primary instruction file is `AGENTS.md`.
+   Completed when: you know whether the workspace is already configured, the likely mode (`with-code` or `without-code`), the likely language (`en-US` or `pt-BR`), whether a glossary exists, whether the tracker exists, and which instruction file to edit.
 
 2. **Inquire, one section at a time, leading with the recommended answer.**
 
-   **Mode.** Recommend based on findings: if code is present, `com-codigo` (with code); if absent, `sem-codigo` (without code). Explain in one line: with code, the agent inspects source code before asking; without code, the PO is the source of facts and architecture questions become questionnaires for the team.
+   **Mode.** Recommend based on findings: if code is present, `with-code`; if absent, `without-code`. Explain in one line: with code, the agent inspects source code before asking; without code, the PO is the source of facts and architecture questions become questionnaires for the team.
 
    **Language.** Recommend based on existing files or `en-US` by default: `en-US` or `pt-BR`. Explain in one line: defines the language of examination, question rounds, narratives, Gherkin criteria, and verdicts.
 
@@ -26,7 +26,7 @@ Write the workspace-level configuration that `/refine-story`, `/qa-plan`, `/requ
 
    Completed when: mode, language, work item convention, and base URL are confirmed.
 
-3. **Confirm and write.** Present the draft of `docs/agents/refinement.md` based on [refinement.md](refinement.md), `docs/agents/issue-tracker.md` based on [issue-tracker.md](issue-tracker.md) (only when it does not already exist), and the `## Refinement` block for the agent instructions file. Allow adjustments. Then write the files. For the instructions file: if `CLAUDE.md` exists and imports `AGENTS.md` (`@AGENTS.md`), edit `AGENTS.md`; otherwise edit `CLAUDE.md` if it exists; otherwise `AGENTS.md` if it exists; if neither exists, ask which to create. If the `## Refinement` block already exists, update it in place without modifying the rest of the file.
+3. **Confirm and write.** Present the draft of `docs/agents/refinement.md` based on [refinement.md](refinement.md) (always writing `Mode: with-code` or `Mode: without-code`, migrating legacy `com-codigo` or `sem-codigo` in place when reconfiguring), `docs/agents/issue-tracker.md` based on [issue-tracker.md](issue-tracker.md) (only when it does not already exist), and the `## Refinement` block for the agent instructions file. Allow adjustments. Then write the files. For the instructions file: if `CLAUDE.md` exists and imports `AGENTS.md` (`@AGENTS.md`), edit `AGENTS.md`; otherwise edit `CLAUDE.md` if it exists; otherwise `AGENTS.md` if it exists; if neither exists, ask which to create. If the `## Refinement` block already exists, update it in place without modifying the rest of the file.
 
    The block:
 
@@ -38,4 +38,4 @@ Write the workspace-level configuration that `/refine-story`, `/qa-plan`, `/requ
 
    Completed when: `refinement.md`, the tracker file (new or preserved), and the instruction block exist with confirmed content.
 
-4. **Conclude.** Confirm the workspace is configured, list workflows that read `docs/agents/refinement.md`, and note that files can be edited manually later; re-running this skill is only required to switch modes, languages, or tracker conventions.
+4. **Conclude.** Confirm the workspace is configured, list workflows that read `docs/agents/refinement.md`, and note that files can be edited manually later; re-running this skill is only required to switch modes, languages, or tracker conventions (already-configured workspaces carrying legacy `com-codigo` or `sem-codigo` continue to work without needing to re-run it).

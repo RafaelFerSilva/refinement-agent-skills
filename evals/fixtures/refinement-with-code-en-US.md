@@ -1,13 +1,13 @@
 # Refinement
 
-Mode: com-codigo
+Mode: with-code
 Language: en-US
 
 Workspace configuration fixture: stands in for `docs/agents/refinement.md` during evals.
 
 ## Mode
 
-- **com-codigo** (with code): before asking questions, the agent inspects source code directly. Architecture questions are resolved by reading code, citing the source file. The PO receives only business and expected-behavior questions.
+- **with-code**: before asking questions, the agent inspects source code directly. Architecture questions are resolved by reading code, citing the source file. The PO receives only business and expected-behavior questions.
 
 ## Language
 

@@ -12,7 +12,7 @@ The Portuguese forms are the ones the package used before the English translatio
 
 ## Canonical in both languages
 
-INVEST criterion names and the results PASS and FAIL. The priority scale Highest, High, Medium, Low. The recipients PO and DEV. The field names `Status:` and `Azure:`. The operating mode tokens `com-codigo` and `sem-codigo`, which are configuration keys in installed workspaces.
+INVEST criterion names and the results PASS and FAIL. The priority scale Highest, High, Medium, Low. The recipients PO and DEV. The field names `Status:` and `Azure:`. The operating mode tokens `com-codigo` and `sem-codigo`, which are configuration keys in installed workspaces (superseded by ADR 0007: `with-code` and `without-code` are canonical in both languages, with `com-codigo` and `sem-codigo` accepted on read).
 
 ## Considered alternatives
 

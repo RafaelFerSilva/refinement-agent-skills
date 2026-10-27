@@ -140,17 +140,54 @@ const codeWorkspaceFiles = existsSync(codeWorkspaceDir) && statSync(codeWorkspac
   ? walk(codeWorkspaceDir, () => true).map((p) => p.slice(root.length + 1))
   : [];
 if (!codeWorkspaceFiles.some((f) => !f.endsWith('.md'))) {
-  fail('evals/fixtures/code-workspace missing or holds no source files: mode com-codigo has no product codebase fixture');
+  fail('evals/fixtures/code-workspace missing or holds no source files: mode with-code has no product codebase fixture');
 }
 
-const withCodeConfig = join(root, 'evals', 'fixtures', 'refinement-with-code-en-US.md');
-if (!existsSync(withCodeConfig) || !statSync(withCodeConfig).isFile()) {
-  fail('evals/fixtures/refinement-with-code-en-US.md missing: mode com-codigo has no workspace configuration fixture');
+// Mode tokens (ADR 0007): one canonical English form written (`with-code` | `without-code`) across both
+// workspace languages, while legacy `com-codigo` and `sem-codigo` stay accepted on read in
+// configure-refinement and requirements-rigor.
+const hasLegacyModeToken = (s) => /\b(?:com|sem)-codigo\b/.test(s);
+const refinementTemplate = join(skillsDir, 'configure-refinement', 'refinement.md');
+if (!existsSync(refinementTemplate) || !statSync(refinementTemplate).isFile()) {
+  fail('skills/configure-refinement/refinement.md missing: /configure-refinement has no workspace configuration template');
 } else {
-  const text = readFileSync(withCodeConfig, 'utf8');
-  if (!/^Mode:\s*com-codigo$/m.test(text)) fail('evals/fixtures/refinement-with-code-en-US.md: does not declare Mode: com-codigo');
-  if (!/^Language:\s*en-US$/m.test(text)) fail('evals/fixtures/refinement-with-code-en-US.md: does not declare Language: en-US');
-  if (!text.includes('evals/fixtures/code-workspace/')) fail('evals/fixtures/refinement-with-code-en-US.md: does not point at evals/fixtures/code-workspace/');
+  const text = readFileSync(refinementTemplate, 'utf8');
+  if (!/^Mode:\s*<with-code\s*\|\s*without-code>$/m.test(text)) {
+    fail('skills/configure-refinement/refinement.md: does not declare Mode: <with-code | without-code>');
+  }
+  if (hasLegacyModeToken(text)) {
+    fail('skills/configure-refinement/refinement.md: still writes legacy com-codigo or sem-codigo instead of canonical with-code and without-code');
+  }
+}
+for (const rel of ['skills/configure-refinement/SKILL.md', 'skills/requirements-rigor/SKILL.md']) {
+  const p = join(root, rel);
+  if (!existsSync(p)) continue;
+  const text = readFileSync(p, 'utf8');
+  for (const token of ['with-code', 'without-code', 'com-codigo', 'sem-codigo']) {
+    if (!text.includes(token)) {
+      fail(`${rel}: missing mode token "${token}" (both canonical and legacy tokens are required on read)`);
+    }
+  }
+}
+
+const workspaceConfigFixtures = [
+  ['evals/fixtures/refinement-with-code-en-US.md', 'with-code', 'en-US', true],
+  ['evals/fixtures/refinement-no-code-en-US.md', 'without-code', 'en-US', false],
+  ['evals/fixtures/refinement-no-code-pt-BR.md', 'without-code', 'pt-BR', false],
+];
+for (const [rel, wantMode, wantLang, wantsCodebase] of workspaceConfigFixtures) {
+  const cfgPath = join(root, rel);
+  if (!existsSync(cfgPath) || !statSync(cfgPath).isFile()) {
+    fail(`${rel} missing: mode ${wantMode} (${wantLang}) has no workspace configuration fixture`);
+    continue;
+  }
+  const text = readFileSync(cfgPath, 'utf8');
+  if (!new RegExp(`^Mode:\\s*${wantMode}$`, 'm').test(text)) fail(`${rel}: does not declare Mode: ${wantMode}`);
+  if (!new RegExp(`^Language:\\s*${wantLang}$`, 'm').test(text)) fail(`${rel}: does not declare Language: ${wantLang}`);
+  if (hasLegacyModeToken(text)) fail(`${rel}: still carries legacy com-codigo or sem-codigo instead of canonical ${wantMode}`);
+  if (wantsCodebase && !text.includes('evals/fixtures/code-workspace/')) {
+    fail(`${rel}: does not point at evals/fixtures/code-workspace/`);
+  }
 }
 
 const evalsDir = join(root, 'evals');
@@ -200,12 +237,12 @@ for (const f of (existsSync(evalsDir) && statSync(evalsDir).isDirectory() ? read
       if (/refinement-with-code-/.test(configs[0])) {
         const missingCode = codeWorkspaceFiles.filter((wf) => !caseFiles.includes(wf));
         if (missingCode.length) {
-          fail(`evals/${f}: case ${c.id} uses a com-codigo configuration without declaring ${missingCode.join(', ')} in files`);
+          fail(`evals/${f}: case ${c.id} uses a with-code configuration without declaring ${missingCode.join(', ')} in files`);
         }
       } else {
         const leakedCode = caseFiles.filter((ref) => underDir(ref, 'evals/fixtures/code-workspace'));
         if (leakedCode.length) {
-          fail(`evals/${f}: case ${c.id} uses a sem-codigo configuration while declaring ${leakedCode.join(', ')} in files`);
+          fail(`evals/${f}: case ${c.id} uses a without-code configuration while declaring ${leakedCode.join(', ')} in files`);
         }
       }
     }

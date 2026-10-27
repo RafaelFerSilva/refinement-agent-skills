@@ -1,14 +1,14 @@
 # Refinement
 
-Mode: <com-codigo | sem-codigo>
+Mode: <with-code | without-code>
 Language: <en-US | pt-BR>
 
 How the `/refine-story`, `/qa-plan`, `/requirements-discovery`, and `/meeting-minutes` workflows operate in this workspace.
 
 ## Mode
 
-- **sem-codigo** (without code): the PO is the source of answers. Facts originate from `CONTEXT.md`, previous stories in `.scratch/`, and documents in `docs/`. Architecture, observability, and test-layer questions flow to the engineering team via questionnaires; never answered by assumption.
-- **com-codigo** (with code): before asking questions, the agent inspects source code directly. Architecture questions are resolved by reading code, citing the source file. The PO receives only business and expected-behavior questions.
+- **without-code**: the PO is the source of answers. Facts originate from `CONTEXT.md`, previous stories in `.scratch/`, and documents in `docs/`. Architecture, observability, and test-layer questions flow to the engineering team via questionnaires; never answered by assumption.
+- **with-code**: before asking questions, the agent inspects source code directly. Architecture questions are resolved by reading code, citing the source file. The PO receives only business and expected-behavior questions.
 
 ## Language
 

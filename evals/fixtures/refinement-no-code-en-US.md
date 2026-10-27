@@ -1,13 +1,13 @@
 # Refinement
 
-Mode: sem-codigo
+Mode: without-code
 Language: en-US
 
 Workspace configuration fixture: stands in for `docs/agents/refinement.md` during evals.
 
 ## Mode
 
-- **sem-codigo** (without code): the PO is the source of answers. Facts originate from `CONTEXT.md`, previous stories in `.scratch/`, and documents in `docs/`. Architecture, observability, and test-layer questions flow to the engineering team via questionnaires; never answered by assumption.
+- **without-code**: the PO is the source of answers. Facts originate from `CONTEXT.md`, previous stories in `.scratch/`, and documents in `docs/`. Architecture, observability, and test-layer questions flow to the engineering team via questionnaires; never answered by assumption.
 
 ## Language
 
