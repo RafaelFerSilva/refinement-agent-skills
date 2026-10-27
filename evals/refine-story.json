@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "/refine-story evals/fixtures/us-245-silence-alerts.md . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`. The product glossary is at evals/fixtures/CONTEXT-fleet.md, read it as `CONTEXT.md`.",
-      "expected_output": "ANALYZABLE triage stated in a single line. First round in examination format (❓ Q<n> followed by **Recommendation:**): who silences (recommending dispatch operator, grounded on the glossary), what \"for a while\" means (duration, who defines it, with no number recommended), what happens to an alert arriving during the silencing (no recommendation, with options), and what \"come back on their own\" means verifiably. AC2 recognized as an implementation task and AC4 as Definition of Done, with no questions about them; \"in a simple way\" flagged as an unverifiable outcome. No duration value invented. The response ends waiting for the PO.",
+      "expected_output": "ANALYZABLE triage stated in a single line. First round in examination format (❓ Q<n> followed by **Recommendation:**): who silences (recommending dispatch operator, grounded on the glossary), what \"for a while\" means (duration, who defines it, with no number recommended), what happens to an alert arriving during the silencing (no recommendation, with options), what \"come back on their own\" means verifiably, and what happens to a reading stamped inside the silence window that arrives retroactively after signal loss (grounded on Reading in the glossary). AC2 recognized as an implementation task and AC4 as Definition of Done, with no questions about them; \"in a simple way\" flagged as an unverifiable outcome. No duration value invented. The response ends waiting for the PO.",
       "files": [
         "evals/fixtures/us-245-silence-alerts.md",
         "evals/fixtures/CONTEXT-fleet.md",
@@ -19,7 +19,8 @@
         "\"in a simple way\" in AC1 is flagged as an unverifiable outcome",
         "No numeric value for duration, limit, or SLA appears as an assertion",
         "The response waits for the PO to answer; it does not write the refined US in the first message",
-        "Questions, recommendations, and markers are in English, following `Language: en-US` in the workspace configuration"
+        "Questions, recommendations, and markers are in English, following `Language: en-US` in the workspace configuration",
+        "A question raises the edge case of a tracker reading arriving retroactively after signal loss against the silence window, grounded on Reading in CONTEXT.md"
       ]
     },
     {
@@ -56,7 +57,7 @@
     {
       "id": 4,
       "prompt": "/refine-story evals/fixtures/us-245-silenciar-alertas.md . The workspace configuration is at evals/fixtures/refinement-no-code-pt-BR.md: read it as `docs/agents/refinement.md`. O glossário do produto está em evals/fixtures/CONTEXT-frota.md, leia como `CONTEXT.md`.",
-      "expected_output": "Same examination as case 1, conducted in Portuguese because the workspace declares `Language: pt-BR`: ANALISÁVEL triage stated in a single line, round in the ❓ Q<n> format with **Recomendação:**, markers `[INFERÊNCIA: base]` and `[A CONFIRMAR: quem]`, and the recommendation for the role citing \"operador de despacho\" from the glossary. No duration value invented, and the response ends waiting for the PO.",
+      "expected_output": "Same examination as case 1, conducted in Portuguese because the workspace declares `Language: pt-BR`: ANALISÁVEL triage stated in a single line, round in the ❓ Q<n> format with **Recomendação:**, markers `[INFERÊNCIA: base]` and `[A CONFIRMAR: quem]`, the recommendation for the role citing \"operador de despacho\" from the glossary, and a question raising the retroactive Leitura edge case from the glossary against the silence window. No duration value invented, and the response ends waiting for the PO.",
       "files": [
         "evals/fixtures/us-245-silenciar-alertas.md",
         "evals/fixtures/CONTEXT-frota.md",
@@ -68,7 +69,8 @@
         "Rigor markers appear in their Portuguese form, such as `[INFERÊNCIA:` or `[A CONFIRMAR:`, with no English markers mixed in, except `[INVEST-FAIL:` and `[MANUAL-ONLY]`, which ADR 0005 keeps canonical in both languages",
         "The response classifies the US as ANALISÁVEL before any question, and AC2 and AC4 are recognized as task and Definition of Done",
         "No numeric value for duration, limit, or SLA appears as an assertion",
-        "The response waits for the PO to answer"
+        "The response waits for the PO to answer",
+        "A question raises the edge case of a tracker reading arriving retroactively after signal loss against the silence window, grounded on Leitura in CONTEXT.md"
       ]
     }
   ]
