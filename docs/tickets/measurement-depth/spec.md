@@ -1,6 +1,6 @@
 # Spec: the evaluation layer cannot answer whether the package works
 
-Status: ready-for-agent
+Status: resolved
 Origin: 2026-10-25 (commit 81547f6)
 
 ## Problem statement
@@ -33,3 +33,7 @@ A scripted Product Owner lets a session run to synthesis, so the grader can read
 ## Seams
 
 The existing ones, and no new ones. `scripts/grade-output.mjs` is the mechanical seam over a published artifact, `evals/*.json` is the assertion seam over a response, and `evals/fixtures/` is where inputs live. A scripted Product Owner is a fixture, not a new mechanism; a threshold is a convention in `evals/README.md` and a field in the grading summary, not a new runner.
+
+## Comments
+
+- 2026-10-27 Resolved: all six User Stories (`issues/01` through `issues/11`) and all nine behavioral and harness defects surfaced during measurement (`issues/12` through `issues/20`) are `Status: resolved` across commits `7c8fe9e` through `1bb4140`, with architectural lessons recorded in `docs/adr/0006-empirical-measurement-and-silent-glossary-corruption.md` (and operating mode tokens subsequently standardized to `with-code` and `without-code` in ADR 0007, commit `63624f7`).
