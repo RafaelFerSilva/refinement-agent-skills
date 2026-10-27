@@ -10,7 +10,7 @@
 
 - **Skill source:** `skills/<name>/SKILL.md`, one folder per skill, no buckets. Each folder contains `agents/openai.yaml` with Codex metadata.
 - **Self-contained:** every skill invoked across workflows lives directly under `skills/`. No external third-party package dependencies, nor references to one.
-- **Manifest:** `.claude-plugin/plugin.json` lists every skill in `skills/`; `marketplace.json` makes the repository its own marketplace.
+- **Manifest:** `.claude-plugin/plugin.json` lists every skill in `skills/`; `.claude-plugin/marketplace.json` makes the repository its own marketplace.
 
 ## Invariants
 

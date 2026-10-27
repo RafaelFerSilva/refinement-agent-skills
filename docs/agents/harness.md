@@ -13,7 +13,7 @@ What keeps this package consistent, and where to change each thing. Instructions
 | Installation by copy | `skills/*` into the agent skills folder of the workspace |
 | Chat and instruction-based agents | `prompts/<flow>.md`, generated from `skills/` by `scripts/build-prompts.mjs` |
 
-There is no copy of the skills inside this repository for any CLI. To use the skills here, `scripts/link-skills.sh` creates symlinks in `~/.claude/skills/` and `~/.agents/skills/`; a `git pull` keeps the links current. `--unlink` removes them.
+There is no copy of the skills inside this repository for any CLI. To use the skills here, `scripts/link-skills.sh` creates symlinks in `~/.claude/skills/`, `~/.agents/skills/`, and `~/.gemini/config/skills/`; a `git pull` keeps the links current. `--unlink` removes them.
 
 ## Validation
 

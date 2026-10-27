@@ -103,7 +103,7 @@ The loop is `scripts/run_loop.py` from `skill-creator`, and `scripts/run_eval.py
 Three more things about this environment shape the result, and a rerun has to repeat them:
 
 - Run from a neutral project root, a directory holding an empty `.claude/`, never from this repository: `AGENTS.md` describes both primitives and would be loaded into every query.
-- Remove the two primitives from `~/.claude/skills` and `~/.agents/skills` for the duration (`scripts/link-skills.sh` restores them). Linked, the model sees the real skill beside the planted copy under the same description, and a call to the real one counts as a miss.
+- Remove the two primitives from `~/.claude/skills`, `~/.agents/skills`, and `~/.gemini/config/skills` for the duration (`scripts/link-skills.sh` restores them). Linked, the model sees the real skill beside the planted copy under the same description, and a call to the real one counts as a miss.
 - Restrict the skills list to the project source, through a `claude` shim on `PATH` that adds `--setting-sources project`, and have the same shim strip MCP servers (`--strict-mcp-config --mcp-config '{"mcpServers":{}}'`). Without the first, the measurement runs against whatever else the machine has installed, and a plugin that competes head on, a grilling skill or a code review skill, takes the trigger and reads as a miss on this package's description. The second cut the cost per call from 0.90 to 0.17 USD in a probe without touching the skills list the decision is made from.
 
 Results land in `refinement-skills-workspace/trigger-*/`, git ignored; the measured scores are recorded in ticket 11 of `docs/tickets/measurement-depth/`.

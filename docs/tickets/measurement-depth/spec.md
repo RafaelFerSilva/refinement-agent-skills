@@ -36,4 +36,4 @@ The existing ones, and no new ones. `scripts/grade-output.mjs` is the mechanical
 
 ## Comments
 
-- 2026-10-27 Resolved: all six User Stories (`issues/01` through `issues/11`) and all nine behavioral and harness defects surfaced during measurement (`issues/12` through `issues/20`) are `Status: resolved` across commits `7c8fe9e` through `1bb4140`, with architectural lessons recorded in `docs/adr/0006-empirical-measurement-and-silent-glossary-corruption.md` (and operating mode tokens subsequently standardized to `with-code` and `without-code` in ADR 0007, commit `63624f7`).
+- 2026-10-27 Resolved: all six User Stories (`issues/01` through `issues/11`) and all nine behavioral and harness defects surfaced during measurement (`issues/12` through `issues/20`) are `Status: resolved` across commits `7c8fe9e` through `1bb4140`, with architectural lessons recorded in `docs/adr/0006-a-glossary-rule-held-by-a-check.md` (and operating mode tokens subsequently standardized to `with-code` and `without-code` in ADR 0007, commit `63624f7`).

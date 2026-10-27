@@ -160,9 +160,34 @@ The interactive skill guides you through:
 4. **Generated files:**
    - `docs/agents/refinement.md`: mode, language, and refinement rules.
    - `docs/agents/issue-tracker.md`: identifier conventions and links.
-   - Adds the `## Refinamento` section to `AGENTS.md` or `CLAUDE.md`.
+   - Adds the `## Refinement` section to `AGENTS.md` or `CLAUDE.md`.
 
 Once configured, run `/which-flow` to pick your first step.
+
+### 3. Update the skills
+
+Use the command matching how you installed the package:
+
+- **Via Claude Code Plugin:**
+  From your terminal:
+  ```bash
+  claude plugin marketplace update refinement-skills
+  claude plugin update refinement-skills@refinement-skills
+  ```
+  Or inside an active Claude Code session, run `/plugin`, open the **Marketplaces** tab, select `refinement-skills`, and choose **Update marketplace** (then run `/reload-plugins` or start a new session).
+
+- **Via Agent Skills CLI (`npx skills`):**
+  Update only the skills from this package:
+  ```bash
+  npx skills update which-flow meeting-minutes requirements-discovery refine-story qa-plan configure-refinement socratic-examination requirements-rigor
+  ```
+  (Add `-g` for global scope, `-p` for project scope, or `-y` for non-interactive mode. To also pick up newly added skills from this repository, re-run `npx skills add RafaelFerSilva/refinement-agent-skills`.)
+
+- **Via Direct One-Liner (curl):**
+  Re-run the same `curl` command (it runs `git pull` inside `~/.refinement-skills` and refreshes symlinks), or run `git -C ~/.refinement-skills pull`.
+
+- **Via Local Git Clone:**
+  Run `git pull` inside the cloned repository; symlinks created by `./scripts/install.sh` point directly to `skills/` and update in place.
 
 ---
 
@@ -198,10 +223,14 @@ Para utilizar o fluxo em português:
 
 - `node scripts/validate-skills.mjs`: verifies frontmatter, plugin manifest, router consistency, self-containment, and prompt freshness.
 - `node scripts/build-prompts.mjs`: rebuilds standalone prompts in `prompts/` from `skills/`.
+- `node scripts/grade-output.mjs`: runs mechanical assertions on published refinement artifacts in `en-US` and `pt-BR`.
+- `node scripts/aggregate-runs.mjs`: aggregates multi-run `grading.json` results against the pass-rate threshold and compares against `no_skill` baselines.
+- `node scripts/diff-glossary.mjs`: checks whether an examination session modified or duplicated existing `CONTEXT.md` definitions without a confirmation marker.
 - `claude plugin validate . --strict`: validates plugin manifest.
-- `git config core.hooksPath .githooks`: enables the pre-commit hook that runs the three checks above before each commit.
+- `git config core.hooksPath .githooks`: enables the pre-commit hook that runs the three Definition of Done checks before each commit.
+- `scripts/link-skills.sh`: symlinks `skills/*` into local CLI skill folders for dogfooding inside this repository.
 - `scripts/install.sh`: fast installer script for local and remote setups.
-- `evals/`: evaluation fixtures following Anthropic skill-creator format.
+- `evals/`: evaluation suites and fixtures following the Anthropic `skill-creator` format (see [evals/README.md](evals/README.md)).
 
 Contributor guidelines are detailed in [AGENTS.md](AGENTS.md); project vocabulary in [CONTEXT.md](CONTEXT.md); architectural decisions in [docs/adr/](docs/adr/).
 
