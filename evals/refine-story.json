@@ -72,6 +72,27 @@
         "The response waits for the PO to answer",
         "A question raises the edge case of a tracker reading arriving retroactively after signal loss against the silence window, grounded on Leitura in CONTEXT.md"
       ]
+    },
+    {
+      "id": 5,
+      "prompt": "/refine-story evals/fixtures/us-352-bulk-close-alerts.md . The workspace configuration is at evals/fixtures/refinement-with-code-en-US.md: read it as `docs/agents/refinement.md`. The product glossary is at evals/fixtures/CONTEXT-fleet.md, read it as `CONTEXT.md`.",
+      "expected_output": "ANALYZABLE triage stated in a single line. Codebase inspected before asking: recommendations cite source files in `evals/fixtures/code-workspace/` (such as `CLOSE_REASONS` or the `dispatch_operator` guard in `alert-service.ts`, or `alert_type` in `schema.sql`), facts already defined in code are not asked of the PO, the contradiction between AC2's claim of an existing closure lock and `alert-service.ts` (which updates `WHERE id = $1` with no lock and no `status = 'active'` guard) enters the round as a question rather than being resolved unilaterally, and AC3's schema/architecture question is answered from `schema.sql` and `alert-service.ts` rather than routed to an engineering questionnaire. The response ends waiting for the PO.",
+      "files": [
+        "evals/fixtures/us-352-bulk-close-alerts.md",
+        "evals/fixtures/CONTEXT-fleet.md",
+        "evals/fixtures/refinement-with-code-en-US.md",
+        "evals/fixtures/code-workspace/alert-evaluator.ts",
+        "evals/fixtures/code-workspace/alert-service.ts",
+        "evals/fixtures/code-workspace/operational-report.ts",
+        "evals/fixtures/code-workspace/schema.sql"
+      ],
+      "assertions": [
+        "The response classifies the US as ANALYZABLE before any question and ends the first round in the ❓ Q<n> format waiting for the PO",
+        "At least one question carries a **Recommendation:** grounded on a fact read from evals/fixtures/code-workspace/ (such as CLOSE_REASONS or the dispatch_operator check in alert-service.ts, or alert_type in schema.sql) with a citation naming that source file",
+        "No question asks the PO to supply a fact that evals/fixtures/code-workspace/ already defines (such as what close reasons exist today, what alert types or statuses exist, which role closeAlert requires today, or whether a closure lock is implemented)",
+        "A question in the round surfaces the contradiction between AC2's claim of an existing closure lock and alert-service.ts (where closeAlert updates WHERE id = $1 with no lock and no status = 'active' guard), citing alert-service.ts rather than resolving the behavior unilaterally",
+        "Architectural facts inspectable in evals/fixtures/code-workspace/ (such as whether the alerts table already has closure metadata columns in schema.sql and how closeAlert persists closures in alert-service.ts) are answered from code citing the source file rather than routed as open questions to the engineering team"
+      ]
     }
   ]
 }
