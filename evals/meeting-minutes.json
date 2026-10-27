@@ -54,6 +54,25 @@
         "The priority scale in the table and in the JSON remains Highest, High, Medium, Low",
         "Running `node scripts/grade-output.mjs <ata publicada> --skill meeting-minutes --lang pt-BR` passes every check"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Generate meeting minutes from the transcript below.\n\n# Transcript: alignment meeting, Fleet Project\n\nTitle: Alignment meeting, Fleet Project\nDate: 2026-04-14\nApproximate duration: 40 minutes\nAttendees and roles:\n- Marcus: consultant\n- Carlos: operations director\n- Priya: IT and infrastructure\nProject/context: RouteWise platform MVP\nGlossary: telemetry (automated transcription usually spells it \"telimetry\")\n\n[~05min] Carlos: Speed alerts have to be in the MVP. Without them I cannot present to the board.\nMarcus: Agreed, speed alerts in the MVP then.\n[~12min] Marcus: I will gather the telimetry requirements with the vendor by Thursday.\n[~18min] Priya: I suggest leaving the SAP integration out of the MVP, it becomes a separate project.\n[nobody answers; the conversation moves to the timeline]\n[~25min] Carlos: My daughter is sick, I will have to leave earlier today, but after the appointment I will review the scope document.\n[~30min] Marcus: Thinking it over, Priya is the one with the vendor contact. Priya, can you gather the telimetry?\nPriya: I can, but only next week.\n[~35min] Carlos: We should think about some driver training as well, at some point.",
+      "expected_output": "Same synthesis content and rigor as case 1, executed from `prompts/meeting-minutes.md` as a standalone chat instruction with `transcript-fleet-project.md` pasted inline: every artifact delivered directly in the response in its own separate block titled with the filename it would have (the minutes intact through section 8 and the final disclaimer, `discovery-input.md`, and one separate `questionnaire-<recipient>.md` block per recipient named in Presumed Agreements or Open Questions), `/requirements-discovery` named as the next step from `discovery-input.md`, the saved minutes block passing every check of `scripts/grade-output.mjs --skill meeting-minutes --lang en-US`, no path under `.scratch/` or on disk claimed as written, no mention of `/configure-refinement`, operating modes, or subagents, and no reference to repository workspace paths (`.scratch/`, `docs/agents/refinement.md`, `docs/`, or `CONTEXT.md`).",
+      "files": [
+        "prompts/meeting-minutes.md"
+      ],
+      "assertions": [
+        "Every artifact required by the transcript is delivered directly in the response in its own separate block titled with the filename it would have: the minutes (intact through section 8 and the final disclaimer), `discovery-input.md`, and one separate `questionnaire-<recipient>.md` block per recipient named in Presumed Agreements or Open Questions (at least `questionnaire-carlos.md` and `questionnaire-marcus.md`)",
+        "The response directs the user to `/requirements-discovery` (or `requirements-discovery`) with `discovery-input.md` as its starting input",
+        "No path under `.scratch/` or elsewhere on disk is claimed as written or saved, and the response makes no mention of `/configure-refinement`, operating modes (`com-codigo`, `sem-codigo`, code/with-code mode, or no-code/without-code mode), or subagents",
+        "The response makes no reference to repository workspace paths (`.scratch/`, `docs/agents/refinement.md`, `docs/`, or `CONTEXT.md`) that do not exist in a standalone chat session",
+        "Section 0 of the minutes records INTACT triage and marks the transcription error \"telimetry\" to \"telemetry\" with `[POSSIBLE TRANSCRIPTION ERROR: ...]`, using \"telemetry\" throughout, and the daughter's illness is omitted from every delivered block while Carlos's commitment to review the scope document is retained without the personal circumstance",
+        "Speed alerts in the MVP is recorded in Decisions with `[STATED:` provenance citing speaker and paraphrase, while leaving SAP integration out of the MVP appears in Presumed Agreements with `[ASSUMED:` provenance (to confirm with Carlos and Marcus) and not in Recorded Decisions",
+        "Telemetry requirement gathering is a single action item assigned to Priya carrying `[supersedes:` for Marcus's ~12min commitment and exposing the deadline arithmetic from 2026-04-14 in Notes, and driver training is marked `[TRACKING]` with no object in the JSON",
+        "Section 8 of the delivered minutes states the Self-Audit result",
+        "Saving the delivered minutes block and running `node scripts/grade-output.mjs <delivered minutes> --skill meeting-minutes --lang en-US` passes every check"
+      ]
     }
   ]
 }
