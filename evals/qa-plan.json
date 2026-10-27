@@ -57,6 +57,28 @@
         "No expected result is asserted for conditions the criteria leave undefined",
         "Cada pergunta que destrava um resultado lista as condições como `destrava #n`, e toda condição assim listada mantém `[INDEFINIDO → Pergunta n]` como resultado"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "/qa-plan evals/fixtures/us-318-close-alert.md . The workspace configuration is at evals/fixtures/refinement-with-code-en-US.md: read it as `docs/agents/refinement.md`. Glossary at evals/fixtures/CONTEXT-fleet.md.",
+      "expected_output": "Testability triage stated before the matrix, noting that US-318 did not go through /refine-story. Subagent inspects `evals/fixtures/code-workspace/` before Round 1: DEV architectural, persistence, and observability questions inspectable in code (`closeAlert` updating `status`, `close_reason`, `closed_by`, and `closed_at = NOW()` in one `UPDATE` in `alert-service.ts` and `schema.sql`, absence of a closure lock in `alert-service.ts`, queue filtering in `listActiveAlerts`, and `operational-report.ts` not joining `alerts`) are resolved from code with source file citations instead of left as open `[DEV]` questions for a questionnaire, and testing layers on those service/persistence conditions are settled (`UNIT` or `INTEGRATION/API`) rather than `[LAYER TO VALIDATE WITH DEV]`. Three-layer boundary holds: `[SPECIFIED]` citations point only to US-318 or workspace specification text, never to code alone, and every outcome US-318 leaves undefined (closing an already \"closed\" alert, concurrent closure by two dispatch operators, unlisted or unnormalized close reasons, and non-existent alert identifiers) remains `[UNDEFINED -> Question n]` rather than being asserted as a settled expected result from code.",
+      "files": [
+        "evals/fixtures/us-318-close-alert.md",
+        "evals/fixtures/CONTEXT-fleet.md",
+        "evals/fixtures/refinement-with-code-en-US.md",
+        "evals/fixtures/code-workspace/alert-evaluator.ts",
+        "evals/fixtures/code-workspace/alert-service.ts",
+        "evals/fixtures/code-workspace/operational-report.ts",
+        "evals/fixtures/code-workspace/schema.sql"
+      ],
+      "assertions": [
+        "Testability triage is stated before the matrix, the response notes that the US did not go through /refine-story, and Round 1 asks PO questions in the ❓ Q<n> format and waits for the PO without publishing qa-plan.md",
+        "DEV architectural, persistence, or observability questions inspectable in evals/fixtures/code-workspace/ (such as how closeAlert persists status, close_reason, closed_by, and closed_at in alert-service.ts and schema.sql, whether a closure lock exists in alert-service.ts, or how listActiveAlerts filters the queue) are resolved from code with a citation naming that source file rather than left as open [DEV] questions for a questionnaire",
+        "Conditions in the matrix whose architecture is inspectable in evals/fixtures/code-workspace/ (reason validation, closure field persistence, closing timestamp, and concurrency or state transitions on closeAlert) carry a settled testing layer (such as UNIT or INTEGRATION/API) rather than [LAYER TO VALIDATE WITH DEV]",
+        "No business condition or expected result is marked [SPECIFIED] on the strength of code alone (neither citing schema.sql, alert-service.ts, alert-evaluator.ts, or operational-report.ts inside [SPECIFIED: ...], nor attributing a code-only behavior that US-318 leaves unstated to [SPECIFIED])",
+        "Lifecycle, concurrency, authorization, alert-type scope, and cross-module business outcomes that us-318-close-alert.md leaves undefined (attempting to close an alert already in \"closed\" state, two dispatch operators closing the same alert concurrently, duplicate retry submission, non-operator role access, closing a 'geofence' alert, impact of \"false positive\" on the Operational report, and retroactive readings) remain [UNDEFINED -> Question n] addressed to PO rather than being asserted as settled expected results from code",
+        "Unstated input-rejection and negative-testing outcomes in us-318-close-alert.md (closing with an unlisted or unnormalized reason, where alert-service.ts returns 400 'Unsupported close reason', and closing a non-existent alert identifier, where alert-service.ts returns 404 'Alert not found') remain [UNDEFINED -> Question n] rather than being asserted as settled expected results from code under [DERIVED: ...]"
+      ]
     }
   ]
 }
