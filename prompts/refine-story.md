@@ -177,7 +177,7 @@ Shared reference for the `/refine-story`, `/qa-plan`, `/requirements-discovery`,
 
 ## Boundary: inference or invention
 
-**Inference** is a conclusion that directly follows from an input statement, `CONTEXT.md`, or a verified fact, which another person reading the same material would reach. Every inference carries its grounding base: the sentence or source that supports it.
+**Inference** is a conclusion that directly follows from an input statement, the glossary, or a verified fact, which another person reading the same material would reach. Every inference carries its grounding base: the sentence or source that supports it.
 
 **Invention** is any value, name, system, rule, or behavior without backing in the source material, even when considered "best practice" or "obvious for this type of feature". Common cases: SLA numbers, limits, volumes, percentages, error messages, retry policies, tool names, and protocols.
 
@@ -192,7 +192,7 @@ The boundary manifests differently depending on the stage:
 
 During examination, finding facts is the agent's job: glossary, previous stories, workspace documents, and in code mode, the codebase. A found fact does not become a question: it becomes a recommended answer with the cited source. Decisions belong to the PO. Without a basis to recommend, the recommended answer is "no recommendation", and when options exist, list them with the implication of each.
 
-Refinement language is determined by `Language:` (or `Idioma:`) in `docs/agents/refinement.md` (`en-US` or `pt-BR`), with `en-US` as default. When the language is `pt-BR`, examination, markers, narrative, Gherkin, triage labels, and verdicts adopt their Portuguese form, and the artifact uses the pt-BR section headings listed at the end of the workflow `TEMPLATE.md`: a workflow that reads the artifact of another looks for those headings, so an ad hoc translation breaks the chain.
+Refinement language is determined by the language requested by the PO, or the language of the input when none is requested (`en-US` or `pt-BR`), with `en-US` as default. When the language is `pt-BR`, examination, markers, narrative, Gherkin, triage labels, and verdicts adopt their Portuguese form, and the artifact uses the pt-BR section headings listed at the end of the "Template" section of this prompt: a workflow that reads the artifact of another looks for those headings, so an ad hoc translation breaks the chain.
 
 ## Markers
 
@@ -222,7 +222,7 @@ Story points are calibrated by the team. Never assign numbers, hours, or days; w
 Format (en-US, default): "As a [specific role], I want [a capability, one verb], so that [verifiable outcome]."
 Format (pt-BR): "Como [papel específico], quero [uma capacidade, um verbo], para que [resultado verificável]."
 
-- Specific role. Generic "User" fails; use the domain role from `CONTEXT.md` when available.
+- Specific role. Generic "User" fails; use the domain role from the glossary when available.
 - One capability per story. Two capabilities joined by "and" are a double requirement: decompose.
 - The "so that" clause declares business value. Paraphrasing the "want" clause fails.
 - Any field that cannot be inferred from the text receives `[TO CONFIRM: PO]` (or `[A CONFIRMAR: PO]`).
@@ -310,7 +310,7 @@ One of three conclusions, without middle ground:
 - **REFINE** (pt-BR: **REFINAR**): usable once listed questions are answered. Specify which items unblock it.
 - **BLOCKED** (pt-BR: **BLOQUEADA**): cannot enter planning. Objective reason: unconfirmed external dependency, indeterminate scope, not a User Story.
 
-The verdict is the `Status:` line of the artifact. For QA plans, corresponding verdicts are `EXECUTABLE`, `PARTIAL`, or `BLOCKED` (pt-BR: `EXECUTÁVEL`, `PARCIAL`, or `BLOQUEADO`). For discovery: `candidate`, `open map`, `in progress`, or `completed` (pt-BR: `candidata`, `mapa aberto`, `em andamento`, or `concluído`). Mapping to external tracker labels lives in `docs/agents/triage-labels.md` when present.
+The verdict is the `Status:` line of the artifact. For QA plans, corresponding verdicts are `EXECUTABLE`, `PARTIAL`, or `BLOCKED` (pt-BR: `EXECUTÁVEL`, `PARCIAL`, or `BLOQUEADO`). For discovery: `candidate`, `open map`, `in progress`, or `completed` (pt-BR: `candidata`, `mapa aberto`, `em andamento`, or `concluído`).
 
 ## Questionnaire
 

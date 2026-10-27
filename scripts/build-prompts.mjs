@@ -42,6 +42,7 @@ const RULES = [
   [/following the template at the end of \[TEMPLATE\.md\]\(TEMPLATE\.md\)/g, 'following the "Discovery input" format in the "Template" section of this prompt'],
   [/following \[TEMPLATE\.md\]\(TEMPLATE\.md\)/g, 'following the "Template" section of this prompt'],
   [/following `skills\/refine-story\/TEMPLATE\.md`/g, 'following the "Candidate story template" section of this prompt'],
+  [/listed at the end of the workflow `TEMPLATE\.md`/g, 'listed at the end of the "Template" section of this prompt'],
 
   // TEST-DESIGN companion file
   [/\[TEST-DESIGN\.md\]\(TEST-DESIGN\.md\)/g, 'the "Test design" section of this prompt'],
@@ -54,6 +55,12 @@ const RULES = [
   [/in \[ADR\.md\]\(ADR\.md\)/g, 'in the "ADR format" section of this prompt'],
 
   // Workspace / scratch / file delivery adapting
+  [/Read `docs\/agents\/refinement\.md` in the workspace to identify the configured language \(`en-US` or `pt-BR`, default `en-US`\) and publishing path\. Minutes, questionnaires, and generated inputs follow this language\./g, 'Minutes, questionnaires, and generated inputs follow the refinement language.'],
+  [/Read `CONTEXT\.md` for glossary terms when present\./g, 'Use any glossary terms provided by the PO.'],
+  [/Refinement language is determined by `Language:` \(or `Idioma:`\) in `docs\/agents\/refinement\.md` \(`en-US` or `pt-BR`\), with `en-US` as default\./g, 'Refinement language is determined by the language requested by the PO, or the language of the input when none is requested (`en-US` or `pt-BR`), with `en-US` as default.'],
+  [/from an input statement, `CONTEXT\.md`, or a verified fact/g, 'from an input statement, the glossary, or a verified fact'],
+  [/use the domain role from `CONTEXT\.md` when available\./g, 'use the domain role from the glossary when available.'],
+  [/ Mapping to external tracker labels lives in `docs\/agents\/triage-labels\.md` when present\./g, ''],
   [/the file exists at `\.scratch\/<project>-<YYYY-MM-DD>\/minutes\.md` \(or where configured in `docs\/agents\/refinement\.md`\), with final disclaimer\./g, 'the minutes were delivered in the response, with final disclaimer.'],
   [/spec and candidate stories exist at the path defined in `docs\/agents\/refinement\.md`, with final disclaimer\./g, 'spec and candidate stories were delivered in the response, with final disclaimer.'],
   [/file exists at path defined by `docs\/agents\/refinement\.md`, with `Status:` matching the verdict and final disclaimer present\./g, 'the refined US was delivered in the response, with `Status:` matching the verdict and final disclaimer present.'],
@@ -76,24 +83,45 @@ const RULES = [
 function adapt(text) {
   let t = text;
   for (const [re, to] of RULES) t = t.replace(re, to);
-  const leftovers = t.match(/Skill tool|\]\([A-Z-]+\.md\)|\$ARGUMENTS/g);
+  const leftovers = t.match(/Skill tool|\]\([A-Z-]+\.md\)|\$ARGUMENTS|docs\/agents\/[a-z-]+\.md/g);
   if (leftovers) throw new Error(`unadapted skill reference: ${[...new Set(leftovers)].join(', ')}`);
   return t;
 }
 
-const CHAT = (flow) => `# Chat mode
-
-This prompt is the chat and instruction-based agent version of the **${flow}** workflow from the Refinement Skills package. It combines the workflow, socratic examination, requirements rigor, and templates into a single document. The rules below take precedence over any file, tool, or mode instructions appearing in the rest of this prompt.
-
-- The operating mode is always **without code**: there is no repository, subagent, or file tool. Ignore instructions regarding with-code mode or dispatching subagents.
-- Input is whatever the PO provides in this conversation: pasted text or attached files. Where the workflow says "read \`CONTEXT.md\`", use the glossary pasted, attached, or placed in knowledge base by the PO; without a glossary, ask for product domain roles in round 1. Where it says "previous stories in \`.scratch/\`", "ADRs", or "documents in \`docs/\`", use only what the PO provided; if nothing was found, state this in one line at the top of round 1.
-- Where the workflow says to publish, write, or save a file, deliver the content directly in the response, each artifact in its own block titled with the filename it would have, ready for the PO to copy into the work item. Questionnaires also go in the response, one block per recipient. "Completed when: file exists" means "the artifact was delivered in the response".
-- Where the workflow says to record a glossary term or an ADR, propose the ready entry in a "Glossary" or "ADR" block at the end of the response for the PO to copy.
-- The \`Azure:\` line receives the ID provided by the PO, or \`none\`. Slugs follow workflow conventions and serve only to label blocks.
-- The other referenced workflows (\`/meeting-minutes\`, \`/requirements-discovery\`, \`/refine-story\`, \`/qa-plan\`) are separate prompts in this collection. When the workflow directs to one of them, inform the PO which one and what artifacts to carry over. A previous artifact pasted by the PO, such as a spec with \`Status: open map\` or a refined US, is the starting point.
-- The session date is the date provided by the PO; if omitted, leave \`<date>\` in the artifact.
-- Socratic examination happens within this conversation: run each round and wait for PO response. Do not invent answers or synthesize before the frontier empties or the PO requests closure.
-`;
+const CHAT = ({ title, examination = true }) => {
+  const variant = examination
+    ? {
+        combines: 'socratic examination, requirements rigor, and templates',
+        inputRest: 'Where the workflow says "read `CONTEXT.md`", use the glossary pasted, attached, or placed in knowledge base by the PO; without a glossary, ask for product domain roles in round 1. Where it says "previous stories in `.scratch/`", "ADRs", or "documents in `docs/`", use only what the PO provided; if nothing was found, state this in one line at the top of round 1.',
+        glossaryAdr: ['- Where the workflow says to record a glossary term or an ADR, propose the ready entry in a "Glossary" or "ADR" block at the end of the response for the PO to copy.'],
+        carryOver: ' A previous artifact pasted by the PO, such as a spec with `Status: open map` or a refined US, is the starting point.',
+        closing: [
+          '- The session date is the date provided by the PO; if omitted, leave `<date>` in the artifact.',
+          '- Socratic examination happens within this conversation: run each round and wait for PO response. Do not invent answers or synthesize before the frontier empties or the PO requests closure.',
+        ],
+      }
+    : {
+        combines: 'requirements rigor, synthesis rules, and templates',
+        inputRest: 'Use only the transcript, meeting metadata, and optional glossary that the PO provided.',
+        glossaryAdr: [],
+        carryOver: '',
+        closing: [],
+      };
+  return [
+    '# Chat mode',
+    '',
+    `This prompt is the chat and instruction-based agent version of the **${title}** workflow from the Refinement Skills package. It combines the workflow, ${variant.combines} into a single document. The rules below take precedence over any file, tool, or mode instructions appearing in the rest of this prompt.`,
+    '',
+    '- The operating mode is always **without code**: there is no repository, subagent, or file tool. Ignore instructions regarding with-code mode or dispatching subagents.',
+    `- Input is whatever the PO provides in this conversation: pasted text or attached files. ${variant.inputRest}`,
+    '- Where the workflow says to publish, write, or save a file, deliver the content directly in the response, each artifact in its own block titled with the filename it would have, ready for the PO to copy into the work item. Questionnaires also go in the response, one block per recipient. "Completed when: file exists" means "the artifact was delivered in the response".',
+    ...variant.glossaryAdr,
+    '- The `Azure:` line receives the ID provided by the PO, or `none`. Slugs follow workflow conventions and serve only to label blocks.',
+    `- The other referenced workflows (\`/meeting-minutes\`, \`/requirements-discovery\`, \`/refine-story\`, \`/qa-plan\`) are separate prompts in this collection. When the workflow directs to one of them, inform the PO which one and what artifacts to carry over.${variant.carryOver}`,
+    ...variant.closing,
+    '',
+  ].join('\n');
+};
 
 const common = () => [ 
   part('Socratic examination', body('socratic-examination/SKILL.md')),
@@ -138,6 +166,7 @@ const FLOWS = {
   },
   'meeting-minutes': {
     title: 'Meeting Minutes',
+    examination: false,
     parts: () => [
       part('Workflow: Meeting Minutes', body('meeting-minutes/SKILL.md')),
       ...rigorOnly(),
@@ -167,7 +196,7 @@ const check = process.argv.includes('--check');
 const outputs = {};
 for (const [name, flow] of Object.entries(FLOWS)) {
   const header = `<!-- Generated by scripts/build-prompts.mjs from skills/. Do not edit manually: run node scripts/build-prompts.mjs -->\n\n`;
-  outputs[`${name}.md`] = header + CHAT(flow.title) + '\n' + adapt(flow.parts().join('\n'));
+  outputs[`${name}.md`] = header + CHAT(flow) + '\n' + adapt(flow.parts().join('\n'));
 }
 outputs['which-flow.md'] = `<!-- Generated by scripts/build-prompts.mjs from skills/. Do not edit manually: run node scripts/build-prompts.mjs -->\n\n` + adapt(router());
 

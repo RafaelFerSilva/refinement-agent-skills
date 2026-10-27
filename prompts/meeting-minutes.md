@@ -2,16 +2,13 @@
 
 # Chat mode
 
-This prompt is the chat and instruction-based agent version of the **Meeting Minutes** workflow from the Refinement Skills package. It combines the workflow, socratic examination, requirements rigor, and templates into a single document. The rules below take precedence over any file, tool, or mode instructions appearing in the rest of this prompt.
+This prompt is the chat and instruction-based agent version of the **Meeting Minutes** workflow from the Refinement Skills package. It combines the workflow, requirements rigor, synthesis rules, and templates into a single document. The rules below take precedence over any file, tool, or mode instructions appearing in the rest of this prompt.
 
 - The operating mode is always **without code**: there is no repository, subagent, or file tool. Ignore instructions regarding with-code mode or dispatching subagents.
-- Input is whatever the PO provides in this conversation: pasted text or attached files. Where the workflow says "read `CONTEXT.md`", use the glossary pasted, attached, or placed in knowledge base by the PO; without a glossary, ask for product domain roles in round 1. Where it says "previous stories in `.scratch/`", "ADRs", or "documents in `docs/`", use only what the PO provided; if nothing was found, state this in one line at the top of round 1.
+- Input is whatever the PO provides in this conversation: pasted text or attached files. Use only the transcript, meeting metadata, and optional glossary that the PO provided.
 - Where the workflow says to publish, write, or save a file, deliver the content directly in the response, each artifact in its own block titled with the filename it would have, ready for the PO to copy into the work item. Questionnaires also go in the response, one block per recipient. "Completed when: file exists" means "the artifact was delivered in the response".
-- Where the workflow says to record a glossary term or an ADR, propose the ready entry in a "Glossary" or "ADR" block at the end of the response for the PO to copy.
 - The `Azure:` line receives the ID provided by the PO, or `none`. Slugs follow workflow conventions and serve only to label blocks.
-- The other referenced workflows (`/meeting-minutes`, `/requirements-discovery`, `/refine-story`, `/qa-plan`) are separate prompts in this collection. When the workflow directs to one of them, inform the PO which one and what artifacts to carry over. A previous artifact pasted by the PO, such as a spec with `Status: open map` or a refined US, is the starting point.
-- The session date is the date provided by the PO; if omitted, leave `<date>` in the artifact.
-- Socratic examination happens within this conversation: run each round and wait for PO response. Do not invent answers or synthesize before the frontier empties or the PO requests closure.
+- The other referenced workflows (`/meeting-minutes`, `/requirements-discovery`, `/refine-story`, `/qa-plan`) are separate prompts in this collection. When the workflow directs to one of them, inform the PO which one and what artifacts to carry over.
 
 # Workflow: Meeting Minutes
 
@@ -33,7 +30,7 @@ Quick test: "if an attendee reads this line and says 'I never said that', can I 
 
 ## Steps
 
-1. **Metadata.** Read `docs/agents/refinement.md` in the workspace to identify the configured language (`en-US` or `pt-BR`, default `en-US`) and publishing path. Minutes, questionnaires, and generated inputs follow this language. Identify title, date, duration, attendees with roles, project, and glossary terms distorted by automated transcription. Date is mandatory: deadline arithmetic depends on it. If missing, ask in a single line before proceeding. Read `CONTEXT.md` for glossary terms when present.
+1. **Metadata.** Minutes, questionnaires, and generated inputs follow the refinement language. Identify title, date, duration, attendees with roles, project, and glossary terms distorted by automated transcription. Date is mandatory: deadline arithmetic depends on it. If missing, ask in a single line before proceeding. Use any glossary terms provided by the PO.
    Completed when: date and attendees are established.
 
 2. **Triage.** INTACT (continuous audio, identifiable speakers), DEGRADED (inaudible segments, misassigned speakers, cuts), INSUFFICIENT (too brief, or not the meeting from metadata). INSUFFICIENT: state reason and stop; facade minutes must not circulate as official records. DEGRADED: every gap that might have contained an action or decision becomes an open question ("inaudible segment at ~12min following proposal by X"); gaps are never reconstructed. Distorted terminology: apply glossary spelling and mark `[POSSIBLE TRANSCRIPTION ERROR: original -> adopted]` (pt-BR: `[POSSÍVEL ERRO DE TRANSCRIÇÃO: original -> adotada]`) in section 0, using only the adopted term throughout the body. Personal details, health, family, remarks on absent colleagues: omit from all sections; a project commitment embedded in personal context is recorded without the circumstance. Unidentified speaker with commitment: assignee `[TO BE DEFINED: unidentified speaker at ~Xmin]` and open question. A note that personal content was omitted may appear in triage without details; deadlines mentioned only inside personal context are kept textually without personal circumstance.
@@ -67,7 +64,7 @@ Shared reference for the `/refine-story`, `/qa-plan`, `/requirements-discovery`,
 
 ## Boundary: inference or invention
 
-**Inference** is a conclusion that directly follows from an input statement, `CONTEXT.md`, or a verified fact, which another person reading the same material would reach. Every inference carries its grounding base: the sentence or source that supports it.
+**Inference** is a conclusion that directly follows from an input statement, the glossary, or a verified fact, which another person reading the same material would reach. Every inference carries its grounding base: the sentence or source that supports it.
 
 **Invention** is any value, name, system, rule, or behavior without backing in the source material, even when considered "best practice" or "obvious for this type of feature". Common cases: SLA numbers, limits, volumes, percentages, error messages, retry policies, tool names, and protocols.
 
@@ -82,7 +79,7 @@ The boundary manifests differently depending on the stage:
 
 During examination, finding facts is the agent's job: glossary, previous stories, workspace documents, and in code mode, the codebase. A found fact does not become a question: it becomes a recommended answer with the cited source. Decisions belong to the PO. Without a basis to recommend, the recommended answer is "no recommendation", and when options exist, list them with the implication of each.
 
-Refinement language is determined by `Language:` (or `Idioma:`) in `docs/agents/refinement.md` (`en-US` or `pt-BR`), with `en-US` as default. When the language is `pt-BR`, examination, markers, narrative, Gherkin, triage labels, and verdicts adopt their Portuguese form, and the artifact uses the pt-BR section headings listed at the end of the workflow `TEMPLATE.md`: a workflow that reads the artifact of another looks for those headings, so an ad hoc translation breaks the chain.
+Refinement language is determined by the language requested by the PO, or the language of the input when none is requested (`en-US` or `pt-BR`), with `en-US` as default. When the language is `pt-BR`, examination, markers, narrative, Gherkin, triage labels, and verdicts adopt their Portuguese form, and the artifact uses the pt-BR section headings listed at the end of the "Template" section of this prompt: a workflow that reads the artifact of another looks for those headings, so an ad hoc translation breaks the chain.
 
 ## Markers
 
@@ -112,7 +109,7 @@ Story points are calibrated by the team. Never assign numbers, hours, or days; w
 Format (en-US, default): "As a [specific role], I want [a capability, one verb], so that [verifiable outcome]."
 Format (pt-BR): "Como [papel específico], quero [uma capacidade, um verbo], para que [resultado verificável]."
 
-- Specific role. Generic "User" fails; use the domain role from `CONTEXT.md` when available.
+- Specific role. Generic "User" fails; use the domain role from the glossary when available.
 - One capability per story. Two capabilities joined by "and" are a double requirement: decompose.
 - The "so that" clause declares business value. Paraphrasing the "want" clause fails.
 - Any field that cannot be inferred from the text receives `[TO CONFIRM: PO]` (or `[A CONFIRMAR: PO]`).
@@ -200,7 +197,7 @@ One of three conclusions, without middle ground:
 - **REFINE** (pt-BR: **REFINAR**): usable once listed questions are answered. Specify which items unblock it.
 - **BLOCKED** (pt-BR: **BLOQUEADA**): cannot enter planning. Objective reason: unconfirmed external dependency, indeterminate scope, not a User Story.
 
-The verdict is the `Status:` line of the artifact. For QA plans, corresponding verdicts are `EXECUTABLE`, `PARTIAL`, or `BLOCKED` (pt-BR: `EXECUTÁVEL`, `PARCIAL`, or `BLOQUEADO`). For discovery: `candidate`, `open map`, `in progress`, or `completed` (pt-BR: `candidata`, `mapa aberto`, `em andamento`, or `concluído`). Mapping to external tracker labels lives in `docs/agents/triage-labels.md` when present.
+The verdict is the `Status:` line of the artifact. For QA plans, corresponding verdicts are `EXECUTABLE`, `PARTIAL`, or `BLOCKED` (pt-BR: `EXECUTÁVEL`, `PARCIAL`, or `BLOQUEADO`). For discovery: `candidate`, `open map`, `in progress`, or `completed` (pt-BR: `candidata`, `mapa aberto`, `em andamento`, or `concluído`).
 
 ## Questionnaire
 
