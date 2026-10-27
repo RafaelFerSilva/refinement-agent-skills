@@ -117,14 +117,14 @@ for (const name of skills) {
   }
 }
 
-function walk(dir, out = []) {
-  for (const e of readdirSync(dir)) {
+function walk(dir, filter = (p) => p.endsWith('.md'), out = []) {
+  for (const e of readdirSync(dir).sort()) {
     // Eval run outputs are generated artifacts, not repository prose: .gitignore keeps them out of the
-    // repository and the prose rules below do not apply to them.
-    if (['.git', 'node_modules', '.scratch'].includes(e) || e.endsWith('-workspace')) continue;
+    // repository at the root and the prose rules below do not apply to them.
+    if (['.git', 'node_modules', '.scratch', '.DS_Store'].includes(e) || (dir === root && e.endsWith('-workspace'))) continue;
     const p = join(dir, e);
-    if (statSync(p).isDirectory()) walk(p, out);
-    else if (p.endsWith('.md')) out.push(p);
+    if (statSync(p).isDirectory()) walk(p, filter, out);
+    else if (filter(p)) out.push(p);
   }
   return out;
 }
@@ -135,17 +135,58 @@ for (const file of walk(root)) {
   if (text.charCodeAt(0) === 0xfeff || text.includes('\r')) fail(`${rel}: BOM or CRLF`);
 }
 
-for (const f of readdirSync(join(root, 'evals')).filter((f) => f.endsWith('.json'))) {
+const codeWorkspaceDir = join(root, 'evals', 'fixtures', 'code-workspace');
+const codeWorkspaceFiles = existsSync(codeWorkspaceDir) && statSync(codeWorkspaceDir).isDirectory()
+  ? walk(codeWorkspaceDir, () => true).map((p) => p.slice(root.length + 1))
+  : [];
+if (!codeWorkspaceFiles.some((f) => !f.endsWith('.md'))) {
+  fail('evals/fixtures/code-workspace missing or holds no source files: mode com-codigo has no product codebase fixture');
+}
+
+const withCodeConfig = join(root, 'evals', 'fixtures', 'refinement-with-code-en-US.md');
+if (!existsSync(withCodeConfig) || !statSync(withCodeConfig).isFile()) {
+  fail('evals/fixtures/refinement-with-code-en-US.md missing: mode com-codigo has no workspace configuration fixture');
+} else {
+  const text = readFileSync(withCodeConfig, 'utf8');
+  if (!/^Mode:\s*com-codigo$/m.test(text)) fail('evals/fixtures/refinement-with-code-en-US.md: does not declare Mode: com-codigo');
+  if (!/^Language:\s*en-US$/m.test(text)) fail('evals/fixtures/refinement-with-code-en-US.md: does not declare Language: en-US');
+  if (!text.includes('evals/fixtures/code-workspace/')) fail('evals/fixtures/refinement-with-code-en-US.md: does not point at evals/fixtures/code-workspace/');
+}
+
+const evalsDir = join(root, 'evals');
+if (!existsSync(evalsDir) || !statSync(evalsDir).isDirectory()) {
+  fail('evals missing: the package has no evaluation suites');
+}
+for (const f of (existsSync(evalsDir) && statSync(evalsDir).isDirectory() ? readdirSync(evalsDir) : []).filter((f) => f.endsWith('.json'))) {
   let suite = null;
-  try { suite = JSON.parse(readFileSync(join(root, 'evals', f), 'utf8')); } catch (e) { fail(`evals/${f}: invalid JSON (${e.message})`); }
+  try { suite = JSON.parse(readFileSync(join(evalsDir, f), 'utf8')); } catch (e) { fail(`evals/${f}: invalid JSON (${e.message})`); }
   if (!suite) continue;
   if (!skills.includes(suite.skill_name)) fail(`evals/${f}: skill_name "${suite.skill_name}" does not exist in skills/`);
   for (const c of suite.evals ?? []) {
     for (const ref of c.files ?? []) {
-      if (!existsSync(join(root, ref))) fail(`evals/${f}: case ${c.id} references ${ref}, which does not exist`);
+      const refPath = join(root, ref);
+      if (!existsSync(refPath) || !statSync(refPath).isFile()) fail(`evals/${f}: case ${c.id} references ${ref}, which is not an existing file`);
     }
-    if (!(c.files ?? []).some((ref) => /refinement-[a-z-]+-(en-US|pt-BR)\.md$/.test(ref))) {
+    const configs = (c.files ?? []).filter((ref) => /^evals\/fixtures\/refinement-(?:no|with)-code-(en-US|pt-BR)\.md$/.test(ref));
+    if (configs.length === 0) {
       fail(`evals/${f}: case ${c.id} provides no workspace configuration fixture; the workflow would stop asking for /configure-refinement`);
+    } else if (configs.length > 1) {
+      fail(`evals/${f}: case ${c.id} provides ${configs.length} workspace configuration fixtures, expected 1`);
+    } else {
+      for (const m of (c.prompt ?? '').matchAll(/evals\/fixtures\/refinement-[a-z-]+-(?:en-US|pt-BR)\.md/g)) {
+        if (m[0] !== configs[0]) fail(`evals/${f}: case ${c.id} names ${m[0]} in prompt while declaring ${configs[0]} in files`);
+      }
+      if (/refinement-with-code-/.test(configs[0])) {
+        const missingCode = codeWorkspaceFiles.filter((wf) => !(c.files ?? []).includes(wf));
+        if (missingCode.length) {
+          fail(`evals/${f}: case ${c.id} uses a com-codigo configuration without declaring ${missingCode.join(', ')} in files`);
+        }
+      } else {
+        const leakedCode = (c.files ?? []).filter((ref) => ref === 'evals/fixtures/code-workspace' || ref.startsWith('evals/fixtures/code-workspace/'));
+        if (leakedCode.length) {
+          fail(`evals/${f}: case ${c.id} uses a sem-codigo configuration while declaring ${leakedCode.join(', ')} in files`);
+        }
+      }
     }
   }
 }

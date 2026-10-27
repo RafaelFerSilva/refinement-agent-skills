@@ -1,5 +1,5 @@
 node_modules/
 .scratch/
-*-workspace/
+/*-workspace/
 .DS_Store
 *.log

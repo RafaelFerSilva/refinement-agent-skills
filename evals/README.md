@@ -65,7 +65,7 @@ With `--baseline`, each assertion is also reported as bought by the package, alr
 
 Flat directory, where the file name declares the language of the material: English names hold en-US material (`us-245-silence-alerts.md`, `CONTEXT-fleet.md`), Portuguese names hold pt-BR material (`us-245-silenciar-alertas.md`, `CONTEXT-frota.md`).
 
-Every case carries a workspace configuration fixture in `files`, `refinement-no-code-en-US.md` or `refinement-no-code-pt-BR.md`, read in place of `docs/agents/refinement.md`. Without it the workflow stops asking for `/configure-refinement`, and the case grades the stop instead of the examination. The validator rejects a case that provides none.
+Every case carries one workspace configuration fixture in `files`, `refinement-no-code-en-US.md`, `refinement-no-code-pt-BR.md`, or `refinement-with-code-en-US.md`, read in place of `docs/agents/refinement.md`. Without it the workflow stops asking for `/configure-refinement`, and the case grades the stop instead of the examination. In `com-codigo` cases, `refinement-with-code-en-US.md` points at `evals/fixtures/code-workspace/`, a small RouteWise codebase whose source files the case also declares in `files`; when copying fixtures into an isolated run workspace, keep those files under `evals/fixtures/code-workspace/` inside the copy so the configuration path resolves unchanged. The validator requires exactly one configuration fixture matching any configuration path in `prompt`, requires `com-codigo` cases to declare every `code-workspace/` file, and rejects `code-workspace/` files in `sem-codigo` cases.
 
 ### Scripted Product Owner answers
 
