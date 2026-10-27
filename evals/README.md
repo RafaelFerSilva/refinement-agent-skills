@@ -6,7 +6,7 @@ Test cases in the format of Anthropic's `skill-creator`: one file per skill, wit
 
 With `skill-creator` installed: run `/skill-creator` and ask it to run the evals in `evals/<skill>.json`. It triggers one run with the skill and one without, writes the outputs to `<skill>-workspace/iteration-N/` (git-ignored), and opens the viewer.
 
-Without it, one subagent per case: give it the prompt, the files listed in `files`, and the path to the skill, then save the output. For synthesis artifacts, run the mechanical grader:
+Without it, one subagent per case: give it the prompt, the files listed in `files`, and the path to the skill (or `prompts/<skill>.md` as the standalone instruction in chat-prompt cases, where `files` names that prompt and inputs sit inline in `prompt`), then save the output. For synthesis artifacts, run the mechanical grader:
 
 ```bash
 node scripts/grade-output.mjs <artifact.md> --skill <refine-story|qa-plan|requirements-discovery|meeting-minutes> [--lang <en-US|pt-BR>] --json
@@ -37,6 +37,7 @@ Per run files live in the layout the workspace already uses, one directory per c
 ```
 <case>/with_skill/run-<n>/outputs/response.md
 <case>/with_skill/run-<n>/grading.json
+<case>/with_prompt/run-<n>/...
 <case>/no_skill/run-<n>/...
 ```
 
@@ -65,7 +66,7 @@ With `--baseline`, each assertion is also reported as bought by the package, alr
 
 Flat directory, where the file name declares the language of the material: English names hold en-US material (`us-245-silence-alerts.md`, `CONTEXT-fleet.md`), Portuguese names hold pt-BR material (`us-245-silenciar-alertas.md`, `CONTEXT-frota.md`).
 
-Every case carries one workspace configuration fixture in `files`, `refinement-no-code-en-US.md`, `refinement-no-code-pt-BR.md`, or `refinement-with-code-en-US.md`, read in place of `docs/agents/refinement.md`. Without it the workflow stops asking for `/configure-refinement`, and the case grades the stop instead of the examination. In `com-codigo` cases, `refinement-with-code-en-US.md` points at `evals/fixtures/code-workspace/`, a small RouteWise codebase whose source files the case also declares in `files`; when copying fixtures into an isolated run workspace, keep those files under `evals/fixtures/code-workspace/` inside the copy so the configuration path resolves unchanged. The validator requires exactly one configuration fixture matching any configuration path in `prompt`, requires `com-codigo` cases to declare every `code-workspace/` file, and rejects `code-workspace/` files in `sem-codigo` cases.
+Every skill case carries one workspace configuration fixture in `files`, `refinement-no-code-en-US.md`, `refinement-no-code-pt-BR.md`, or `refinement-with-code-en-US.md`, read in place of `docs/agents/refinement.md`. Without it the workflow stops asking for `/configure-refinement`, and the case grades the stop instead of the examination. In `com-codigo` cases, `refinement-with-code-en-US.md` points at `evals/fixtures/code-workspace/`, a small RouteWise codebase whose source files the case also declares in `files`; when copying fixtures into an isolated run workspace, keep those files under `evals/fixtures/code-workspace/` inside the copy so the configuration path resolves unchanged. Chat-prompt cases declare only `prompts/<skill>.md` in `files` and paste their inputs inline in `prompt`, with no workspace configuration or fixture files; what the validator checks on both shapes is listed in `docs/agents/harness.md`.
 
 ### Scripted Product Owner answers
 

@@ -157,32 +157,53 @@ const evalsDir = join(root, 'evals');
 if (!existsSync(evalsDir) || !statSync(evalsDir).isDirectory()) {
   fail('evals missing: the package has no evaluation suites');
 }
+const underDir = (ref, dir) => ref === dir || ref.startsWith(`${dir}/`);
 for (const f of (existsSync(evalsDir) && statSync(evalsDir).isDirectory() ? readdirSync(evalsDir) : []).filter((f) => f.endsWith('.json'))) {
   let suite = null;
   try { suite = JSON.parse(readFileSync(join(evalsDir, f), 'utf8')); } catch (e) { fail(`evals/${f}: invalid JSON (${e.message})`); }
   if (!suite) continue;
   if (!skills.includes(suite.skill_name)) fail(`evals/${f}: skill_name "${suite.skill_name}" does not exist in skills/`);
   for (const c of suite.evals ?? []) {
-    for (const ref of c.files ?? []) {
+    const caseFiles = c.files ?? [];
+    const casePrompt = c.prompt ?? '';
+    for (const ref of caseFiles) {
       const refPath = join(root, ref);
       if (!existsSync(refPath) || !statSync(refPath).isFile()) fail(`evals/${f}: case ${c.id} references ${ref}, which is not an existing file`);
     }
-    const configs = (c.files ?? []).filter((ref) => /^evals\/fixtures\/refinement-(?:no|with)-code-(en-US|pt-BR)\.md$/.test(ref));
+    const promptRefs = caseFiles.filter((ref) => underDir(ref, 'prompts'));
+    if (promptRefs.length > 0) {
+      const chatPrompt = `prompts/${suite.skill_name}.md`;
+      if (promptRefs.length !== 1 || promptRefs[0] !== chatPrompt) {
+        fail(`evals/${f}: case ${c.id} declares ${promptRefs.join(', ')} in files, expected only ${chatPrompt}`);
+      }
+      const extraFiles = caseFiles.filter((ref) => !promptRefs.includes(ref));
+      if (extraFiles.length) {
+        fail(`evals/${f}: chat-prompt case ${c.id} declares ${extraFiles.join(', ')} alongside ${chatPrompt}; chat cases paste inputs inline and take no workspace or fixture files`);
+      }
+      if (!casePrompt.includes('\n')) {
+        fail(`evals/${f}: chat-prompt case ${c.id} has a single-line or empty prompt; chat cases paste their inputs inline`);
+      }
+      if (/evals\/fixtures\/|docs\/agents\/refinement\.md/.test(casePrompt)) {
+        fail(`evals/${f}: chat-prompt case ${c.id} references evals/fixtures/ or docs/agents/refinement.md in prompt instead of pasting inputs inline`);
+      }
+      continue;
+    }
+    const configs = caseFiles.filter((ref) => /^evals\/fixtures\/refinement-(?:no|with)-code-(en-US|pt-BR)\.md$/.test(ref));
     if (configs.length === 0) {
       fail(`evals/${f}: case ${c.id} provides no workspace configuration fixture; the workflow would stop asking for /configure-refinement`);
     } else if (configs.length > 1) {
       fail(`evals/${f}: case ${c.id} provides ${configs.length} workspace configuration fixtures, expected 1`);
     } else {
-      for (const m of (c.prompt ?? '').matchAll(/evals\/fixtures\/refinement-[a-z-]+-(?:en-US|pt-BR)\.md/g)) {
+      for (const m of casePrompt.matchAll(/evals\/fixtures\/refinement-[a-z-]+-(?:en-US|pt-BR)\.md/g)) {
         if (m[0] !== configs[0]) fail(`evals/${f}: case ${c.id} names ${m[0]} in prompt while declaring ${configs[0]} in files`);
       }
       if (/refinement-with-code-/.test(configs[0])) {
-        const missingCode = codeWorkspaceFiles.filter((wf) => !(c.files ?? []).includes(wf));
+        const missingCode = codeWorkspaceFiles.filter((wf) => !caseFiles.includes(wf));
         if (missingCode.length) {
           fail(`evals/${f}: case ${c.id} uses a com-codigo configuration without declaring ${missingCode.join(', ')} in files`);
         }
       } else {
-        const leakedCode = (c.files ?? []).filter((ref) => ref === 'evals/fixtures/code-workspace' || ref.startsWith('evals/fixtures/code-workspace/'));
+        const leakedCode = caseFiles.filter((ref) => underDir(ref, 'evals/fixtures/code-workspace'));
         if (leakedCode.length) {
           fail(`evals/${f}: case ${c.id} uses a sem-codigo configuration while declaring ${leakedCode.join(', ')} in files`);
         }
