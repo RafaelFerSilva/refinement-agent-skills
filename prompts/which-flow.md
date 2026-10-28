@@ -2,7 +2,10 @@
 
 # Which workflow? (chat mode)
 
-Chat and instruction-based agent version of the Refinement Skills package router. Each workflow is a standalone prompt in this collection: `bootstrap-context.md`, `refine-story.md`, `qa-plan.md`, `requirements-discovery.md`, `meeting-minutes.md`, plus `ask-refinement.md` for usage questions. In a project or agent supporting knowledge files, use this text as instructions and the five workflow prompts (plus `ask-refinement.md`) as knowledge files; when the PO requests a workflow or asks how to use the system, read the corresponding file and follow it as instructions. In a standard chat, paste the prompt directly.
+Chat and instruction-based agent version of the Refinement Skills package router. Two prompt distributions are generated from `skills/`:
+
+- **Unified web workspace (`prompts/project/`):** paste `prompts/project/INSTRUCTIONS.md` into your platform's System Prompt / Custom Instructions field and upload `prompts/project/refinement-core.md` plus the five lean workflow files in `prompts/project/` (`bootstrap-context.md`, `refine-story.md`, `qa-plan.md`, `requirements-discovery.md`, `meeting-minutes.md`) to the Knowledge Base alongside your product's `CONTEXT.md` and `product-overview.md`. All workflows, routing, and Q&A coexist in one shared workspace without duplicating shared rules.
+- **Ad-hoc single chat (`prompts/*.md`):** paste one self-contained prompt at the root of `prompts/` (`bootstrap-context.md`, `refine-story.md`, `qa-plan.md`, `requirements-discovery.md`, `meeting-minutes.md`, `which-flow.md`, or `ask-refinement.md`) directly into a standalone chat conversation.
 
 You do not need to memorize every skill; ask.
 
@@ -19,11 +22,11 @@ Enter at any step. A User Story written directly by the PO enters `/refine-story
 
 ### Ongoing products
 
-Run **`/bootstrap-context`** before refining stories on a product already in production: pass existing manuals, legacy specs, or exported stories pasted or attached in the conversation (or run with no files for a short onboarding examination) to generate `CONTEXT.md` and `product-overview.md` for your agent knowledge base so subsequent workflows start with domain roles, active modules, and rules grounded. Re-run whenever documentation for a new legacy area arrives.
+Run **`/bootstrap-context`** before refining stories on a product already in production: pass existing manuals, legacy specs, or exported stories pasted, attached, or stored in the Knowledge Base (or run with no files for a short onboarding examination) to generate `CONTEXT.md` and `product-overview.md` for your agent Knowledge Base (jumping straight into `refine-story.md` without product context turns missing facts into baseline questions because `requirements-rigor` forbids silent invention) so subsequent workflows start with domain roles, active modules, and rules grounded. Re-run whenever documentation for a new legacy area arrives.
 
 ### Context hygiene
 
-Each workflow fits in a single session and publishes to the tracker. Between workflows, start a new conversation and paste the previous artifact: the next stage reads the artifact, not the conversation.
+Each workflow fits in a single session and publishes to the tracker. Between workflows, start a new conversation and paste the previous artifact: the next stage reads the artifact rather than prior chat turns, and inside a unified web workspace (`prompts/project/`) opening a new conversation in the same workspace resets chat history like `/clear` while keeping Knowledge Base files shared. Within a workflow session, keep the same conversation until final synthesis.
 
 ## Two operating modes
 
@@ -40,6 +43,4 @@ Workflows conclude by delivering one questionnaire per recipient in the response
 
 ## Questions and workspace status
 
-Use **`ask-refinement.md`** whenever you have a question about how the prompts work, what a marker or verdict means, how to resume after a questionnaire, or how to keep platform memory / knowledge base files updated.
-
-
+Use **`ask-refinement.md`** (or ask directly in any conversation inside a unified web workspace configured with `prompts/project/INSTRUCTIONS.md`) whenever you have a question about how the prompts work, what a marker or verdict means, how to resume after a questionnaire, or how to keep platform memory / Knowledge Base files updated.

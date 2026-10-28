@@ -82,24 +82,38 @@ Standard AI prompts fill context gaps with plausible-sounding inventions (invent
 
 ---
 
-## 4. Using Standalone Chat Prompts (`prompts/`) and Platform Memory
+## 4. Web Agent Platforms Without a Local Repository (`prompts/project/` vs. `prompts/*.md`)
 
-Teams without a local repository or CLI agent can run the generated standalone prompts in [`prompts/`](../prompts/) inside **Claude Projects, Custom GPTs, Gemini Gems, Copilot Studio**, or standard web chats:
+Teams without a local Git repository or CLI agent have two generated prompt distributions under [`prompts/`](../prompts/), built from the same source of truth in `skills/`:
 
-- `prompts/which-flow.md` (router instructions)
-- `prompts/ask-refinement.md` (usage Q&A and memory-update helper)
-- `prompts/bootstrap-context.md`
-- `prompts/meeting-minutes.md`
-- `prompts/requirements-discovery.md`
-- `prompts/refine-story.md`
-- `prompts/qa-plan.md`
+### Option A (Recommended): Unified Web Workspace (`prompts/project/`)
+
+Best for **Claude Projects, ChatGPT Projects, Custom GPTs, Gemini Gems, and Copilot Studio**, where all five workflows, the router, the Q&A helper, and your product's living context coexist in **one shared web workspace** with zero duplicated rules:
+
+1. **Paste system instructions (0 file upload slots):** copy [`prompts/project/INSTRUCTIONS.md`](../prompts/project/INSTRUCTIONS.md) into your platform's *System Prompt / Custom Instructions* field. It keeps the workflow router (`which-flow`), the single-turn Q&A helper (`ask-refinement`), and chat-mode rules active in every conversation.
+2. **Upload the 6 modular package files to the Knowledge Base:**
+   - [`prompts/project/refinement-core.md`](../prompts/project/refinement-core.md) (the single shared copy of `socratic-examination` and `requirements-rigor`, cutting bundle size by more than half and preventing duplicate RAG chunks)
+   - [`prompts/project/bootstrap-context.md`](../prompts/project/bootstrap-context.md)
+   - [`prompts/project/meeting-minutes.md`](../prompts/project/meeting-minutes.md)
+   - [`prompts/project/requirements-discovery.md`](../prompts/project/requirements-discovery.md)
+   - [`prompts/project/refine-story.md`](../prompts/project/refine-story.md)
+   - [`prompts/project/qa-plan.md`](../prompts/project/qa-plan.md)
+   *(Six Knowledge Base slots fit comfortably inside Gemini Gems' 10-file cap and Custom GPTs' 20-file cap, leaving plenty of slots for your product context and reference manuals.)*
+3. **Bootstrap your product context:** open your first conversation inside that shared workspace, run `bootstrap-context` (pasting or attaching existing manuals, or answering the short onboarding examination), and upload the generated `CONTEXT.md` and `product-overview.md` files into the same Knowledge Base.
+4. **Open a new conversation inside the same workspace as your `/clear`:**
+   - All five workflows and Q&A coexist in that workspace: paste a transcript, briefing, User Story, refined User Story, or usage question, and `INSTRUCTIONS.md` routes to the right workflow (or answers usage/marker questions in a single turn without opening examination rounds).
+   - Keep a single workflow examination inside one conversation until final synthesis completes.
+   - When moving between stages (for example, from `refine-story` to `qa-plan`, or on to the next User Story), **start a new conversation inside the same Project / Gem / GPT** and paste the published artifact from the previous step: the fresh thread resets chat history cleanly just like `/clear`, while `CONTEXT.md`, `product-overview.md`, and ADRs in the Knowledge Base stay shared across every thread.
+
+### Option B: Ad-hoc Single Chat (`prompts/*.md`)
+
+For plain web chats without persistent instructions or a shared Knowledge Base, paste one self-contained file from the root of [`prompts/`](../prompts/) (`bootstrap-context.md`, `meeting-minutes.md`, `requirements-discovery.md`, `refine-story.md`, `qa-plan.md`, `which-flow.md`, or `ask-refinement.md`) at the top of a conversation together with your input and any `CONTEXT.md` excerpt.
 
 ### Keeping platform Memory / Knowledge Base in sync
 
-In a web platform, your product's `CONTEXT.md`, `product-overview.md`, and ADRs typically live in the platform's **Project Knowledge, Agent Memory, or Knowledge Base files**. Because chat models cannot overwrite platform configuration files automatically, every examination prompt (`bootstrap-context`, `refine-story`, `requirements-discovery`, `qa-plan`) follows a dedicated **Memory / Knowledge Base Updates** protocol:
+Because web chat models cannot overwrite Knowledge Base files automatically, every examination workflow (`bootstrap-context`, `refine-story`, `requirements-discovery`, `qa-plan`) follows a dedicated **Memory / Knowledge Base Updates** protocol:
 
-1. **Initial setup:** paste `prompts/bootstrap-context.md` (or add the `prompts/*.md` files to your agent) along with any legacy notes, complete the short curation round, and upload the generated `CONTEXT.md` and `product-overview.md` blocks into your platform's Knowledge Base / Memory.
-2. **Clean examination rounds:** while examining a new User Story with you, the agent acknowledges newly settled terms in one brief line without cluttering intermediate rounds with file blocks.
-3. **Consolidated handoff at synthesis:** whenever a session resolves new domain terms, flags a glossary widening, updates a baseline rule, or records an ADR, the final synthesis response appends a **`Memory / Knowledge Base Updates`** section right below the main artifact, and reminds you in the final report to update your agent's configuration before the next story:
+1. **Clean examination rounds:** while examining a User Story with you, the agent acknowledges newly settled terms in one brief line without cluttering intermediate rounds with file blocks.
+2. **Consolidated handoff at synthesis:** whenever a session resolves new domain terms, flags a glossary widening, updates a baseline rule, or records an ADR, the final synthesis response appends a **`Memory / Knowledge Base Updates`** section right below the main artifact, and reminds you in the final report to update your agent's Knowledge Base before the next User Story:
    - **Full replacement block:** emitted when creating a file from scratch or when you pasted the complete prior file inline in that conversation, ready to replace the file in one copy-paste.
    - **Safe append / delta block (`Append to CONTEXT.md`):** emitted when prior context came from platform memory or RAG search chunks (where the model may not see every entry in your file), giving you only the new or flagged entries to append at the end so pre-existing terms are never erased by mistake.

@@ -97,7 +97,7 @@ A user-invoked skill that runs an examination and publishes an artifact: `/boots
 _Avoid_: copilot, prompt, command, agent
 
 **Workspace**:
-The repository where the package is installed and User Stories are analyzed. Contains the product's `CONTEXT.md`, `docs/agents/refinement.md` with operating mode, and `.scratch/` with generated artifacts.
+The repository where the package is installed and User Stories are analyzed. Contains the product's `CONTEXT.md`, `docs/agents/refinement.md` with operating mode, and `.scratch/` with generated artifacts. On web agent platforms without a local repository, a **unified web workspace** pairs `prompts/project/INSTRUCTIONS.md` with a shared Knowledge Base holding `refinement-core.md`, the five workflow files, `CONTEXT.md`, and `product-overview.md`.
 _Avoid_: project (ambiguous with product), analysis repo
 
 **Mode**:

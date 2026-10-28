@@ -115,7 +115,12 @@ Operating mode and language are saved in `docs/agents/refinement.md` during `/co
 
 ## Usage in Chat and Prompt-Based Agents
 
-The [prompts/](prompts/) directory contains standalone, self-contained versions of each flow designed for Claude Projects, custom GPTs, Gems, Copilot Studio, or standard web chats. They are generated from `skills/` via `node scripts/build-prompts.mjs`. In this setup no local repository is needed: the user pastes inputs directly into the chat or configures `CONTEXT.md` and `product-overview.md` in the platform's Memory / Knowledge Base, and examination workflows emit copy-ready memory update blocks at final synthesis whenever new domain terms, rules, or ADRs are resolved. See [Getting Started](docs/getting-started.md#4-using-standalone-chat-prompts-prompts-and-platform-memory).
+`node scripts/build-prompts.mjs` generates two prompt distributions under [prompts/](prompts/) from `skills/` for teams working without a local repository:
+
+- **Unified web workspace ([prompts/project/](prompts/project/)):** paste `prompts/project/INSTRUCTIONS.md` into the System Prompt / Custom Instructions field of a Claude Project, ChatGPT Project, Custom GPT, Gemini Gem, or Copilot Studio agent, and upload `prompts/project/refinement-core.md` plus the five lean workflow files in `prompts/project/` to the Knowledge Base alongside `CONTEXT.md`, `product-overview.md`, and ADRs. All five workflows, automatic routing, and single-turn Q&A coexist in one shared workspace (using six package Knowledge Base slots with zero duplicated primitives), and starting a new conversation inside that same workspace resets chat history like `/clear` while keeping Knowledge Base files shared.
+- **Ad-hoc single chat (`prompts/*.md`):** self-contained single-file prompts at the root of `prompts/` for pasting directly into plain web chats without persistent instructions or a shared Knowledge Base.
+
+In both setups, examination workflows emit copy-ready **Memory / Knowledge Base Updates** blocks at final synthesis whenever new domain terms, baseline rules, or ADRs are resolved. See [Getting Started](docs/getting-started.md#4-web-agent-platforms-without-a-local-repository-promptsproject-vs-promptsmd).
 
 ---
 
@@ -224,7 +229,7 @@ Use the command matching how you installed the package:
 
 ## Guia em Português
 
-Consulte o **[Guia de Início Rápido completo em Português](docs/getting-started.pt-BR.md)** para ver a estrutura de pastas do workspace, como iniciar em projetos novos vs. projetos já em andamento (`docs/reference/` + `/bootstrap-context`) e como atualizar a Memória / Base de Conhecimento ao usar `prompts/`.
+Consulte o **[Guia de Início Rápido completo em Português](docs/getting-started.pt-BR.md)** para ver a estrutura de pastas do workspace, como iniciar em projetos novos vs. projetos já em andamento (`docs/reference/` + `/bootstrap-context`), como configurar um workspace web unificado (`prompts/project/`) vs. chats avulsos (`prompts/*.md`) e como manter a Memória / Base de Conhecimento sincronizada.
 
 Resumo rápido para utilizar o fluxo em português:
 
@@ -238,7 +243,7 @@ Resumo rápido para utilizar o fluxo em português:
 ## Development and Testing
 
 - `node scripts/validate-skills.mjs`: verifies frontmatter, plugin manifest, router consistency, self-containment, and prompt freshness.
-- `node scripts/build-prompts.mjs`: rebuilds standalone prompts in `prompts/` from `skills/`.
+- `node scripts/build-prompts.mjs`: rebuilds self-contained `prompts/*.md` and modular `prompts/project/*.md` files from `skills/`.
 - `node scripts/grade-output.mjs`: runs mechanical assertions on published refinement artifacts in `en-US` and `pt-BR`.
 - `node scripts/aggregate-runs.mjs`: aggregates multi-run `grading.json` results against the pass-rate threshold and compares against `no_skill` baselines.
 - `node scripts/diff-glossary.mjs`: checks whether an examination session modified or duplicated existing `CONTEXT.md` definitions without a confirmation marker.

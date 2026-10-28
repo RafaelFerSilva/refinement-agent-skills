@@ -82,24 +82,38 @@ Prompts comuns tentam parecer prestativos inventando regras, perfis genéricos (
 
 ---
 
-## 4. Fluxo com Prompts Avulsos (`prompts/`) e Memória da Plataforma
+## 4. Agentes Web sem Repositório Local (`prompts/project/` vs. `prompts/*.md`)
 
-Times que usam agentes web sem repositório local (**Claude Projects, Custom GPTs, Gemini Gems, Copilot Studio** ou chats padrão) utilizam os arquivos gerados em [`prompts/`](../prompts/):
+Times que usam agentes web sem repositório Git local contam com duas distribuições geradas em [`prompts/`](../prompts/) a partir da mesma fonte em `skills/`:
 
-- `prompts/which-flow.md` (roteador de fluxos)
-- `prompts/ask-refinement.md` (tira-dúvidas de uso e manutenção de memória)
-- `prompts/bootstrap-context.md`
-- `prompts/meeting-minutes.md`
-- `prompts/requirements-discovery.md`
-- `prompts/refine-story.md`
-- `prompts/qa-plan.md`
+### Opção A (Recomendada): Workspace Web Unificado (`prompts/project/`)
+
+Ideal para **Claude Projects, ChatGPT Projects, Custom GPTs, Gemini Gems e Copilot Studio**, onde todas as 5 etapas, o roteador, o tira-dúvidas e o contexto vivo do produto coexistem em **um único workspace web compartilhado** (sem duplicar regras na Base de Conhecimento):
+
+1. **Configure as instruções fixas (0 vagas de arquivo):** copie o conteúdo de [`prompts/project/INSTRUCTIONS.md`](../prompts/project/INSTRUCTIONS.md) para o campo *System Prompt / Custom Instructions* na plataforma (Project, GPT, Gem ou agente). Ele mantém o roteador (`which-flow`), o tira-dúvidas de turno único (`ask-refinement`) e as regras de memória sempre ativos.
+2. **Suba os 6 arquivos modulares na Base de Conhecimento (*Knowledge Base*):**
+   - [`prompts/project/refinement-core.md`](../prompts/project/refinement-core.md) (cópia única de `socratic-examination` e `requirements-rigor`, reduzindo em mais de 50% o volume de instruções e evitando trechos repetidos na busca por RAG)
+   - [`prompts/project/bootstrap-context.md`](../prompts/project/bootstrap-context.md)
+   - [`prompts/project/meeting-minutes.md`](../prompts/project/meeting-minutes.md)
+   - [`prompts/project/requirements-discovery.md`](../prompts/project/requirements-discovery.md)
+   - [`prompts/project/refine-story.md`](../prompts/project/refine-story.md)
+   - [`prompts/project/qa-plan.md`](../prompts/project/qa-plan.md)
+   *(Ocupa apenas 6 arquivos, cabendo com folga no limite de 10 arquivos do Gemini Gems e de 20 arquivos dos Custom GPTs, deixando espaço livre para os documentos do produto.)*
+3. **Inicialize o contexto do produto:** abra a primeira conversa dentro desse workspace web, rode o `bootstrap-context` (colando/anexando manuais atuais ou respondendo à sabatina curta) e adicione os arquivos `CONTEXT.md` e `product-overview.md` gerados à mesma Base de Conhecimento.
+4. **Use novas conversas dentro do mesmo workspace web como equivalente ao `/clear`:**
+   - Todos os fluxos coexistem ali: basta enviar uma transcrição, briefing, User Story, User Story refinada ou dúvida de uso e o `INSTRUCTIONS.md` aciona automaticamente o fluxo certo (ou responde em turno único sem abrir sabatina quando for dúvida).
+   - Mantenha a mesma conversa até concluir a síntese de um fluxo.
+   - Ao avançar de etapa (por exemplo, de `refine-story` para `qa-plan`, ou para uma nova User Story), **abra uma nova conversa dentro do mesmo Project / Gem / GPT** e cole apenas o artefato final da etapa anterior: o histórico de mensagens zera como no `/clear` (sem ruído de perguntas intermediárias), enquanto `CONTEXT.md`, `product-overview.md` e ADRs seguem compartilhados na Base de Conhecimento.
+
+### Opção B: Chat Avulso sem Base de Conhecimento (`prompts/*.md`)
+
+Para chats web comuns sem instruções persistentes nem arquivos compartilhados, cole diretamente no início da conversa um dos prompts autocontidos da raiz de [`prompts/`](../prompts/) (`bootstrap-context.md`, `meeting-minutes.md`, `requirements-discovery.md`, `refine-story.md`, `qa-plan.md`, `which-flow.md` ou `ask-refinement.md`) junto com o insumo e o trecho atual do seu `CONTEXT.md`.
 
 ### Como atualizar o contexto na Memória / Base de Conhecimento da plataforma
 
-Quando você usa plataformas web, o `CONTEXT.md`, o `product-overview.md` e os ADRs costumam ficar configurados na **Memória ou Base de Conhecimento (Knowledge Base)** do projeto/agente. Como cada nova US pode descobrir novos termos de domínio, regras transversais ou ADRs e o modelo não consegue editar os arquivos internos da plataforma sozinho, os prompts seguem esta regra automática:
+Como modelos em plataformas web não conseguem sobrescrever sozinhos os arquivos salvos na Base de Conhecimento do projeto/agente, todos os fluxos com sabatina seguem um protocolo automático de atualização:
 
-1. **Partida do projeto:** rode `prompts/bootstrap-context.md` colando seus manuais/notas atuais (ou respondendo à entrevista curta) e salve os blocos gerados de `CONTEXT.md` e `product-overview.md` na Base de Conhecimento / Memória do seu agente na plataforma.
-2. **Rodadas limpas durante a sabatina:** enquanto entrevista o PO em uma US, o agente apenas confirma em uma linha curta quando um termo novo é fechado, sem despejar blocos de arquivo no meio da conversa.
-3. **Entrega consolidada na síntese final:** sempre que a sessão criar ou alterar dados de contexto (`CONTEXT.md`, `product-overview.md` ou novo ADR), o agente entrega ao final da resposta, logo abaixo da US/artefato principal, a seção **`Atualizações para a Memória / Base de Conhecimento`** com blocos prontos para copiar e avisa no fechamento o que você deve atualizar na configuração da plataforma:
+1. **Rodadas limpas durante a sabatina:** enquanto examina uma User Story com o PO, o agente apenas confirma em uma linha curta quando um termo novo é fechado, sem despejar blocos de arquivo no meio da conversa.
+2. **Entrega consolidada na síntese final:** sempre que a sessão criar ou alterar dados de contexto (`CONTEXT.md`, `product-overview.md` ou novo ADR), o agente entrega ao final da resposta, logo abaixo do artefato principal, a seção **`Atualizações para a Memória / Base de Conhecimento`** com blocos prontos para copiar e avisa no fechamento o que atualizar na plataforma antes da próxima conversa:
    - **Arquivo completo para substituição:** gerado quando o documento está sendo criado do zero ou quando você colou o arquivo anterior inteiro naquela conversa.
    - **Bloco incremental seguro (`Adicionar ao CONTEXT.md`):** gerado quando o contexto veio da Memória / Base de Conhecimento da plataforma (onde buscas por RAG podem mostrar apenas trechos parciais ao modelo). Assim, você apenas adiciona as novas entradas ao final do arquivo na plataforma, sem risco de sobrescrever e apagar termos antigos.

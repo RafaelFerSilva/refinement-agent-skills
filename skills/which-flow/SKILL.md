@@ -44,6 +44,10 @@ Workflows conclude by writing a questionnaire per recipient alongside the artifa
 
 Run **`/ask-refinement`** whenever you have a question about how the package works, what a marker or verdict means, where files belong, how to resume after a questionnaire, or what state your workspace is in right now.
 
+## Web agent platforms
+
+Without a local repository, configure a **unified web workspace** from `prompts/project/` (`INSTRUCTIONS.md` in System Prompt / Custom Instructions plus `refinement-core.md` and the five workflow files in the Knowledge Base alongside `CONTEXT.md` and `product-overview.md`), or paste a self-contained `prompts/*.md` file in an ad-hoc chat.
+
 ## Prerequisite
 
 **`/configure-refinement`**, run once per workspace: sets up operating mode, tracker, and publishing conventions.

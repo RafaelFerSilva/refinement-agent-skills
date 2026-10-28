@@ -56,6 +56,21 @@
         "It recommends `meeting-minutes.md` (or `/meeting-minutes` prompt) as the concrete next prompt for the raw kickoff transcript",
         "It makes no claim of reading or writing local disk files or `.scratch/` in chat mode"
       ]
+    },
+    {
+      "id": 5,
+      "prompt": "Configuramos nosso projeto web compartilhado usando `prompts/project/` (com `CONTEXT.md` e `product-overview.md` da RouteWise já carregados na Base de Conhecimento).\n\nTenho duas dúvidas antes de começar:\n1. Os 5 fluxos conseguem coexistir neste mesmo workspace web compartilhado ou precisamos colar um prompt avulso em cada chat? E por que abrir uma nova conversa dentro deste mesmo projeto ao passar do `refine-story.md` para o `qa-plan.md` equivale ao `/clear`?\n2. O que significam os marcadores `[DEPENDÊNCIA NÃO MAPEADA]` e `[INVEST-FAIL: S]` quando aparecem em uma User Story?",
+      "expected_output": "Dispatched via `prompts/project/INSTRUCTIONS.md` to single-turn Q&A mode in Portuguese (`pt-BR`) consulting `prompts/project/refinement-core.md` strictly as reference: (1) confirms that with `INSTRUCTIONS.md` in System Prompt / Custom Instructions and `refinement-core.md` plus the five workflow files in the Knowledge Base, all five workflows coexist in one shared web workspace without pasting standalone `prompts/*.md` files per chat, and explains that opening a new conversation inside that same workspace resets chat history like `/clear` (so `qa-plan.md` reads the published User Story artifact cleanly rather than prior chat noise) while keeping Knowledge Base files (`CONTEXT.md`, `product-overview.md`, ADRs) shared; (2) accurately explains `[DEPENDÊNCIA NÃO MAPEADA]` (external integration or system whose availability is unconfirmed, requiring confirmation before entering sprint) and `[INVEST-FAIL: S]` (failure on the Small INVEST criterion when a User Story does not fit in one sprint, paired with decomposition `[DECOMPOR]`). Opens no `❓ Q<n>` examination round, writes no files, and includes no `Status:` verdict line or `⚠️` artifact disclaimer.",
+      "files": [
+        "prompts/project/INSTRUCTIONS.md",
+        "prompts/project/refinement-core.md"
+      ],
+      "assertions": [
+        "The response answers directly in Portuguese (`pt-BR`) in a single turn without opening any `❓ Q<n>` examination round, `Status:` verdict header, or `⚠️` artifact disclaimer",
+        "It explains that `prompts/project/` (`INSTRUCTIONS.md` plus `refinement-core.md` and the five workflow files in the Knowledge Base) lets all five workflows coexist in one shared web workspace, and that opening a new conversation inside the same workspace resets chat history like `/clear` while keeping Knowledge Base files (`CONTEXT.md`, `product-overview.md`, ADRs) shared",
+        "It accurately explains both `[DEPENDÊNCIA NÃO MAPEADA]` (unconfirmed integration or external system availability blocking sprint entry until confirmed) and `[INVEST-FAIL: S]` (failed Small INVEST criterion for a User Story too large for a single sprint, paired with decomposition)",
+        "It makes no claim of reading or writing local repository files or `.scratch/`"
+      ]
     }
   ]
 }

@@ -195,6 +195,9 @@ if (!existsSync(evalsDir) || !statSync(evalsDir).isDirectory()) {
   fail('evals missing: the package has no evaluation suites');
 }
 const underDir = (ref, dir) => ref === dir || ref.startsWith(`${dir}/`);
+const PROJECT_WORKFLOWS = ['bootstrap-context', 'meeting-minutes', 'requirements-discovery', 'refine-story', 'qa-plan'];
+const PROJECT_INSTRUCTION_SKILLS = ['ask-refinement', 'which-flow'];
+const PRIMITIVE_HEADINGS = ['Socratic examination', 'Glossary format', 'ADR format', 'Requirements rigor', 'Anti-patterns', 'Questionnaire'];
 const CONFIG_OPTIONAL_SUITES = new Set(['ask-refinement']);
 for (const f of (existsSync(evalsDir) && statSync(evalsDir).isDirectory() ? readdirSync(evalsDir) : []).filter((f) => f.endsWith('.json'))) {
   let suite = null;
@@ -212,13 +215,28 @@ for (const f of (existsSync(evalsDir) && statSync(evalsDir).isDirectory() ? read
     }
     const promptRefs = caseFiles.filter((ref) => underDir(ref, 'prompts'));
     if (promptRefs.length > 0) {
-      const chatPrompt = `prompts/${suite.skill_name}.md`;
-      if (promptRefs.length !== 1 || promptRefs[0] !== chatPrompt) {
-        fail(`evals/${f}: case ${c.id} declares ${promptRefs.join(', ')} in files, expected only ${chatPrompt}`);
+      const isProjectCase = promptRefs.some((ref) => underDir(ref, 'prompts/project'));
+      let expectedPrompts = null;
+      if (isProjectCase) {
+        if (PROJECT_WORKFLOWS.includes(suite.skill_name)) {
+          expectedPrompts = ['prompts/project/INSTRUCTIONS.md', 'prompts/project/refinement-core.md', `prompts/project/${suite.skill_name}.md`];
+        } else if (PROJECT_INSTRUCTION_SKILLS.includes(suite.skill_name)) {
+          expectedPrompts = ['prompts/project/INSTRUCTIONS.md', 'prompts/project/refinement-core.md'];
+        } else {
+          fail(`evals/${f}: case ${c.id} declares prompts/project/ files for "${suite.skill_name}", which is not part of prompts/project/`);
+        }
+      } else {
+        expectedPrompts = [`prompts/${suite.skill_name}.md`];
       }
-      const extraFiles = caseFiles.filter((ref) => !promptRefs.includes(ref));
-      if (extraFiles.length) {
-        fail(`evals/${f}: chat-prompt case ${c.id} declares ${extraFiles.join(', ')} alongside ${chatPrompt}; chat cases paste inputs inline and take no workspace or fixture files`);
+      if (expectedPrompts) {
+        const sameSet = promptRefs.length === expectedPrompts.length && expectedPrompts.every((p) => promptRefs.includes(p));
+        if (!sameSet) {
+          fail(`evals/${f}: case ${c.id} declares ${promptRefs.join(', ')} in files, expected ${expectedPrompts.join(', ')}`);
+        }
+        const extraFiles = caseFiles.filter((ref) => !promptRefs.includes(ref));
+        if (extraFiles.length) {
+          fail(`evals/${f}: chat-prompt case ${c.id} declares ${extraFiles.join(', ')} alongside ${expectedPrompts.join(', ')}; chat cases paste inputs inline and take no workspace or fixture files`);
+        }
       }
       if (!casePrompt.includes('\n')) {
         fail(`evals/${f}: chat-prompt case ${c.id} has a single-line or empty prompt; chat cases paste their inputs inline`);
@@ -443,6 +461,27 @@ if (!existsSync(glossaryDir) || !existsSync(fleet) || !existsSync(frota)) {
     else if (run.status !== status) fail(`diff-glossary.mjs exits ${run.status} over evals/fixtures/glossary/${name}, expected ${status}`);
     else if (!shape(report)) fail(`diff-glossary.mjs over evals/fixtures/glossary/${name} reports a shape other than the one the fixture was taken for: ${JSON.stringify({ added: report.added.length, flagged: report.flagged, rewritten: report.rewritten, duplicated: report.duplicated })}`);
   }
+}
+
+const projectDir = join(root, 'prompts', 'project');
+const requiredProjectFiles = ['INSTRUCTIONS.md', 'refinement-core.md', ...PROJECT_WORKFLOWS.map((w) => `${w}.md`)];
+for (const f of requiredProjectFiles) {
+  const p = join(projectDir, f);
+  if (!existsSync(p) || !statSync(p).isFile()) fail(`prompts/project/${f} missing: modular web-workspace bundle incomplete`);
+}
+const corePath = join(projectDir, 'refinement-core.md');
+if (existsSync(corePath)) {
+  const coreText = readFileSync(corePath, 'utf8');
+  for (const heading of PRIMITIVE_HEADINGS) {
+    if (!new RegExp(`^# ${heading}$`, 'm').test(coreText)) fail(`prompts/project/refinement-core.md: missing "# ${heading}" section`);
+  }
+}
+const DUPLICATED_PRIMITIVE_HEADING = new RegExp(`^# (?:${PRIMITIVE_HEADINGS.join('|')})$`, 'm');
+for (const nonCore of ['INSTRUCTIONS.md', ...PROJECT_WORKFLOWS.map((wf) => `${wf}.md`)]) {
+  const p = join(projectDir, nonCore);
+  if (!existsSync(p)) continue;
+  const m = readFileSync(p, 'utf8').match(DUPLICATED_PRIMITIVE_HEADING);
+  if (m) fail(`prompts/project/${nonCore}: duplicates primitive section "${m[0]}" that belongs only in prompts/project/refinement-core.md`);
 }
 
 const built = spawnSync(process.execPath, [join(root, 'scripts', 'build-prompts.mjs'), '--check'], { encoding: 'utf8' });

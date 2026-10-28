@@ -110,6 +110,24 @@
         "The response makes no reference to writing or saving files, to `.scratch/`, or to `docs/agents/refinement.md` or `/configure-refinement`",
         "The response makes no mention of operating modes (`com-codigo`, `sem-codigo`, code/with-code mode, or no-code/without-code mode) or of subagents"
       ]
+    },
+    {
+      "id": 7,
+      "prompt": "We are working inside our RouteWise web workspace (`CONTEXT.md` from our Knowledge Base is included below). Please refine US-245.\n\n# US-245: Silence alerts of a vehicle\n\nStatus: open\nAzure: 245\n\nAs a user, I want to silence the speed alerts of a vehicle for a while, so that I am not bothered when I am already handling the case.\n\nAcceptance criteria:\n\n- AC1: The user can silence the vehicle in a simple way.\n- AC2: Adjust the alerts table to store the silencing.\n- AC3: Alerts come back on their own afterwards.\n- AC4: Tested in staging.\n\nKnowledge Base `CONTEXT.md`:\n\n# RouteWise\n\nFictional logistics fleet management platform, used only as test material for this package.\n\n## Language\n\n**Dispatch operator**:\nThe person who follows vehicles on route and contacts drivers when something departs from the plan.\n_Avoid_: user, dispatcher, control room\n\n**Operations director**:\nAccountable for operational results and presents them to the board. Decides what enters the MVP.\n_Avoid_: manager, client\n\n**Device technician**:\nInstalls and maintains the trackers on vehicles.\n_Avoid_: support, field staff\n\n**Tracker**:\nThe GPS device embedded in the vehicle. Older models send neither battery level nor accelerometer data.\n_Avoid_: device, GPS, tracking unit\n\n**Reading**:\nOne record sent by the tracker: position, speed, and timestamp. It can arrive retroactively when the tracker loses signal.\n_Avoid_: ping, event, telemetry (telemetry is the set of readings, not one of them)\n\n**Operational report**:\nThe daily consolidation of readings per vehicle, consumed by the dispatch operator and the operations director.\n_Avoid_: dashboard, statement\n\n**Real time**:\nTerm with no agreed latency. Every occurrence requires an SLA to confirm with the operations director.\n_Avoid_: instant, online",
+      "expected_output": "Dispatched via `prompts/project/INSTRUCTIONS.md` to workflow execution (`prompts/project/refinement-core.md` + `prompts/project/refine-story.md`): ANALYZABLE triage stated in a single line before any question, Round 1 in the ❓ Q<n> format with **Recommendation:** carrying cited inferences or \"no recommendation\", dispatch operator recommended from Knowledge Base `CONTEXT.md`, no numeric duration recommended or asserted, the retroactive Reading edge case raised from `CONTEXT.md`, AC1's \"in a simple way\" flagged as an unverifiable outcome, AC2 and AC4 moved out of criteria with no PO questions about table/storage implementation or staging verification, and the response ending waiting for the PO without synthesizing the refined User Story or appending the final disclaimer. No reference to writing local disk files, `.scratch/`, `docs/agents/refinement.md`, `/configure-refinement`, operating modes, or subagents.",
+      "files": [
+        "prompts/project/INSTRUCTIONS.md",
+        "prompts/project/refinement-core.md",
+        "prompts/project/refine-story.md"
+      ],
+      "assertions": [
+        "The response dispatches to workflow execution rather than Q&A mode, classifying US-245 as ANALYZABLE before any question",
+        "Round 1 contains at least three questions in the ❓ Q<n> format, each followed by **Recommendation:** carrying either a cited recommended answer or \"no recommendation\", and ends waiting for the PO without synthesizing the refined User Story or appending the final artifact disclaimer",
+        "The role question recommends dispatch operator citing `CONTEXT.md` / the glossary, and the duration question recommends no numeric value (with no numeric duration, limit, or SLA asserted anywhere)",
+        "A question raises the edge case of a tracker reading arriving retroactively after signal loss against the silence window, grounded on Reading in `CONTEXT.md`",
+        "AC1's \"in a simple way\" is flagged as an unverifiable outcome, and AC2 (implementation task) and AC4 (Definition of Done) are recognized and moved out of criteria with no PO questions about table/storage implementation or staging verification",
+        "The response makes no reference to writing or saving local disk files, `.scratch/`, `docs/agents/refinement.md`, `/configure-refinement`, operating modes, or subagents"
+      ]
     }
   ]
 }
