@@ -19,6 +19,10 @@ A **workflow** is a path through the skills. The primary path runs from meeting 
 
 Enter at any step. A User Story written directly by the PO enters `/refine-story`; a story refined elsewhere enters `/qa-plan`.
 
+### Ongoing products
+
+Run **`/bootstrap-context`** before refining stories on a product already in production: pass existing manuals, legacy specs, or exported stories from `docs/reference/` (or run with no files for a short onboarding examination; in code mode it also inspects the codebase) to build `CONTEXT.md` and `docs/product-overview.md` so subsequent workflows start with domain roles, active modules, and rules grounded. Re-run whenever documentation for a new legacy area arrives.
+
 ### Context hygiene
 
 Each workflow fits in a single session and publishes to the tracker. Between workflows, run `/clear`: the subsequent step reads the published artifact, not the conversation history. Within a workflow session, do not compact context before final synthesis: the examination and the resulting artifact require the same continuous reasoning.

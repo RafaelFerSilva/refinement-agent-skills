@@ -9,7 +9,7 @@ With `skill-creator` installed: run `/skill-creator` and ask it to run the evals
 Without it, one subagent per case: give it the prompt, the files listed in `files`, and the path to the skill (or `prompts/<skill>.md` as the standalone instruction in chat-prompt cases, where `files` names that prompt and inputs sit inline in `prompt`), then save the output. For synthesis artifacts, run the mechanical grader:
 
 ```bash
-node scripts/grade-output.mjs <artifact.md> --skill <refine-story|qa-plan|requirements-discovery|meeting-minutes> [--lang <en-US|pt-BR>] --json
+node scripts/grade-output.mjs <artifact.md> --skill <refine-story|qa-plan|requirements-discovery|meeting-minutes|bootstrap-context> [--lang <en-US|pt-BR>] --json
 ```
 
 The grader evaluates artifacts in en-US and pt-BR: section names, verdicts, markers, and Gherkin keywords come from its language table. The language is detected from the artifact; `--lang` fixes which one to expect, and then an artifact mixing both fails on `markers consistent with <language>` and on `sections present in <language>`. A section that exists in neither language fails instead of passing empty.
@@ -88,7 +88,7 @@ What the answers are built to exercise, and what to read the published artifact 
 
 ## What is evaluated
 
-- **Examination workflows** (`refine-story`, `qa-plan`, `requirements-discovery`): the **first round**, in the format `socratic-examination` defines. With no PO answering, the session does not advance, and it is in the first round that triage, fact seeking, and the shape of the questions appear. The assertions check that triage was stated, that questions carry a recommended answer with a cited base, that nothing was invented, and that the agent waited for the PO instead of synthesizing.
+- **Examination workflows** (`bootstrap-context`, `refine-story`, `qa-plan`, `requirements-discovery`): the **first round**, in the format `socratic-examination` defines. With no PO answering, the session does not advance, and it is in the first round that triage, fact seeking, and the shape of the questions appear. The assertions check that triage was stated, that questions carry a recommended answer with a cited base, that nothing was invented, and that the agent waited for the PO instead of synthesizing.
 - **Synthesis** (`meeting-minutes`, and the final artifacts of the workflows when a case simulates the PO answers): the published artifact, graded by the mechanical grader plus the assertions of the case.
 - **Language**: each suite carries en-US cases, the package default, and one pt-BR case that exercises the same discipline with Portuguese dialogue, markers, and verdicts. A mixed-language artifact fails.
 

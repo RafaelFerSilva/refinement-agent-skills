@@ -15,7 +15,7 @@ Workspace configuration fixture: stands in for `docs/agents/refinement.md` durin
 
 ## Fact sources
 
-In priority order: `CONTEXT.md` (product domain glossary), `docs/adr/`, previous stories in `.scratch/`, documents in `docs/`.
+In priority order: `CONTEXT.md` (product domain glossary), `docs/adr/`, `docs/product-overview.md`, previous stories in `.scratch/`, reference documents in `docs/reference/` and `docs/`.
 
 ## Work items
 
@@ -29,6 +29,7 @@ Directories in `.scratch/` use kebab-case: meeting `<project>-<YYYY-MM-DD>`, dis
 
 | Workflow | Artifact |
 | --- | --- |
+| `/bootstrap-context` | `CONTEXT.md`, `docs/product-overview.md`, and optional `docs/adr/NNNN-<slug>.md` |
 | `/meeting-minutes` | `.scratch/<project>-<date>/minutes.md` and `discovery-input.md` |
 | `/requirements-discovery` | `.scratch/<topic>/spec.md`, `issues/NN-<slug>.md` and `issues/NN-decision-<slug>.md` |
 | `/refine-story` | `.scratch/<ID>-<title>/spec.md` |

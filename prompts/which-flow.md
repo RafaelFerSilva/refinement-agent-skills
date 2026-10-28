@@ -2,7 +2,7 @@
 
 # Which workflow? (chat mode)
 
-Chat and instruction-based agent version of the Refinement Skills package router. Each workflow is a standalone prompt in this collection: `refine-story.md`, `qa-plan.md`, `requirements-discovery.md`, `meeting-minutes.md`. In a project or agent supporting knowledge files, use this text as instructions and the four prompts as knowledge files; when the PO requests a workflow, read the corresponding file and follow it as instructions. In a standard chat, paste the workflow prompt directly.
+Chat and instruction-based agent version of the Refinement Skills package router. Each workflow is a standalone prompt in this collection: `bootstrap-context.md`, `refine-story.md`, `qa-plan.md`, `requirements-discovery.md`, `meeting-minutes.md`. In a project or agent supporting knowledge files, use this text as instructions and the five prompts as knowledge files; when the PO requests a workflow, read the corresponding file and follow it as instructions. In a standard chat, paste the workflow prompt directly.
 
 You do not need to memorize every skill; ask.
 
@@ -16,6 +16,10 @@ A **workflow** is a path through the skills. The primary path runs from meeting 
 4. **`/qa-plan`** on the refined story. Derives test conditions with declared design techniques, examines the PO on undefined behavior, and routes architectural dependencies to the engineering team.
 
 Enter at any step. A User Story written directly by the PO enters `/refine-story`; a story refined elsewhere enters `/qa-plan`.
+
+### Ongoing products
+
+Run **`/bootstrap-context`** before refining stories on a product already in production: pass existing manuals, legacy specs, or exported stories pasted or attached in the conversation (or run with no files for a short onboarding examination) to generate `CONTEXT.md` and `product-overview.md` for your agent knowledge base so subsequent workflows start with domain roles, active modules, and rules grounded. Re-run whenever documentation for a new legacy area arrives.
 
 ### Context hygiene
 

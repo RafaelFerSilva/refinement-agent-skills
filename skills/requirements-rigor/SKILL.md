@@ -5,7 +5,7 @@ description: "Vocabulary and rigor rules for requirements artifacts: a User Stor
 
 # Requirements rigor
 
-Shared reference for the `/refine-story`, `/qa-plan`, `/requirements-discovery`, and `/meeting-minutes` workflows. Defines the boundary between what can be asserted and what must be asked, the markers that make that boundary visible, and the standards for narrative, acceptance criteria, and verdicts. This is the single source of truth for these rules: workflows point here rather than repeating them.
+Shared reference for the `/bootstrap-context`, `/refine-story`, `/qa-plan`, `/requirements-discovery`, and `/meeting-minutes` workflows. Defines the boundary between what can be asserted and what must be asked, the markers that make that boundary visible, and the standards for narrative, acceptance criteria, and verdicts. This is the single source of truth for these rules: workflows point here rather than repeating them.
 
 ## Boundary: inference or invention
 
@@ -131,6 +131,9 @@ Every workflow opens by classifying its input in a single line, and the label is
 | `/meeting-minutes` | INTACT | ÍNTEGRA | Continuous audio, identifiable speakers |
 | `/meeting-minutes` | DEGRADED | DEGRADADA | Inaudible segments, misassigned speakers, cuts |
 | `/meeting-minutes` | INSUFFICIENT | INSUFICIENTE | Too brief, or not the meeting from the metadata |
+| `/bootstrap-context` | DOCUMENTED | DOCUMENTADO | Sources cover purpose, roles, modules, integrations, and active rules |
+| `/bootstrap-context` | PARTIAL SOURCES | FONTES PARCIAIS | Sources cover part of the baseline while leaving operational or technical gaps |
+| `/bootstrap-context` | TACIT ONLY | APENAS TÁCITO | No written documents or product code available; baseline comes from PO examination |
 
 A triage label that stops the workflow (NOT A US, NOT TESTABLE, UNUSABLE, INSUFFICIENT) is stated with its rationale, and nothing further is published.
 
@@ -142,7 +145,7 @@ One of three conclusions, without middle ground:
 - **REFINE** (pt-BR: **REFINAR**): usable once listed questions are answered. Specify which items unblock it.
 - **BLOCKED** (pt-BR: **BLOQUEADA**): cannot enter planning. Objective reason: unconfirmed external dependency, indeterminate scope, not a User Story.
 
-The verdict is the `Status:` line of the artifact. For QA plans, corresponding verdicts are `EXECUTABLE`, `PARTIAL`, or `BLOCKED` (pt-BR: `EXECUTÁVEL`, `PARCIAL`, or `BLOQUEADO`). For discovery: `candidate`, `open map`, `in progress`, or `completed` (pt-BR: `candidata`, `mapa aberto`, `em andamento`, or `concluído`). Mapping to external tracker labels lives in `docs/agents/triage-labels.md` when present.
+The verdict is the `Status:` line of the artifact. For QA plans, corresponding verdicts are `EXECUTABLE`, `PARTIAL`, or `BLOCKED` (pt-BR: `EXECUTÁVEL`, `PARCIAL`, or `BLOQUEADO`). For discovery: `candidate`, `open map`, `in progress`, or `completed` (pt-BR: `candidata`, `mapa aberto`, `em andamento`, or `concluído`). For product context bootstrap: `BASELINE READY`, `PARTIAL`, or `BLOCKED` (pt-BR: `BASE PRONTA`, `PARCIAL`, or `BLOQUEADO`). Mapping to external tracker labels lives in `docs/agents/triage-labels.md` when present.
 
 ## Questionnaire
 

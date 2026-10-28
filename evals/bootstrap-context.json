@@ -1,0 +1,105 @@
+{
+  "skill_name": "bootstrap-context",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/bootstrap-context evals/fixtures/legacy-fleet-manual.md . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`. No `CONTEXT.md` or `docs/product-overview.md` exists yet.",
+      "expected_output": "PARTIAL SOURCES triage stated in a single line. Round 1 in socratic examination format (❓ Q<n> with **Recommendation:**): challenges competing synonyms in the manual (\"Dispatch operator\" vs. \"Control room agent\", \"Tracker\" vs. \"GPS box\") with cited recommendations, asks the PO to clarify production status of geofence alerts, whether closed alerts belong in the operational report, and whether SAP billing export is active in production, while routing TeleTrack webhook replay batch limits and backend duplicate handling to DEV rather than asking the PO to guess technical numbers. Invents no SLA, batch size, or retry count, writes no files yet, and waits for PO responses.",
+      "files": [
+        "evals/fixtures/legacy-fleet-manual.md",
+        "evals/fixtures/refinement-no-code-en-US.md"
+      ],
+      "assertions": [
+        "The response classifies input coverage as PARTIAL SOURCES in a single line before opening questions",
+        "Round 1 uses the ❓ Q<n> format followed by **Recommendation:** carrying either a cited inference from legacy-fleet-manual.md or \"no recommendation\"",
+        "At least one question challenges the competing synonyms in the manual (\"Dispatch operator\" vs. \"Control room agent\", or \"Tracker\" vs. \"GPS box\") and recommends a canonical term citing the manual",
+        "Questions for the PO ask about unsettled product scope or production state (such as geofence alerts, operational report contents, or whether SAP export is active)",
+        "Backend technical gaps (such as TeleTrack webhook batch limits, duplicate handling, or SAP retry mechanics) are noted as routed to DEV / engineering rather than asked of the PO in the round",
+        "No numeric value is invented for webhook batch limits, retry policies, or SAP SLAs",
+        "The response waits for the PO to answer without synthesizing `docs/product-overview.md` or appending the final artifact disclaimer"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/bootstrap-context evals/fixtures/manual-legado-frota.md . A configuração do workspace está em evals/fixtures/refinement-no-code-pt-BR.md: leia como `docs/agents/refinement.md`. Ainda não existem `CONTEXT.md` nem `docs/product-overview.md`.",
+      "expected_output": "Same curation examination conducted in Portuguese per `Language: pt-BR`: `FONTES PARCIAIS` triage stated in one line, Round 1 in ❓ Q<n> format with `**Recomendação:**`, markers in Portuguese (`[INFERÊNCIA:`, `[A CONFIRMAR:`), competing synonyms challenged (\"Operador de despacho\" vs. \"Agente da central\", \"Rastreador\" vs. \"Caixa GPS\"), technical TeleTrack/SAP details routed to engineering, no numbers invented, waiting for the PO.",
+      "files": [
+        "evals/fixtures/manual-legado-frota.md",
+        "evals/fixtures/refinement-no-code-pt-BR.md"
+      ],
+      "assertions": [
+        "The response classifies input coverage as FONTES PARCIAIS before opening questions",
+        "The examination round is written in Portuguese, with **Recomendação:** instead of **Recommendation:**",
+        "Rigor markers appear in their Portuguese form, such as `[INFERÊNCIA:` or `[A CONFIRMAR:`, with no English markers mixed in, except `[INVEST-FAIL:` and `[MANUAL-ONLY]`, which ADR 0005 keeps canonical in both languages",
+        "At least one question challenges the competing synonyms (\"Operador de despacho\" vs. \"Agente da central\", or \"Rastreador\" vs. \"Caixa GPS\") with a cited recommendation",
+        "No numeric value is invented for TeleTrack batch limits or SAP retry policies, and the response waits for the PO to answer"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/bootstrap-context evals/fixtures/legacy-fleet-manual.md . The workspace configuration is at evals/fixtures/refinement-with-code-en-US.md: read it as `docs/agents/refinement.md`. No `CONTEXT.md` or `docs/product-overview.md` exists yet.",
+      "expected_output": "Codebase in `evals/fixtures/code-workspace/` inspected alongside `legacy-fleet-manual.md` before asking questions. Triage stated in a single line. Round 1 surfaces the contradiction between the manual's 100 km/h speed threshold and `SPEED_ALERT_THRESHOLD_KMH = 110` in `alert-evaluator.ts`, cites `schema.sql` and `alert-evaluator.ts` on `geofence` appearing in the schema check constraint without evaluation logic, and grounds role access (`dispatch_operator`, `REPORT_READER_ROLES`, `CLOSE_REASONS`) and `operational-report.ts` behavior (queries `vehicles` and `readings` only, excluding alerts) citing source files rather than asking the PO to guess what the code currently does. Ends waiting for the PO.",
+      "files": [
+        "evals/fixtures/legacy-fleet-manual.md",
+        "evals/fixtures/refinement-with-code-en-US.md",
+        "evals/fixtures/code-workspace/alert-evaluator.ts",
+        "evals/fixtures/code-workspace/alert-service.ts",
+        "evals/fixtures/code-workspace/operational-report.ts",
+        "evals/fixtures/code-workspace/schema.sql"
+      ],
+      "assertions": [
+        "The response states triage in a single line and opens Round 1 in ❓ Q<n> format waiting for the PO",
+        "A question surfaces the contradiction between the manual's 100 km/h speed alert threshold and `SPEED_ALERT_THRESHOLD_KMH = 110` in `alert-evaluator.ts`, citing both sources rather than picking one silently",
+        "At least one question or recommendation cites `operational-report.ts`, `alert-service.ts`, or `schema.sql` (such as `operational-report.ts` querying readings without alerts, `CLOSE_REASONS` in `alert-service.ts`, or `geofence` existing in `schema.sql` without evaluation in `alert-evaluator.ts`)",
+        "No question asks the PO what close reasons or report reader roles are currently implemented in code",
+        "The response waits for the PO to answer without writing `docs/product-overview.md` in the first message"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "/bootstrap-context . The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md: read it as `docs/agents/refinement.md`. This is an ongoing product in production, and there are no reference documents in `docs/`, no `CONTEXT.md`, and no `docs/product-overview.md`.",
+      "expected_output": "TACIT ONLY triage stated in a single line, noting that no workspace reference documents were found. Opens Round 1 onboarding examination asking for product purpose, active user roles and restrictions, core domain entities, modules already running in production, and external integrations / constraints, each with \"no recommendation\" since no source exists. Invents no domain entities or rules, and waits for the PO.",
+      "files": [
+        "evals/fixtures/refinement-no-code-en-US.md"
+      ],
+      "assertions": [
+        "The response classifies input coverage as TACIT ONLY and notes in a single line that no reference documents were found",
+        "Round 1 asks structured onboarding questions covering product purpose, user roles, core domain entities, production modules, and external integrations",
+        "Every question in Round 1 carries \"no recommendation\" because no written source exists in the workspace",
+        "No domain roles, entities, or SLAs are invented, and the response waits for the PO to answer"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Bootstrap our product context from the legacy rollout notes below. Our agent platform already holds the short glossary snippet pasted at the end.\n\nLegacy rollout notes:\n- RouteWise tracks delivery trucks on active routes.\n- Control room agents (also called dispatch operators) monitor speed alerts above 100 km/h and close them after calling the driver.\n- Operational reports summarize daily vehicle readings for dispatch operators and operations directors; one note claims closed alerts are also listed in the operational report.\n- Nightly SAP mileage sync is mentioned, with no SLA or confirmation that it is live.\n\nExisting glossary snippet from platform memory:\n\n# RouteWise\n\nFleet monitoring platform.\n\n## Language\n\n**Dispatch operator**:\nThe person who follows vehicles on route and contacts drivers when something departs from the plan.\n_Avoid_: user, dispatcher\n\n**Operational report**:\nThe daily consolidation of readings per vehicle, consumed by the dispatch operator and the operations director.\n_Avoid_: dashboard, statement",
+      "expected_output": "Standalone chat execution of `prompts/bootstrap-context.md`: PARTIAL SOURCES triage stated in a single line, Round 1 in ❓ Q<n> format with **Recommendation:**, recommending \"Dispatch operator\" (and adding \"control room agent\" to `_Avoid_`) grounded on the existing glossary, challenging the claim that closed alerts appear in the Operational report because it widens the existing glossary definition of Operational report, asking whether SAP mileage sync is live in production, routing technical SAP SLA/retry questions to DEV, emitting no mid-round file or Glossary blocks, making no reference to saving files to disk, `.scratch/`, `/configure-refinement`, operating modes, or subagents, and waiting for the PO.",
+      "files": [
+        "prompts/bootstrap-context.md"
+      ],
+      "assertions": [
+        "The response classifies input coverage as PARTIAL SOURCES before any question and ends Round 1 waiting for the PO without synthesizing the product overview or appending the final disclaimer",
+        "A question challenges the claim that closed alerts appear in the Operational report against the existing glossary definition (which defines Operational report over readings), rather than widening the glossary entry silently",
+        "The synonym question recommends keeping Dispatch operator and cites the existing glossary",
+        "No mid-round Glossary or file code block is emitted during Round 1",
+        "The response makes no reference to writing or saving files to disk, to `.scratch/`, or to `/configure-refinement`",
+        "The response makes no mention of operating modes (`com-codigo`, `sem-codigo`, code/with-code mode, or no-code/without-code mode) or of subagents"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Bootstrap our product context from the legacy rollout notes below and close the examination immediately using the PO decisions included at the end (session date 2026-10-28). The glossary snippet below was retrieved via search from our agent platform memory (additional entries exist in platform memory that are not shown here).\n\nLegacy rollout notes:\n- RouteWise tracks delivery vehicles on active routes.\n- Control room agents (also called dispatch operators) monitor speed alerts above 100 km/h and close them after calling the driver.\n- Operational reports summarize daily vehicle readings for dispatch operators and operations directors; one note claims closed alerts are also listed in the operational report.\n- Nightly SAP mileage sync is mentioned, with no SLA or confirmation that it is live.\n\nRetrieved snippet from platform memory:\n\n## Language\n\n**Dispatch operator**:\nThe person who follows vehicles on route and contacts drivers when something departs from the plan.\n_Avoid_: user, dispatcher\n\n**Operational report**:\nThe daily consolidation of readings per vehicle, consumed by the dispatch operator and the operations director.\n_Avoid_: dashboard, statement\n\nPO decisions to synthesize now:\n- Keep \"Dispatch operator\" as canonical and add \"control room agent\" under `_Avoid_`. Define \"Speed alert\" (opened automatically when a vehicle reading exceeds 100 km/h; closed only by a dispatch operator after contacting the driver). Define \"Operations director\" (reviews daily operational reports; cannot close alerts).\n- Operational report remains over readings only; closed alerts do not enter the operational report.\n- We do not know whether nightly SAP mileage sync is live in production or what its SLA and retry policy are; mark it `[TO CONFIRM: DEV]` and route to `DEV`.\n- Close the examination now and deliver synthesis.",
+      "expected_output": "Standalone chat synthesis of `prompts/bootstrap-context.md`: delivers `product-overview.md` with `Status: PARTIAL`, provenance on baseline rows and cross-cutting rules, open question `[DEV]` for SAP sync linked to `questionnaire-dev.md`, and final disclaimer; delivers `questionnaire-dev.md` for `DEV`; appends a dedicated \"Memory / Knowledge Base Updates\" section containing an append/delta glossary block (`Append to CONTEXT.md`) rather than a full replacement `CONTEXT.md` (preserving unseen platform-memory entries) and without duplicating `product-overview.md`; and reminds the PO in the report to update their agent platform memory or knowledge base before the next session.",
+      "files": [
+        "prompts/bootstrap-context.md"
+      ],
+      "assertions": [
+        "The response delivers `product-overview.md` with `Status: PARTIAL`, provenance on baseline rows and cross-cutting rules, an open `[DEV]` question for SAP sync, and the final `⚠️` disclaimer",
+        "The response delivers a separate `questionnaire-dev.md` block for `DEV` covering the unconfirmed SAP mileage sync status, SLA, or retry behavior",
+        "The response includes a \"Memory / Knowledge Base Updates\" section carrying an append/delta block (`Append to CONTEXT.md`) for the new or updated glossary entries rather than replacing the entire `CONTEXT.md` file",
+        "`product-overview.md` is delivered once as the primary synthesis artifact rather than duplicated inside \"Memory / Knowledge Base Updates\"",
+        "The closing report reminds the PO to update their agent platform memory or knowledge base with the delivered context blocks before the next session",
+        "The response makes no reference to saving files to disk, `.scratch/`, `/configure-refinement`, operating modes, or subagents"
+      ]
+    }
+  ]
+}

@@ -3,10 +3,10 @@
 // Grades en-US and pt-BR artifacts from a single language table: section names, verdicts, markers,
 // and Gherkin keywords are looked up by language. A section found in neither language fails the run
 // instead of silently passing the checks that depend on it.
-// usage: node scripts/grade-output.mjs <artifact.md> --skill <refine-story|qa-plan|requirements-discovery|meeting-minutes> [--lang <en-US|pt-BR>] [--json]
+// usage: node scripts/grade-output.mjs <artifact.md> --skill <refine-story|qa-plan|requirements-discovery|meeting-minutes|bootstrap-context> [--lang <en-US|pt-BR>] [--json]
 import { readFileSync } from 'node:fs';
 
-const SKILLS = ['refine-story', 'qa-plan', 'requirements-discovery', 'meeting-minutes'];
+const SKILLS = ['refine-story', 'qa-plan', 'requirements-discovery', 'meeting-minutes', 'bootstrap-context'];
 const LANGS = ['en-US', 'pt-BR'];
 const VALUED = ['--skill', '--lang'];
 
@@ -44,19 +44,29 @@ const TABLE = {
       decisions: ['Recorded Decisions'],
       selfAudit: ['Self-Audit'],
       summary: ['Executive Summary'],
+      purpose: ['Product Purpose'],
+      roles: ['Roles and Permissions'],
+      modules: ['Production Modules'],
+      integrations: ['Active Integrations'],
+      rules: ['Cross-Cutting Rules and SLAs'],
+      sourceConflicts: ['Source Conflicts Resolved'],
+      examDecisions: ['Examination Decisions'],
     },
     verdicts: {
       'refine-story': ['READY', 'REFINE', 'BLOCKED'],
       'qa-plan': ['EXECUTABLE', 'PARTIAL', 'BLOCKED'],
       'requirements-discovery': ['open map', 'in progress', 'completed', 'candidate'],
       'meeting-minutes': ['draft'],
+      'bootstrap-context': ['BASELINE READY', 'PARTIAL', 'BLOCKED'],
     },
     refine: 'REFINE',
+    partial: 'PARTIAL',
     triageLabels: {
       'refine-story': ['ANALYZABLE', 'SKELETON', 'NOT A US'],
       'qa-plan': ['TESTABLE', 'TESTABLE WITH RESERVATIONS', 'NOT TESTABLE'],
       'requirements-discovery': ['USABLE', 'PARTIALLY USABLE', 'UNUSABLE'],
       'meeting-minutes': ['INTACT', 'DEGRADED', 'INSUFFICIENT'],
+      'bootstrap-context': ['DOCUMENTED', 'PARTIAL SOURCES', 'TACIT ONLY'],
     },
     tokens: ['[INFERENCE:', '[TO CONFIRM', '[STATED:', '[ASSUMED', '[SPECIFIED', '[DERIVED', '[UNDEFINED', '[TRACKING]', '[TO BE DEFINED', '[AMBIGUITY', '[DECOMPOSE', '[DIVERGENCE', '[ORPHAN', '[CONFLICT'],
     gherkin: /^\s*(?:Given|When|Then)\b/gim,
@@ -77,6 +87,8 @@ const TABLE = {
     confidence: /\b(?:High|Medium|Low)\b/,
     complexity: /\|\s*(?:S|M|L|XL)\s*\|/,
     selfAuditLabel: /Self-Audit:/i,
+    baselineProvenance: /(?:\[INFERENCE:|\[TO CONFIRM|\[UNMAPPED DEPENDENCY|PO decision)/i,
+    noneRow: /^\|\s*none\s*\|/i,
   },
   'pt-BR': {
     sections: {
@@ -92,19 +104,29 @@ const TABLE = {
       decisions: ['Decisões registradas'],
       selfAudit: ['Autoverificação'],
       summary: ['Resumo executivo'],
+      purpose: ['Propósito do produto'],
+      roles: ['Papéis e permissões'],
+      modules: ['Módulos em produção'],
+      integrations: ['Integrações ativas'],
+      rules: ['Regras transversais e SLAs'],
+      sourceConflicts: ['Conflitos de fonte resolvidos'],
+      examDecisions: ['Decisões da sabatina'],
     },
     verdicts: {
       'refine-story': ['PRONTA', 'REFINAR', 'BLOQUEADA'],
       'qa-plan': ['EXECUTÁVEL', 'PARCIAL', 'BLOQUEADO'],
       'requirements-discovery': ['mapa aberto', 'em andamento', 'concluído', 'candidata'],
       'meeting-minutes': ['rascunho'],
+      'bootstrap-context': ['BASE PRONTA', 'PARCIAL', 'BLOQUEADO'],
     },
     refine: 'REFINAR',
+    partial: 'PARCIAL',
     triageLabels: {
       'refine-story': ['ANALISÁVEL', 'ESQUELETO', 'NÃO É US'],
       'qa-plan': ['TESTÁVEL', 'TESTÁVEL COM RESSALVAS', 'NÃO TESTÁVEL'],
       'requirements-discovery': ['UTILIZÁVEL', 'PARCIALMENTE UTILIZÁVEL', 'INUTILIZÁVEL'],
       'meeting-minutes': ['ÍNTEGRA', 'DEGRADADA', 'INSUFICIENTE'],
+      'bootstrap-context': ['DOCUMENTADO', 'FONTES PARCIAIS', 'APENAS TÁCITO'],
     },
     tokens: ['[INFERÊNCIA:', '[A CONFIRMAR', '[DITO:', '[PRESUMIDO', '[ESPECIFICADO', '[DERIVADO', '[INDEFINIDO', '[ACOMPANHAMENTO]', '[A DEFINIR', '[AMBIGUIDADE', '[DECOMPOR', '[DIVERGÊNCIA', '[ÓRFÃO', '[CONFLITO'],
     gherkin: /^\s*(?:Dado|Quando|Então)\b/gim,
@@ -125,6 +147,8 @@ const TABLE = {
     confidence: /\b(?:Alta|Média|Baixa)\b/,
     complexity: /\|\s*(?:P|M|G|GG)\s*\|/,
     selfAuditLabel: /Autoverificação:/i,
+    baselineProvenance: /(?:\[INFERÊNCIA:|\[A CONFIRMAR|\[DEPENDÊNCIA NÃO MAPEADA|Decisão do PO)/i,
+    noneRow: /^\|\s*nenhum[a]?\s*\|/i,
   },
 };
 
@@ -183,6 +207,7 @@ function section(key) {
 const status = (text.match(/^Status:\s*(.+)$/m) || [])[1]?.trim() ?? '';
 const numbered = (body) => body.match(/^\s*\d+\.\s+.*$/gm) || [];
 const withoutRecipient = (qs) => qs.filter((q) => !/^\s*\d+\.\s+\[[^\]]+\]/.test(q));
+const dataRows = (body) => (body.match(/^\|.*\|$/gm) || []).filter((r, i) => i >= 2 && !/^\|\s*-+/.test(r));
 // Triage label of the graded language, in the triage section the template defines for this workflow.
 function checkTriage() {
   const labels = T.triageLabels[skill];
@@ -191,6 +216,21 @@ function checkTriage() {
   const foreignLabels = O.triageLabels[skill].filter((l) => body.includes(l) && !found.some((f) => f.includes(l)));
   check(`triage declares one of ${labels.join(', ')}`, found.length > 0,
     found.length ? found.join(', ') : (foreignLabels.length ? `${other} label present: ${foreignLabels.join(', ')}` : body.trim().split('\n')[0]));
+}
+function checkOpenQuestions({ checkToConfirm = true } = {}) {
+  const qs = numbered(section('openQuestions'));
+  const noRecipient = withoutRecipient(qs);
+  check('every open question has a recipient [whom]', noRecipient.length === 0, noRecipient.join('\n'));
+  if (checkToConfirm) {
+    const toConfirm = (text.match(T.toConfirm) || []).length;
+    check('gaps marked to confirm have an open question', toConfirm === 0 || qs.length > 0, `${toConfirm} markers, ${qs.length} questions`);
+  }
+}
+function checkUnblockingVerdict(token, label) {
+  if (new RegExp(`^${escape(token)}`, 'i').test(status)) {
+    const verdict = section('verdict');
+    check(`${label} verdict points to the questions that unblock it`, new RegExp(`${escape(token)}[^\\n]*\\d`, 'i').test(verdict), verdict.trim().split('\n')[0]);
+  }
 }
 
 // Global checks
@@ -219,21 +259,14 @@ check(`${statusLabel} ${verdicts.join(', ')}`, verdictOk, status);
 
 switch (skill) {
   case 'refine-story': {
-    const qs = numbered(section('openQuestions'));
-    const noRecipient = withoutRecipient(qs);
-    check('every open question has a recipient [whom]', noRecipient.length === 0, noRecipient.join('\n'));
-    const toConfirm = (text.match(T.toConfirm) || []).length;
-    check('gaps marked to confirm have an open question', toConfirm === 0 || qs.length > 0, `${toConfirm} markers, ${qs.length} questions`);
+    checkOpenQuestions();
     const givenAction = text.match(T.givenAction) || [];
     check('Given describes state, not action', givenAction.length === 0, givenAction.join('\n'));
     const invest = section('invest');
     const criteria = ['Independent', 'Negotiable', 'Valuable', 'Estimable', 'Small', 'Testable'];
     const missingCriteria = criteria.filter((c) => !invest.includes(c));
     check('INVEST scorecard lists the six criteria', missingCriteria.length === 0, missingCriteria.join(', '));
-    if (new RegExp(`^${escape(T.refine)}`, 'i').test(status)) {
-      const verdict = section('verdict');
-      check('refine verdict points to the questions that unblock it', new RegExp(`${escape(T.refine)}[^\\n]*\\d`, 'i').test(verdict), verdict.trim().split('\n')[0]);
-    }
+    checkUnblockingVerdict(T.refine, 'refine');
     break;
   }
   case 'qa-plan': {
@@ -278,8 +311,7 @@ switch (skill) {
     check('domains carry a confidence rating', T.confidence.test(section('domains')));
     check('epics carry a complexity rating', T.complexity.test(section('epics')));
     check('candidate stories listed', /issues\/\d{2}-/.test(section('candidates')));
-    const noRecipient = withoutRecipient(numbered(section('openQuestions')));
-    check('every open question has a recipient [whom]', noRecipient.length === 0, noRecipient.join('\n'));
+    checkOpenQuestions({ checkToConfirm: false });
     break;
   }
   case 'meeting-minutes': {
@@ -313,6 +345,31 @@ switch (skill) {
       check('recorded decisions carry stated provenance only', !decisions.includes(T.assumed) && (decisions.trim() === '' || decisions.includes(T.stated)));
     }
     check('self-audit reported', T.selfAuditLabel.test(section('selfAudit')));
+    break;
+  }
+  case 'bootstrap-context': {
+    checkTriage();
+    check('product purpose stated', section('purpose').trim().length > 0);
+    const roleRows = dataRows(section('roles'));
+    check('roles table lists at least one role', roleRows.length > 0, `${roleRows.length} roles`);
+    const moduleBody = section('modules');
+    check('production modules listed', moduleBody.trim().length > 0);
+    const integrationBody = section('integrations');
+    check('active integrations listed', integrationBody.trim().length > 0);
+    const rulesBody = section('rules');
+    check('cross-cutting rules listed', rulesBody.trim().length > 0);
+    const claimLines = [
+      ...roleRows,
+      ...dataRows(moduleBody),
+      ...dataRows(integrationBody).filter((r) => !T.noneRow.test(r)),
+      ...(rulesBody.match(/^\s*-\s+.*$/gm) || []),
+    ];
+    const missingProv = claimLines.filter((l) => !T.baselineProvenance.test(l));
+    check('baseline claims carry provenance', claimLines.length > 0 && missingProv.length === 0, missingProv.join('\n'));
+    section('sourceConflicts');
+    section('examDecisions');
+    checkOpenQuestions();
+    checkUnblockingVerdict(T.partial, 'partial');
     break;
   }
 }

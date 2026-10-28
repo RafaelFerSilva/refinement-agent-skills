@@ -1,0 +1,5 @@
+interface:
+  display_name: "Bootstrap Context"
+  short_description: "Builds CONTEXT.md and docs/product-overview.md for ongoing products via examination"
+policy:
+  allow_implicit_invocation: false

@@ -34,6 +34,10 @@ _Avoid_: test plan (reserved for the QA team's final artifact), test cases
 The artifact produced by `/meeting-minutes`: decisions and action items with provenance, with presumed agreements separated from stated agreements.
 _Avoid_: summary, digest (outside skill name)
 
+**Product overview**:
+The artifact produced by `/bootstrap-context` at `docs/product-overview.md`: product purpose, roles and permissions, production modules, active integrations, cross-cutting rules, and resolved source conflicts, keeping `CONTEXT.md` strictly a domain glossary.
+_Avoid_: architecture doc, system spec, PRD
+
 ### Examination
 
 **Socratic examination**:
@@ -83,13 +87,13 @@ What the material does not state and the artifact requires. Remains visible as a
 _Avoid_: missing item, pending, TBD
 
 **Verdict**:
-The final conclusion of a workflow on an artifact: READY, REFINE, or BLOCKED for a User Story (PRONTA, REFINAR, BLOQUEADA in pt-BR); EXECUTABLE, PARTIAL, or BLOCKED for a QA plan; candidate, open map, in progress, completed for discovery. Appears on the `Status:` line.
+The final conclusion of a workflow on an artifact: READY, REFINE, or BLOCKED for a User Story (PRONTA, REFINAR, BLOQUEADA in pt-BR); EXECUTABLE, PARTIAL, or BLOCKED for a QA plan; candidate, open map, in progress, completed for discovery; BASELINE READY, PARTIAL, or BLOCKED for product context bootstrap (BASE PRONTA, PARCIAL, BLOQUEADO in pt-BR). Appears on the `Status:` line.
 _Avoid_: status (as an isolated word), score, grade
 
 ### Operation
 
 **Workflow**:
-A user-invoked skill that runs an examination and publishes an artifact: `/meeting-minutes`, `/requirements-discovery`, `/refine-story`, `/qa-plan`. Workflows run on top of the model-invoked primitives `socratic-examination` and `requirements-rigor`.
+A user-invoked skill that runs an examination and publishes an artifact: `/bootstrap-context`, `/meeting-minutes`, `/requirements-discovery`, `/refine-story`, `/qa-plan`. Workflows run on top of the model-invoked primitives `socratic-examination` and `requirements-rigor`.
 _Avoid_: copilot, prompt, command, agent
 
 **Workspace**:

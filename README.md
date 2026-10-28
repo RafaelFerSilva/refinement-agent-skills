@@ -1,12 +1,14 @@
 # Refinement Skills
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-8%20available-blue)](skills/)
+[![Skills](https://img.shields.io/badge/skills-9%20available-blue)](skills/)
 [![Languages](https://img.shields.io/badge/languages-en--US%20(default)%20%7C%20pt--BR-green)](#two-modes-and-two-languages)
 
 Agent skills for software requirements refinement: from meeting transcripts to QA test plans, driven by **socratic examination** (sabatina). The AI agent interviews the Product Owner in structured rounds with recommended answers, leaving no silent assumptions behind. Only then does it synthesize and publish. Nothing is invented: statements without backing become questions, and unanswered points are marked as explicit gaps and routed to questionnaires for stakeholders.
 
 The package is self-contained: every skill invoked across the workflow lives directly in this repository.
+
+> **New here or adopting on an ongoing (brownfield) product?** Read the **[Getting Started Guide (en-US)](docs/getting-started.md)** or **[Guia de Início Rápido (pt-BR)](docs/getting-started.pt-BR.md)** for workspace anatomy, brownfield context bootstrapping (`docs/reference/` + `/bootstrap-context`), and keeping platform Memory / Knowledge Base files updated in chat mode.
 
 ---
 
@@ -16,12 +18,15 @@ The diagram below shows how each skill connects across the refinement lifecycle,
 
 ```mermaid
 flowchart TD
-    subgraph Setup["0. Workspace Setup (run once)"]
-        CFG["/configure-refinement"] --> CFG_OUT["docs/agents/refinement.md<br/>• Mode: with-code or without-code<br/>• Language: en-US (default) or pt-BR"]
+    subgraph Setup["0. Workspace Setup & Onboarding"]
+        CFG["/configure-refinement"] --> CFG_OUT["docs/agents/refinement.md<br/>• Mode: with-code or without-code<br/>• Language: en-US (default) or pt-BR<br/>• docs/reference/ for ongoing products"]
+        CFG_OUT -.->|"ongoing product"| BOOT["/bootstrap-context<br/>Legacy docs, code, or PO examination"]
+        BOOT --> BOOT_OUT["CONTEXT.md +<br/>docs/product-overview.md"]
     end
 
     subgraph Router["Router"]
-        QF["/which-flow"] -.->|"guides starting point"| ATA
+        QF["/which-flow"] -.->|"guides starting point"| BOOT
+        QF -.-> ATA
         QF -.-> DISC
         QF -.-> REF
         QF -.-> QA
@@ -53,7 +58,8 @@ Start at any point in the workflow. A User Story written by the PO can jump dire
 
 | Command | What you provide | What the agent delivers | Next step |
 | --- | --- | --- | --- |
-| `/configure-refinement` | None (interactive conversation) | Configured `refinement.md`, issue tracker rules, and agent instructions | `/which-flow` |
+| `/configure-refinement` | None (interactive conversation) | Configured `refinement.md`, `docs/reference/` (ongoing products with docs), tracker rules, and agent instructions | `/bootstrap-context` or `/which-flow` |
+| `/bootstrap-context` | Docs in `docs/reference/`, codebase, or PO answers | Curated `CONTEXT.md`, `docs/product-overview.md`, optional ADRs, and stakeholder questionnaires | `/refine-story` or `/requirements-discovery` |
 | `/meeting-minutes` | Meeting transcript or text | Auditable minutes with provenance, action items, and discovery input | `/requirements-discovery` |
 | `/requirements-discovery` | Briefing, notes, or `discovery-input.md` | Sized epics and candidate stories (`spec.md` or decision map) | `/refine-story` |
 | `/refine-story` | Text, file path, or ID of a User Story | Refined US with Gherkin criteria and INVEST verdict | `/qa-plan` |
@@ -107,7 +113,7 @@ Operating mode and language are saved in `docs/agents/refinement.md` during `/co
 
 ## Usage in Chat and Prompt-Based Agents
 
-The [prompts/](prompts/) directory contains standalone, self-contained versions of each flow designed for Claude Projects, custom GPTs, Gems, Copilot Studio, or standard web chats. They are generated from `skills/` via `node scripts/build-prompts.mjs`. In this setup no local repository is needed: the user pastes the context directly into the chat.
+The [prompts/](prompts/) directory contains standalone, self-contained versions of each flow designed for Claude Projects, custom GPTs, Gems, Copilot Studio, or standard web chats. They are generated from `skills/` via `node scripts/build-prompts.mjs`. In this setup no local repository is needed: the user pastes inputs directly into the chat or configures `CONTEXT.md` and `product-overview.md` in the platform's Memory / Knowledge Base, and examination workflows emit copy-ready memory update blocks at final synthesis whenever new domain terms, rules, or ADRs are resolved. See [Getting Started](docs/getting-started.md#4-using-standalone-chat-prompts-prompts-and-platform-memory).
 
 ---
 
@@ -179,7 +185,7 @@ Use the command matching how you installed the package:
 - **Via Agent Skills CLI (`npx skills`):**
   Update only the skills from this package:
   ```bash
-  npx skills update which-flow meeting-minutes requirements-discovery refine-story qa-plan configure-refinement socratic-examination requirements-rigor
+  npx skills update which-flow bootstrap-context meeting-minutes requirements-discovery refine-story qa-plan configure-refinement socratic-examination requirements-rigor
   ```
   (Add `-g` for global scope, `-p` for project scope, or `-y` for non-interactive mode. To also pick up newly added skills from this repository, re-run `npx skills add RafaelFerSilva/refinement-agent-skills`.)
 
@@ -196,6 +202,7 @@ Use the command matching how you installed the package:
 **User-Invoked Workflows**
 
 - [which-flow](skills/which-flow/SKILL.md): router skill that identifies the right workflow for your input.
+- [bootstrap-context](skills/bootstrap-context/SKILL.md): builds `CONTEXT.md` and `docs/product-overview.md` for ongoing products from existing docs, code, or a short PO examination.
 - [meeting-minutes](skills/meeting-minutes/SKILL.md): turns meeting transcripts into auditable minutes, JSON action items, and discovery input.
 - [requirements-discovery](skills/requirements-discovery/SKILL.md): transforms raw briefs and notes into epics and candidate user stories.
 - [refine-story](skills/refine-story/SKILL.md): refines a User Story through examination until it earns a READY, REFINE, or BLOCKED verdict.
@@ -211,11 +218,14 @@ Use the command matching how you installed the package:
 
 ## Guia em Português
 
-Para utilizar o fluxo em português:
+Consulte o **[Guia de Início Rápido completo em Português](docs/getting-started.pt-BR.md)** para ver a estrutura de pastas do workspace, como iniciar em projetos novos vs. projetos já em andamento (`docs/reference/` + `/bootstrap-context`) e como atualizar a Memória / Base de Conhecimento ao usar `prompts/`.
+
+Resumo rápido para utilizar o fluxo em português:
 
 1. Instale o pacote usando um dos comandos acima.
 2. No seu repositório, execute `/configure-refinement` e selecione o idioma `pt-BR`.
-3. O agente conduzirá as perguntas em português, produzirá narrativas no padrão "Como [papel], quero [capacidade], para que [resultado]", critérios com `Dado/Quando/Então`, marcadores como `[INFERÊNCIA: base]` e vereditos `PRONTA`, `REFINAR` ou `BLOQUEADA`.
+3. Em projetos já em andamento, coloque a documentação existente em `docs/reference/` (opcional) e execute `/bootstrap-context` para gerar o `CONTEXT.md` e o `docs/product-overview.md` antes da primeira US.
+4. O agente conduzirá as perguntas em português, produzirá narrativas no padrão "Como [papel], quero [capacidade], para que [resultado]", critérios com `Dado/Quando/Então`, marcadores como `[INFERÊNCIA: base]` e vereditos `PRONTA`, `REFINAR` ou `BLOQUEADA`.
 
 ---
 

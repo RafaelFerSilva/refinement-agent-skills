@@ -8,7 +8,7 @@
     {
       "name": "refinement-skills",
       "source": "./",
-      "description": "Meeting minutes, discovery, User Story refinement, and QA test plan driven by socratic examination.",
+      "description": "Context bootstrap, meeting minutes, discovery, User Story refinement, and QA test plan driven by socratic examination.",
       "category": "productivity",
       "keywords": [
         "requirements",

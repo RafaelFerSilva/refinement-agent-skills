@@ -1,7 +1,7 @@
 {
   "name": "refinement-skills",
   "version": "0.1.0",
-  "description": "Requirements refinement skills in en-US and pt-BR driven by socratic examination: meeting minutes, discovery, user story refinement, and QA test plan.",
+  "description": "Requirements refinement skills in en-US and pt-BR driven by socratic examination: context bootstrap, meeting minutes, discovery, user story refinement, and QA test plan.",
   "author": {
     "name": "RafaelFerSilva"
   },
@@ -25,6 +25,7 @@
     "./skills/qa-plan",
     "./skills/refine-story",
     "./skills/requirements-rigor",
-    "./skills/configure-refinement"
+    "./skills/configure-refinement",
+    "./skills/bootstrap-context"
   ]
 }

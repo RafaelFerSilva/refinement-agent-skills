@@ -15,7 +15,7 @@
 ## Invariants
 
 - `name` in frontmatter matches the folder name. Canonical instructions in en-US; frontmatter keys in English.
-- Workflows (`refine-story`, `qa-plan`, `requirements-discovery`, `meeting-minutes`, `which-flow`, `configure-refinement`) are user-invoked: `disable-model-invocation: true` and `policy.allow_implicit_invocation: false` in `openai.yaml`. The primitives `socratic-examination` and `requirements-rigor` are model-invoked: the `description` is the trigger that decides when they fire. A user-invoked skill cannot be called by another skill; what a workflow needs from another skill, it calls from a primitive or performs itself.
+- Workflows (`bootstrap-context`, `refine-story`, `qa-plan`, `requirements-discovery`, `meeting-minutes`, `which-flow`, `configure-refinement`) are user-invoked: `disable-model-invocation: true` and `policy.allow_implicit_invocation: false` in `openai.yaml`. The primitives `socratic-examination` and `requirements-rigor` are model-invoked: the `description` is the trigger that decides when they fire. A user-invoked skill cannot be called by another skill; what a workflow needs from another skill, it calls from a primitive or performs itself.
 - Any rule used by more than one workflow lives in `requirements-rigor` or `socratic-examination`, once. Workflows point there; they do not repeat rules.
 - No em-dash or en-dash in any repository prose. Rewrite with commas, colons, or periods.
 - Any new or renamed skill must be added to `plugin.json`, `README.md`, and the `which-flow` router. A router that does not know a skill is a router that lies.

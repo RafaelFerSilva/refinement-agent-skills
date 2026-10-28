@@ -36,7 +36,7 @@ Run both before committing, because the local run is currently the only one that
 
 ## What a synthesis grade covers
 
-`grade-output.mjs` reads the shape of a published artifact, and shape is most of what it can read: the sections present in the graded language, markers in the right syntax and the right language, the verdict drawn from that workflow's vocabulary, `Given` as state rather than action, the six INVEST rows, the final notice, and the absence of story points and effort in hours. On top of that each workflow adds a few structural ties: in `refine-story`, a recipient on every open question and a question behind every `[TO CONFIRM:`; in `qa-plan`, the open question ledger read against the matrix in both directions; in `meeting-minutes`, the action table against its JSON twin, provenance on every row, and the self-audit line.
+`grade-output.mjs` reads the shape of a published artifact, and shape is most of what it can read: the sections present in the graded language, markers in the right syntax and the right language, the verdict drawn from that workflow's vocabulary, `Given` as state rather than action, the six INVEST rows, the final notice, and the absence of story points and effort in hours. On top of that each workflow adds a few structural ties: in `refine-story`, a recipient on every open question and a question behind every `[TO CONFIRM:`; in `bootstrap-context`, provenance on baseline rows and cross-cutting rules plus a recipient and open question behind every `[TO CONFIRM:`; in `qa-plan`, the open question ledger read against the matrix in both directions; in `meeting-minutes`, the action table against its JSON twin, provenance on every row, and the self-audit line.
 
 How many checks that comes to, counted over each committed fixture, which is what `validate-skills.mjs` grades and compares against this table:
 
@@ -51,8 +51,10 @@ How many checks that comes to, counted over each committed fixture, which is wha
 | `meeting-minutes-en-US` | 21 |
 | `meeting-minutes-pt-BR` | 21 |
 | `meeting-minutes-actions-en-US` | 20 |
+| `bootstrap-context-en-US` | 19 |
+| `bootstrap-context-pt-BR` | 19 |
 
-A few checks are conditional, so another artifact of the same workflow can draw one fewer: the `refine-story` fixtures carry a REFINE verdict and draw the check that it names the questions unblocking it, while a READY artifact never reaches that check and grades out of 13. A count is therefore a property of an artifact, not of a workflow, and the number a run reports should be read with that in mind.
+A few checks are conditional, so another artifact of the same workflow can draw one fewer: the `refine-story` fixtures carry a REFINE verdict and the `bootstrap-context` fixtures carry a PARTIAL verdict, each drawing the check that the verdict names the questions unblocking it, while a READY or BASELINE READY artifact never reaches that check and grades out of one fewer. A count is therefore a property of an artifact, not of a workflow, and the number a run reports should be read with that in mind.
 
 ## What the harness does not check
 

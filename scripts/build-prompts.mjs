@@ -72,11 +72,26 @@ const RULES = [
   [/Search workspace sources \(`CONTEXT\.md`, ADRs, previous stories in `\.scratch\/`, attached documents\)/g, 'Search what the PO provided (glossary, ADRs, previous artifacts, attached documents)'],
   [/In code mode, dispatch a subagent to inspect the codebase for DEV questions \(is notification synchronous or asynchronous\? is there a lock on approval\? does a mock exist for the external system\?\) and for existing code behavior on open PO questions: code facts settle testing layers, observation points on outcomes stated in specifications, automation blockers, and regression impact, with source citation, while any outcome no specification states in words stays `\[UNDEFINED -> Question n\]` for PO with the code behavior cited as context or recommendation base in the question\. /g, ''],
   [/Check glossary, previous stories in `\.scratch\/`, workspace documents, and in code mode, the codebase: does the mentioned integration already exist\? Is the threshold already implemented\?/g, 'Check glossary, previous artifacts, and documents provided by the PO: does the mentioned integration already exist? Is the threshold already implemented?'],
+  [/Before asking, search for the answer in `CONTEXT\.md`, ADRs, previous stories in `\.scratch\/`, and workspace documents; in code mode, inspect the codebase via subagent\./g, 'Before asking, search for the answer in what the PO provided (glossary, ADRs, previous artifacts, and attached documents).'],
+  [/In no-code mode, search is restricted to the workspace without subagents; if nothing is found/g, 'Search is restricted to what the PO provided; if nothing is found'],
   [/In no-code mode, search is restricted to workspace files without subagents; if nothing is found/g, 'Search is restricted to what the PO provided; if nothing is found'],
   [/verify in workspace artifacts and, in code mode, against source code\./g, 'verify against artifacts and documents provided by the PO.'],
-  [/A resolved domain term enters `CONTEXT\.md` immediately, in the format of the "Glossary format" section of this prompt; do not accumulate for the end\./g, 'A resolved domain term becomes a proposed entry in a "Glossary" block in the response, in the format of the "Glossary format" section of this prompt, in the same round it is resolved.'],
-  [/Domain terms resolved are added to `CONTEXT\.md` immediately\./g, 'Domain terms resolved become proposed entries in a "Glossary" block in the response.'],
-  [/record in `CONTEXT\.md` only what the PO resolves/g, 'propose in the "Glossary" block only what the PO resolves'],
+  [/Re-read `CONTEXT\.md`, where the workspace has one, against two things:/g, 'Re-read the provided glossary, when present, against two things:'],
+  [/A resolved domain term enters `CONTEXT\.md` immediately, in the format of the "Glossary format" section of this prompt; do not accumulate for the end\./g, 'Acknowledge a resolved domain term in one line during the round and hold it in the format of the "Glossary format" section of this prompt for the consolidated "Memory / Knowledge Base Updates" section at synthesis.'],
+  [/glossary updated immediately\./g, 'glossary terms acknowledged briefly during rounds for synthesis updates.'],
+  [/Domain terms resolved are added to `CONTEXT\.md` immediately\./g, 'Domain terms resolved are acknowledged briefly during the round and emitted in the consolidated "Memory / Knowledge Base Updates" section at synthesis.'],
+  [/record in `CONTEXT\.md` only what the PO resolves/g, 'include in the "Memory / Knowledge Base Updates" section at synthesis only what the PO resolves'],
+  [/Read any paths or text in the input, existing files in `docs\/reference\/` and `docs\/` \(excluding `docs\/agents\/`\), `CONTEXT\.md`, domain ADRs in `docs\/adr\/`, and existing `docs\/product-overview\.md` when present,/g, 'Read what the PO provided in this conversation (pasted notes, attached legacy documents, existing glossary, ADRs, or prior product overview),'],
+  [/In code mode, dispatch a subagent to map implemented domain entities, user roles and permission checks, external integrations, and configured limits or SLAs in the codebase, citing source files\. In no-code mode, inspection is restricted to workspace files without subagents; if neither reference documents nor prior context files exist/g, 'Inspection is restricted to what the PO provided; if neither reference documents nor prior context were provided'],
+  [/every technical gap in no-code mode is assigned to `DEV`\./g, 'every unresolved technical gap is assigned to `DEV`.'],
+  [/\(and in no-code mode with `TACIT ONLY`, state in one line that no workspace reference documents were found\)/g, '(and with `TACIT ONLY`, state in one line that no reference documents were provided)'],
+  [/"no recommendation: no written source in workspace"/g, '"no recommendation: no written source provided"'],
+  [/Write `docs\/product-overview\.md` following the "Template" section of this prompt, citing `\[INFERENCE: source\]` on document-derived or code-derived claims/g, 'Deliver `product-overview.md` (or updated sections when prior `product-overview.md` came partially from platform memory) following the "Template" section of this prompt, citing `[INFERENCE: source]` on document-derived claims'],
+  [/Write an ADR in `docs\/adr\/` only when/g, 'Deliver an ADR block (`NNNN-<slug>.md`) only when'],
+  [/`docs\/product-overview\.md` exists with `Status:` matching the verdict and final disclaimer present, and `CONTEXT\.md` holds every resolved domain term without silent rewrites or operational prose\./g, 'the product overview was delivered in the response with `Status:` matching the verdict and final disclaimer present, and the glossary holds every resolved domain term without silent rewrites or operational prose.'],
+  [/alongside `docs\/product-overview\.md`, and link the file from the open questions section\./g, 'delivered in the response, and reference it from the open questions section.'],
+  [/path to `docs\/product-overview\.md` \(and any ADRs or questionnaires created\),/g, 'which artifacts and memory update blocks were delivered in the response,'],
+  [/Source: <paths in docs\/reference\/, codebase in with-code mode, or "tacit onboarding examination">, \/bootstrap-context session on <YYYY-MM-DD>/g, 'Source: <pasted or attached reference documents, or "tacit onboarding examination">, bootstrap-context session on <YYYY-MM-DD>'],
   [/If the item lives in the workspace, add `Status: not a US` \(or `Status: não é US`\) and the rationale below the title to leave a trail\./g, 'Tell the PO to mark the item with `Status: not a US` (or `Status: não é US`) and the rationale to leave a trail.'],
   [/\$ARGUMENTS/g, 'what the PO provides in this conversation'],
 ];
@@ -89,12 +104,18 @@ function adapt(text) {
   return t;
 }
 
-const CHAT = ({ title, examination = true }) => {
+const COUNT_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+
+const CHAT = (name, { title, examination = true }) => {
+  const otherFlows = Object.keys(FLOWS).filter((f) => f !== name).map((f) => `\`/${f}\``).join(', ');
   const variant = examination
     ? {
         combines: 'socratic examination, requirements rigor, and templates',
-        inputRest: 'Where the workflow says "read `CONTEXT.md`", use the glossary pasted, attached, or placed in knowledge base by the PO; without a glossary, ask for product domain roles in round 1. Where it says "previous stories in `.scratch/`", "ADRs", or "documents in `docs/`", use only what the PO provided; if nothing was found, state this in one line at the top of round 1.',
-        glossaryAdr: ['- Where the workflow says to record a glossary term or an ADR, propose the ready entry in a "Glossary" or "ADR" block at the end of the response for the PO to copy.'],
+        inputRest: 'Where the workflow says "read `CONTEXT.md`", use the glossary pasted, attached, or configured in platform memory / knowledge base by the PO; without a glossary, ask for product domain roles in round 1. Where it says "previous stories in `.scratch/`", "ADRs", `docs/product-overview.md`, or "documents in `docs/`", use only what the PO provided or configured in platform memory; if nothing was found, state this in one line at the top of round 1.',
+        glossaryAdr: [
+          '- During examination rounds, acknowledge newly resolved glossary terms, ADRs, or product-overview updates in one brief line without emitting file blocks mid-round.',
+          '- At final synthesis, whenever the session added or flagged `CONTEXT.md` terms, updated `product-overview.md` baseline facts, or recorded an ADR, append a dedicated "Memory / Knowledge Base Updates" section (in `pt-BR`: "Atualizações para a Memória / Base de Conhecimento") with copy-ready blocks, and remind the PO in the report step to update those files in their agent platform memory or knowledge base before the next session (omit both the section and reminder when nothing changed). Emit the complete file only when creating it from scratch or when the entire prior file was pasted inline in this conversation; when prior context came from platform memory or knowledge retrieval where unseen entries may exist, emit an append/delta block (`Append to CONTEXT.md` / `Adicionar ao CONTEXT.md`, or updated sections for `product-overview.md`) so pre-existing entries are never overwritten. In `bootstrap-context`, `product-overview.md` is already delivered as the primary synthesis artifact (delivering updated sections only on incremental platform-memory runs), so do not duplicate `product-overview.md` inside "Memory / Knowledge Base Updates". Emit each new ADR as its own complete `NNNN-<slug>.md` block.',
+        ],
         carryOver: ' A previous artifact pasted by the PO, such as a spec with `Status: open map` or a refined US, is the starting point.',
         closing: [
           '- The session date is the date provided by the PO; if omitted, leave `<date>` in the artifact.',
@@ -118,7 +139,7 @@ const CHAT = ({ title, examination = true }) => {
     '- Where the workflow says to publish, write, or save a file, deliver the content directly in the response, each artifact in its own block titled with the filename it would have, ready for the PO to copy into the work item. Questionnaires also go in the response, one block per recipient. "Completed when: file exists" means "the artifact was delivered in the response".',
     ...variant.glossaryAdr,
     '- The `Azure:` line receives the ID provided by the PO, or `none`. Slugs follow workflow conventions and serve only to label blocks.',
-    `- The other referenced workflows (\`/meeting-minutes\`, \`/requirements-discovery\`, \`/refine-story\`, \`/qa-plan\`) are separate prompts in this collection. When the workflow directs to one of them, inform the PO which one and what artifacts to carry over.${variant.carryOver}`,
+    `- The other referenced workflows (${otherFlows}) are separate prompts in this collection. When the workflow directs to one of them, inform the PO which one and what artifacts to carry over.${variant.carryOver}`,
     ...variant.closing,
     '',
   ].join('\n');
@@ -139,6 +160,14 @@ const rigorOnly = () => [
 ];
 
 const FLOWS = {
+  'bootstrap-context': {
+    title: 'Bootstrap Context',
+    parts: () => [
+      part('Workflow: Bootstrap Context', dropSection(body('bootstrap-context/SKILL.md'), 'Before starting')),
+      ...common(),
+      part('Template', verbatim('bootstrap-context/TEMPLATE.md')),
+    ],
+  },
   'refine-story': {
     title: 'Refine Story',
     parts: () => [
@@ -179,15 +208,20 @@ const FLOWS = {
 
 function router() {
   let t = dropSection(body('which-flow/SKILL.md'), 'Prerequisite');
+  t = t.replace(/from `docs\/reference\/` \(or run with no files for a short onboarding examination; in code mode it also inspects the codebase\) to build `CONTEXT\.md` and `docs\/product-overview\.md`/,
+    'pasted or attached in the conversation (or run with no files for a short onboarding examination) to generate `CONTEXT.md` and `product-overview.md` for your agent knowledge base');
   t = t.replace(/Between workflows, run `\/clear`: the subsequent step reads the published artifact, not the conversation history\. Within a workflow session, do not compact context before final synthesis: the examination and the resulting artifact require the same continuous reasoning\./,
     'Between workflows, start a new conversation and paste the previous artifact: the next stage reads the artifact, not the conversation.');
   t = t.replace(/The workspace declares in `docs\/agents\/refinement\.md` whether it runs \*\*with code\*\* \(`with-code`\) or \*\*without code\*\* \(`without-code`\)\. With code, workflows inspect the codebase before asking questions and resolve architectural questions directly\. Without code, the PO is the source of facts, the glossary and previous stories serve as memory, and architectural questions become questionnaires for the engineering team\. The workflows remain identical; only who answers what changes\./,
     'In chat mode, the operating mode is always **without code**.');
   t = t.replace(/Workflows conclude by writing a questionnaire per recipient alongside the artifact, containing questions that examination could not resolve\. Send the file, paste responses into a new conversation, and run the workflow again against the artifact: it resumes from where it left off\./,
     'Workflows conclude by delivering one questionnaire per recipient in the response for questions that examination could not resolve. Send the questionnaire, paste responses into a new conversation along with the artifact, and rerun the workflow: it resumes from where it left off.');
+  const flowNames = Object.keys(FLOWS);
+  const flowFiles = flowNames.map((f) => `\`${f}.md\``).join(', ');
+  const flowCount = COUNT_WORDS[flowNames.length] ?? String(flowNames.length);
   const head = `# Which workflow? (chat mode)
 
-Chat and instruction-based agent version of the Refinement Skills package router. Each workflow is a standalone prompt in this collection: \`refine-story.md\`, \`qa-plan.md\`, \`requirements-discovery.md\`, \`meeting-minutes.md\`. In a project or agent supporting knowledge files, use this text as instructions and the four prompts as knowledge files; when the PO requests a workflow, read the corresponding file and follow it as instructions. In a standard chat, paste the workflow prompt directly.
+Chat and instruction-based agent version of the Refinement Skills package router. Each workflow is a standalone prompt in this collection: ${flowFiles}. In a project or agent supporting knowledge files, use this text as instructions and the ${flowCount} prompts as knowledge files; when the PO requests a workflow, read the corresponding file and follow it as instructions. In a standard chat, paste the workflow prompt directly.
 
 `;
   return head + t + '\n';
@@ -197,7 +231,7 @@ const check = process.argv.includes('--check');
 const outputs = {};
 for (const [name, flow] of Object.entries(FLOWS)) {
   const header = `<!-- Generated by scripts/build-prompts.mjs from skills/. Do not edit manually: run node scripts/build-prompts.mjs -->\n\n`;
-  outputs[`${name}.md`] = header + CHAT(flow) + '\n' + adapt(flow.parts().join('\n'));
+  outputs[`${name}.md`] = header + CHAT(name, flow) + '\n' + adapt(flow.parts().join('\n'));
 }
 outputs['which-flow.md'] = `<!-- Generated by scripts/build-prompts.mjs from skills/. Do not edit manually: run node scripts/build-prompts.mjs -->\n\n` + adapt(router());
 
