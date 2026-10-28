@@ -1,0 +1,61 @@
+{
+  "skill_name": "ask-refinement",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/ask-refinement Our backend developer just replied to `questionnaire-dev.md` for US-245, and I also know the silencing window now. What does `Status: REFINE` mean on that User Story and how do I continue? The workspace configuration is at evals/fixtures/refinement-no-code-en-US.md (read as `docs/agents/refinement.md`), `CONTEXT.md` is at evals/fixtures/CONTEXT-fleet.md, and `.scratch/245-silence-alerts/spec.md` is at evals/fixtures/artifacts/refine-story-en-US.md.",
+      "expected_output": "Single-turn read-only answer in English: explains that `Status: REFINE` on US-245 means the User Story has a viable narrative and criteria structure while specific open questions (questions 1 for PO and 2 for DEV) still block sprint readiness (`READY`). Instructs starting a clean session (`/clear`), pasting or attaching the developer's answers to `questionnaire-dev.md` plus the PO's silencing window decision, and re-running `/refine-story .scratch/245-silence-alerts/spec.md` so the workflow updates the existing artifact toward `READY` (after which `/qa-plan` can run). Opens no `❓ Q<n>` examination round, writes no files, and appends no workflow `Status:` header or `⚠️` artifact disclaimer.",
+      "files": [
+        "evals/fixtures/refinement-no-code-en-US.md",
+        "evals/fixtures/CONTEXT-fleet.md",
+        "evals/fixtures/artifacts/refine-story-en-US.md"
+      ],
+      "assertions": [
+        "The response answers directly in English in a single turn without opening any `❓ Q<n>` examination round",
+        "It explains `Status: REFINE` on US-245 accurately, referencing open questions 1 (`[PO]`) and 2 (`[DEV]`) that currently block `READY`",
+        "It explains how to resume: paste or attach the developer's `questionnaire-dev.md` answers (and the PO's window answer) in a clean session and re-run `/refine-story` against the existing `.scratch/245-silence-alerts/spec.md` artifact",
+        "It does not create or edit files, and does not format its response as a published workflow artifact with a top `Status:` metadata line or final `⚠️` disclaimer"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/ask-refinement Nosso produto já está em produção há 2 anos e não temos acesso ao código aqui. Por que o `/refine-story` faz tantas perguntas na primeira rodada, onde coloco nossos manuais antigos e o que significam `[INFERÊNCIA: base]` e `[A CONFIRMAR: DEV]`? A configuração do workspace está em evals/fixtures/refinement-no-code-pt-BR.md (leia como `docs/agents/refinement.md`); ainda não existem `CONTEXT.md` nem `docs/product-overview.md`.",
+      "expected_output": "Single-turn read-only answer in Portuguese (`pt-BR`): notes that the workspace is in `without-code` mode without `CONTEXT.md` or `docs/product-overview.md` yet; explains that `requirements-rigor` forbids silent invention so missing baseline context becomes explicit questions instead of invented rules; explains `[INFERÊNCIA: base]` (conclusion backed by a cited excerpt or workspace file) and `[A CONFIRMAR: DEV]` (gap routed to an engineering questionnaire `questionario-dev.md`); and instructs dropping existing manuals into `docs/reference/` and running `/bootstrap-context` before `/refine-story` to build `CONTEXT.md` (domain glossary only) and `docs/product-overview.md`.",
+      "files": [
+        "evals/fixtures/refinement-no-code-pt-BR.md"
+      ],
+      "assertions": [
+        "The response is written in Portuguese (`pt-BR`) and answers in a single turn without opening `❓ Q<n>` rounds",
+        "It explains that `requirements-rigor` forbids silent invention when `CONTEXT.md` and `docs/product-overview.md` are absent, turning missing product context into questions rather than invented defaults",
+        "It accurately explains both `[INFERÊNCIA: base]` (claim grounded in a cited source) and `[A CONFIRMAR: DEV]` (open technical gap routed to an engineering questionnaire such as `questionario-dev.md`)",
+        "It tells the user to place legacy manuals in `docs/reference/` and run `/bootstrap-context` before `/refine-story`, distinguishing `CONTEXT.md` (domain glossary) from `docs/product-overview.md` (operational baseline)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/ask-refinement Acabei de instalar as skills neste repositório vazio e ainda não existe `docs/agents/refinement.md` nem `CONTEXT.md`. Como eu começo?",
+      "expected_output": "Single-turn read-only answer in Portuguese (matching the user's question language when `docs/agents/refinement.md` is absent): diagnoses that the workspace has not been configured yet instead of stopping with an error, recommends running `/configure-refinement` first to set mode (`with-code` or `without-code`), language (`pt-BR` or `en-US`), and tracker conventions, and outlines the next command depending on whether the product is new (`/which-flow`, `/meeting-minutes`, `/requirements-discovery`) or already in production (`docs/reference/` + `/bootstrap-context`).",
+      "files": [],
+      "assertions": [
+        "Rather than halting or refusing to run because `docs/agents/refinement.md` is missing, the response diagnoses that the workspace is unconfigured and answers in Portuguese matching the user's question",
+        "It instructs running `/configure-refinement` first as the concrete next command",
+        "It briefly contrasts what follows setup for a new product versus an ongoing product (`/bootstrap-context` and `docs/reference/`)",
+        "It opens no `❓ Q<n>` examination round and writes no files"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "We use these Refinement Skills prompts inside a Claude Project where `CONTEXT.md` and `product-overview.md` are uploaded to Project Knowledge.\n\nTwo questions:\n1. When we refine a new User Story and new glossary terms appear, why can't the prompt update `CONTEXT.md` automatically, and how do we avoid overwriting older glossary terms when updating Project Knowledge?\n2. Which prompt should I run right now if I have a raw transcript from yesterday's kickoff meeting?",
+      "expected_output": "Single-turn chat-mode answer from `prompts/ask-refinement.md`: (1) explains that web chat platforms do not let prompts edit Project Knowledge / platform memory files directly, so examination prompts keep rounds clean and emit a consolidated \"Memory / Knowledge Base Updates\" section at final synthesis, using a full replacement file only when created from scratch or pasted in full inline, and an append/delta block (`Append to CONTEXT.md`) when prior context came from platform memory / RAG retrieval so unseen entries are never overwritten; (2) recommends running `meeting-minutes.md` next with the raw kickoff transcript (followed by `requirements-discovery.md` using the generated discovery input). Makes no claim of reading or saving local disk files or `.scratch/` and opens no `❓ Q<n>` round.",
+      "files": [
+        "prompts/ask-refinement.md"
+      ],
+      "assertions": [
+        "The response answers both questions directly in a single turn without opening any `❓ Q<n>` examination round or synthesizing minutes",
+        "It explains the \"Memory / Knowledge Base Updates\" section emitted at synthesis and distinguishes full-file replacement from the safe append/delta block (`Append to CONTEXT.md`) that protects unseen platform-memory entries",
+        "It recommends `meeting-minutes.md` (or `/meeting-minutes` prompt) as the concrete next prompt for the raw kickoff transcript",
+        "It makes no claim of reading or writing local disk files or `.scratch/` in chat mode"
+      ]
+    }
+  ]
+}

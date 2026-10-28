@@ -92,6 +92,17 @@ const RULES = [
   [/alongside `docs\/product-overview\.md`, and link the file from the open questions section\./g, 'delivered in the response, and reference it from the open questions section.'],
   [/path to `docs\/product-overview\.md` \(and any ADRs or questionnaires created\),/g, 'which artifacts and memory update blocks were delivered in the response,'],
   [/Source: <paths in docs\/reference\/, codebase in with-code mode, or "tacit onboarding examination">, \/bootstrap-context session on <YYYY-MM-DD>/g, 'Source: <pasted or attached reference documents, or "tacit onboarding examination">, bootstrap-context session on <YYYY-MM-DD>'],
+  [/Single-turn, read-only Q&A and workspace diagnostic helper for the Refinement Skills package\. Answer operational questions directly and ground guidance in the current workspace state, keeping every file untouched and/g, 'Single-turn, read-only Q&A helper for the Refinement Skills package. Answer operational questions directly and ground guidance in whatever context the user provided,'],
+  [/1\. \*\*Inspect workspace state silently\.\*\* Check which workspace files exist: `docs\/agents\/refinement\.md`[^\n]+\n   Completed when: response language \(`en-US` or `pt-BR`\) is selected and existing configuration, context files, open artifacts, decision-map items, and pending questionnaires are inventoried\./g, '1. **Inspect provided context silently.** Check whatever context the user pasted, attached, or configured in platform memory / knowledge base (`CONTEXT.md`, `product-overview.md`, ADRs, prior refinement artifacts, open decision-map items, or questionnaires) without claiming local disk access. Select the response language from the language requested by the user or the language of the user\'s question (`en-US` or `pt-BR`, default `en-US`).\n   Completed when: response language (`en-US` or `pt-BR`) is selected and any provided context, open artifacts, decision-map items, and pending questionnaires are inventoried.'],
+  [/\(and read `ANTI-PATTERNS\.md` or `QUESTIONNAIRE\.md` in `requirements-rigor` when asked about anti-patterns or questionnaires\)/g, '(and consult the "Anti-patterns" or "Questionnaire" section of this prompt when asked about anti-patterns or questionnaires)'],
+  [/invoke the Skill tool for `socratic-examination` \(and read `GLOSSARY\.md` or `ADR\.md` in `socratic-examination` when asked about glossary or ADR format\)/g, 'apply the "Socratic examination" section of this prompt (and consult the "Glossary format" or "ADR format" section of this prompt when asked about glossary or ADR format)'],
+  [/### File responsibilities in a target workspace\n\n- `docs\/agents\/refinement\.md`:[^\n]+\n- `docs\/agents\/issue-tracker\.md`:[^\n]+\n- `CONTEXT\.md`: ([^\n]+)\n- `docs\/product-overview\.md`: ([^\n]+) Created and updated by `\/bootstrap-context`\.\n- `docs\/adr\/`: ([^\n]+)\n- `docs\/reference\/`:[^\n]+\n- `\.scratch\/<slug>\/`:[^\n]+/g, '### Context and artifact responsibilities in chat mode\n\n- `CONTEXT.md` (in platform memory / knowledge base): $1\n- `product-overview.md` (in platform memory / knowledge base): $2 Created and updated by `bootstrap-context.md`.\n- `NNNN-<slug>.md` ADRs (in platform memory / knowledge base): $3\n- Reference documents: existing manuals, business rules, specifications, or exported legacy User Stories pasted or attached when running `bootstrap-context.md`.\n- Workflow artifacts, decision items, and questionnaires: delivered directly in chat responses (`minutes.md`, `discovery-input.md`, `spec.md`, candidate stories, pending decision blocks, refined User Stories, `qa-plan.md`, and `questionnaire-<recipient>.md` or `questionario-<destinatario>.md`) ready to copy into your tracker.'],
+  [/- \*\*Unconfigured workspace \(`docs\/agents\/refinement\.md` missing\):\*\* run `\/configure-refinement` first\.\n- \*\*Ongoing \(brownfield\) product without `CONTEXT\.md` or `docs\/product-overview\.md`:\*\* drop any existing documentation into `docs\/reference\/` \(optional when none exists\) and run `\/bootstrap-context` before refining User Stories\. Because `requirements-rigor` forbids silent invention, jumping straight into `\/refine-story`/g, '- **Ongoing (brownfield) product without `CONTEXT.md` or `product-overview.md` in platform memory:** run `bootstrap-context.md` pasting or attaching any existing documentation (or with no files for a short onboarding examination) before refining User Stories, then save the generated `CONTEXT.md` and `product-overview.md` blocks in your agent platform memory / knowledge base. Because `requirements-rigor` forbids silent invention, jumping straight into `refine-story.md`'],
+  [/- \*\*Pipeline stages \(enter at any stage, or run `\/which-flow` to route an input\):\*\*\n  1\. `\/meeting-minutes`:/g, '- **Pipeline stages (enter at any stage, or run `which-flow.md` to route an input):**\n  1. `meeting-minutes.md`:'],
+  [/  2\. `\/requirements-discovery`:([^\n]+)\n  3\. `\/refine-story`:([^\n]+)\n  4\. `\/qa-plan`:/g, '  2. `requirements-discovery.md`:$1\n  3. `refine-story.md`:$2\n  4. `qa-plan.md`:'],
+  [/re-run the originating workflow \(`\/refine-story`, `\/qa-plan`, `\/requirements-discovery`, or `\/bootstrap-context`\) passing the existing artifact path in `\.scratch\/` \(or `docs\/product-overview\.md`\)/g, 're-run the originating prompt (`refine-story.md`, `qa-plan.md`, `requirements-discovery.md`, or `bootstrap-context.md`) pasting the existing artifact (or `product-overview.md`) along with the answers'],
+  [/re-run `\/requirements-discovery <path-to-spec\.md>` in a fresh session to examine and resolve one unblocked pending decision per session until the map clears\. A pending decision under `issues\/` is unblocked/g, 'start a new conversation with `requirements-discovery.md` and paste the spec plus decision blocks to examine and resolve one unblocked pending decision per session until the map clears. A pending decision is unblocked'],
+  [/run `\/clear` between workflows so the next workflow reads the published markdown artifact cleanly;/g, 'start a new conversation between workflows and paste the published artifact from the previous step;'],
   [/If the item lives in the workspace, add `Status: not a US` \(or `Status: não é US`\) and the rationale below the title to leave a trail\./g, 'Tell the PO to mark the item with `Status: not a US` (or `Status: não é US`) and the rationale to leave a trail.'],
   [/\$ARGUMENTS/g, 'what the PO provides in this conversation'],
 ];
@@ -106,16 +117,18 @@ function adapt(text) {
 
 const COUNT_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 
+const MEMORY_UPDATES_BULLETS = [
+  '- During examination rounds, acknowledge newly resolved glossary terms, ADRs, or product-overview updates in one brief line without emitting file blocks mid-round.',
+  '- At final synthesis, whenever the session added or flagged `CONTEXT.md` terms, updated `product-overview.md` baseline facts, or recorded an ADR, append a dedicated "Memory / Knowledge Base Updates" section (in `pt-BR`: "Atualizações para a Memória / Base de Conhecimento") with copy-ready blocks, and remind the PO in the report step to update those files in their agent platform memory or knowledge base before the next session (omit both the section and reminder when nothing changed). Emit the complete file only when creating it from scratch or when the entire prior file was pasted inline in this conversation; when prior context came from platform memory or knowledge retrieval where unseen entries may exist, emit an append/delta block (`Append to CONTEXT.md` / `Adicionar ao CONTEXT.md`, or updated sections for `product-overview.md`) so pre-existing entries are never overwritten. In `bootstrap-context`, `product-overview.md` is already delivered as the primary synthesis artifact (delivering updated sections only on incremental platform-memory runs), so do not duplicate `product-overview.md` inside "Memory / Knowledge Base Updates". Emit each new ADR as its own complete `NNNN-<slug>.md` block.',
+];
+
 const CHAT = (name, { title, examination = true }) => {
   const otherFlows = Object.keys(FLOWS).filter((f) => f !== name).map((f) => `\`/${f}\``).join(', ');
   const variant = examination
     ? {
         combines: 'socratic examination, requirements rigor, and templates',
         inputRest: 'Where the workflow says "read `CONTEXT.md`", use the glossary pasted, attached, or configured in platform memory / knowledge base by the PO; without a glossary, ask for product domain roles in round 1. Where it says "previous stories in `.scratch/`", "ADRs", `docs/product-overview.md`, or "documents in `docs/`", use only what the PO provided or configured in platform memory; if nothing was found, state this in one line at the top of round 1.',
-        glossaryAdr: [
-          '- During examination rounds, acknowledge newly resolved glossary terms, ADRs, or product-overview updates in one brief line without emitting file blocks mid-round.',
-          '- At final synthesis, whenever the session added or flagged `CONTEXT.md` terms, updated `product-overview.md` baseline facts, or recorded an ADR, append a dedicated "Memory / Knowledge Base Updates" section (in `pt-BR`: "Atualizações para a Memória / Base de Conhecimento") with copy-ready blocks, and remind the PO in the report step to update those files in their agent platform memory or knowledge base before the next session (omit both the section and reminder when nothing changed). Emit the complete file only when creating it from scratch or when the entire prior file was pasted inline in this conversation; when prior context came from platform memory or knowledge retrieval where unseen entries may exist, emit an append/delta block (`Append to CONTEXT.md` / `Adicionar ao CONTEXT.md`, or updated sections for `product-overview.md`) so pre-existing entries are never overwritten. In `bootstrap-context`, `product-overview.md` is already delivered as the primary synthesis artifact (delivering updated sections only on incremental platform-memory runs), so do not duplicate `product-overview.md` inside "Memory / Knowledge Base Updates". Emit each new ADR as its own complete `NNNN-<slug>.md` block.',
-        ],
+        glossaryAdr: MEMORY_UPDATES_BULLETS,
         carryOver: ' A previous artifact pasted by the PO, such as a spec with `Status: open map` or a refined US, is the starting point.',
         closing: [
           '- The session date is the date provided by the PO; if omitted, leave `<date>` in the artifact.',
@@ -206,6 +219,45 @@ const FLOWS = {
   },
 };
 
+function askRefinement() {
+  const flowFiles = Object.keys(FLOWS).map((f) => `\`${f}.md\``).join(', ');
+  let assistantBody = body('ask-refinement/SKILL.md');
+  assistantBody = assistantBody.replace(
+    /3\. \*\*Answer directly and recommend the next command\.\*\* Resolve the user's question concisely in the selected language, citing the relevant files and statuses observed in step 1 \(when input is empty, deliver a concise diagnostic summary of what is configured, open, unblocked, or missing in the workspace\)\. End with the concrete command \(and file path, when applicable\) to run next\.\n   Completed when: the answer directly resolves the question \(or diagnoses the workspace when input is empty\), names relevant existing workspace files, leaves all files untouched, and states the exact next command when an action applies\./,
+    `3. **Answer directly and recommend the next prompt.** Resolve the user's question concisely in the selected language, citing the relevant context and statuses observed in step 1 (when input is empty, summarize what context is present in this conversation or platform memory and recommend how to proceed). End with the concrete standalone prompt (${flowFiles}, or \`which-flow.md\`) and inputs to use next.\n   Completed when: the answer directly resolves the question (or summarizes provided context when input is empty), names relevant provided context or artifacts, and states the exact next prompt when an action applies.`,
+  );
+  assistantBody = assistantBody.replace(
+    /- \*\*Web chat platforms without a local repository:\*\* teammates on Claude Projects, Custom GPTs, Gemini Gems, or Copilot Studio run the generated standalone prompts in `prompts\/`\./,
+    [
+      '',
+      '### Platform memory maintenance across examination prompts',
+      '',
+      `- Standalone prompts in this collection: \`which-flow.md\`, \`ask-refinement.md\`, ${flowFiles}.`,
+      '- Web chat models cannot write back to platform memory or knowledge base files automatically, so examination prompts follow these rules:',
+      ...MEMORY_UPDATES_BULLETS,
+    ].join('\n'),
+  );
+  const head = [
+    '# Chat mode',
+    '',
+    'This prompt is the chat and instruction-based agent version of **`/ask-refinement`** from the Refinement Skills package. It answers user questions about workflows, markers, verdicts, artifacts, questionnaires, and platform memory maintenance in a single turn.',
+    '',
+    '- Operate strictly as a single-turn, read-only Q&A helper: there is no local repository, file tool, or subagent, and the operating mode in chat is always without code (omit operating mode tokens and local disk paths unless the user explicitly asks how the CLI workspace version differs).',
+    '- Use only what the user provides in this conversation or configured in platform memory / knowledge base (`CONTEXT.md`, `product-overview.md`, ADRs, artifacts, or questionnaires).',
+    `- Treat the "Socratic examination", "Glossary format", "ADR format", "Requirements rigor", "Anti-patterns", and "Questionnaire" sections below strictly as authoritative reference material for explaining rules, markers, verdicts, and formats. Never open \`❓ Q<n>\` socratic examination rounds and never synthesize workflow artifacts here; instead, answer the question directly and tell the user which standalone prompt (${flowFiles}, or \`which-flow.md\`) to run next.`,
+    '',
+  ].join('\n');
+  const parts = [
+    part('Assistant: Ask Refinement', assistantBody),
+    ...common(),
+  ];
+  const adapted = adapt(parts.join('\n')).replace(
+    /at the end of the "Template" section of this prompt/g,
+    'at the end of each workflow prompt\'s "Template" section',
+  );
+  return head + '\n' + adapted;
+}
+
 function router() {
   let t = dropSection(body('which-flow/SKILL.md'), 'Prerequisite');
   t = t.replace(/from `docs\/reference\/` \(or run with no files for a short onboarding examination; in code mode it also inspects the codebase\) to build `CONTEXT\.md` and `docs\/product-overview\.md`/,
@@ -216,12 +268,14 @@ function router() {
     'In chat mode, the operating mode is always **without code**.');
   t = t.replace(/Workflows conclude by writing a questionnaire per recipient alongside the artifact, containing questions that examination could not resolve\. Send the file, paste responses into a new conversation, and run the workflow again against the artifact: it resumes from where it left off\./,
     'Workflows conclude by delivering one questionnaire per recipient in the response for questions that examination could not resolve. Send the questionnaire, paste responses into a new conversation along with the artifact, and rerun the workflow: it resumes from where it left off.');
+  t = t.replace(/Run \*\*`\/ask-refinement`\*\* whenever you have a question about how the package works, what a marker or verdict means, where files belong, how to resume after a questionnaire, or what state your workspace is in right now\./,
+    'Use **`ask-refinement.md`** whenever you have a question about how the prompts work, what a marker or verdict means, how to resume after a questionnaire, or how to keep platform memory / knowledge base files updated.');
   const flowNames = Object.keys(FLOWS);
   const flowFiles = flowNames.map((f) => `\`${f}.md\``).join(', ');
   const flowCount = COUNT_WORDS[flowNames.length] ?? String(flowNames.length);
   const head = `# Which workflow? (chat mode)
 
-Chat and instruction-based agent version of the Refinement Skills package router. Each workflow is a standalone prompt in this collection: ${flowFiles}. In a project or agent supporting knowledge files, use this text as instructions and the ${flowCount} prompts as knowledge files; when the PO requests a workflow, read the corresponding file and follow it as instructions. In a standard chat, paste the workflow prompt directly.
+Chat and instruction-based agent version of the Refinement Skills package router. Each workflow is a standalone prompt in this collection: ${flowFiles}, plus \`ask-refinement.md\` for usage questions. In a project or agent supporting knowledge files, use this text as instructions and the ${flowCount} workflow prompts (plus \`ask-refinement.md\`) as knowledge files; when the PO requests a workflow or asks how to use the system, read the corresponding file and follow it as instructions. In a standard chat, paste the prompt directly.
 
 `;
   return head + t + '\n';
@@ -229,11 +283,12 @@ Chat and instruction-based agent version of the Refinement Skills package router
 
 const check = process.argv.includes('--check');
 const outputs = {};
+const generatedHeader = `<!-- Generated by scripts/build-prompts.mjs from skills/. Do not edit manually: run node scripts/build-prompts.mjs -->\n\n`;
 for (const [name, flow] of Object.entries(FLOWS)) {
-  const header = `<!-- Generated by scripts/build-prompts.mjs from skills/. Do not edit manually: run node scripts/build-prompts.mjs -->\n\n`;
-  outputs[`${name}.md`] = header + CHAT(name, flow) + '\n' + adapt(flow.parts().join('\n'));
+  outputs[`${name}.md`] = generatedHeader + CHAT(name, flow) + '\n' + adapt(flow.parts().join('\n'));
 }
-outputs['which-flow.md'] = `<!-- Generated by scripts/build-prompts.mjs from skills/. Do not edit manually: run node scripts/build-prompts.mjs -->\n\n` + adapt(router());
+outputs['ask-refinement.md'] = generatedHeader + askRefinement();
+outputs['which-flow.md'] = generatedHeader + adapt(router());
 
 let stale = [];
 for (const [file, text] of Object.entries(outputs)) {

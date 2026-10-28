@@ -26,6 +26,7 @@
     "./skills/refine-story",
     "./skills/requirements-rigor",
     "./skills/configure-refinement",
-    "./skills/bootstrap-context"
+    "./skills/bootstrap-context",
+    "./skills/ask-refinement"
   ]
 }

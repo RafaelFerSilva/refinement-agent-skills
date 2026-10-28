@@ -2,7 +2,7 @@
 
 # Which workflow? (chat mode)
 
-Chat and instruction-based agent version of the Refinement Skills package router. Each workflow is a standalone prompt in this collection: `bootstrap-context.md`, `refine-story.md`, `qa-plan.md`, `requirements-discovery.md`, `meeting-minutes.md`. In a project or agent supporting knowledge files, use this text as instructions and the five prompts as knowledge files; when the PO requests a workflow, read the corresponding file and follow it as instructions. In a standard chat, paste the workflow prompt directly.
+Chat and instruction-based agent version of the Refinement Skills package router. Each workflow is a standalone prompt in this collection: `bootstrap-context.md`, `refine-story.md`, `qa-plan.md`, `requirements-discovery.md`, `meeting-minutes.md`, plus `ask-refinement.md` for usage questions. In a project or agent supporting knowledge files, use this text as instructions and the five workflow prompts (plus `ask-refinement.md`) as knowledge files; when the PO requests a workflow or asks how to use the system, read the corresponding file and follow it as instructions. In a standard chat, paste the prompt directly.
 
 You do not need to memorize every skill; ask.
 
@@ -37,5 +37,9 @@ In chat mode, the operating mode is always **without code**.
 ## When key stakeholders are outside the session
 
 Workflows conclude by delivering one questionnaire per recipient in the response for questions that examination could not resolve. Send the questionnaire, paste responses into a new conversation along with the artifact, and rerun the workflow: it resumes from where it left off.
+
+## Questions and workspace status
+
+Use **`ask-refinement.md`** whenever you have a question about how the prompts work, what a marker or verdict means, how to resume after a questionnaire, or how to keep platform memory / knowledge base files updated.
 
 

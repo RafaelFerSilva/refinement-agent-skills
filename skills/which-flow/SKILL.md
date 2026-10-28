@@ -40,6 +40,10 @@ The workspace declares in `docs/agents/refinement.md` whether it runs **with cod
 
 Workflows conclude by writing a questionnaire per recipient alongside the artifact, containing questions that examination could not resolve. Send the file, paste responses into a new conversation, and run the workflow again against the artifact: it resumes from where it left off.
 
+## Questions and workspace status
+
+Run **`/ask-refinement`** whenever you have a question about how the package works, what a marker or verdict means, where files belong, how to resume after a questionnaire, or what state your workspace is in right now.
+
 ## Prerequisite
 
 **`/configure-refinement`**, run once per workspace: sets up operating mode, tracker, and publishing conventions.

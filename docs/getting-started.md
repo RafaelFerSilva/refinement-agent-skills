@@ -78,6 +78,7 @@ Standard AI prompts fill context gaps with plausible-sounding inventions (invent
 - **Keep `CONTEXT.md` pure:** `CONTEXT.md` holds domain definitions and `_Avoid_` synonyms only. Operational capabilities, active integrations, and cross-cutting SLAs belong in `docs/product-overview.md`.
 - **Re-run `/bootstrap-context` per legacy area:** months later, when the team tackles an unfamiliar legacy module, drop that module's docs into `docs/reference/` and run `/bootstrap-context` again; existing glossary terms are protected against silent rewrites.
 - **Clear chat history between workflows:** run `/clear` between `/bootstrap-context`, `/refine-story`, and `/qa-plan`. Each workflow reads the published markdown files on disk, keeping context sharp and token usage low.
+- **Ask `/ask-refinement` whenever you are unsure:** run `/ask-refinement` (with a question or with no arguments) to inspect your current workspace status, decode markers or verdicts, or check how to resume after a questionnaire returns.
 
 ---
 
@@ -86,6 +87,7 @@ Standard AI prompts fill context gaps with plausible-sounding inventions (invent
 Teams without a local repository or CLI agent can run the generated standalone prompts in [`prompts/`](../prompts/) inside **Claude Projects, Custom GPTs, Gemini Gems, Copilot Studio**, or standard web chats:
 
 - `prompts/which-flow.md` (router instructions)
+- `prompts/ask-refinement.md` (usage Q&A and memory-update helper)
 - `prompts/bootstrap-context.md`
 - `prompts/meeting-minutes.md`
 - `prompts/requirements-discovery.md`

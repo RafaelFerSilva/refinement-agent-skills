@@ -1,0 +1,5 @@
+interface:
+  display_name: "Ask Refinement"
+  short_description: "Q&A helper and workspace diagnostic for refinement skills"
+policy:
+  allow_implicit_invocation: false

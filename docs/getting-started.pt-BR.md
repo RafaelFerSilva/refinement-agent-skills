@@ -78,6 +78,7 @@ Prompts comuns tentam parecer prestativos inventando regras, perfis genéricos (
 - **Mantenha cada documento no seu papel:** `CONTEXT.md` guarda exclusivamente definições de vocabulário e `_Avoid_`; estado atual do produto, módulos, integrações e regras transversais ficam em `docs/product-overview.md`.
 - **Rode `/bootstrap-context` novamente ao entrar em um módulo legado novo:** basta adicionar os documentos daquele módulo em `docs/reference/` e rodar o comando; termos já existentes no `CONTEXT.md` são protegidos contra reescrita silenciosa.
 - **Limpe a sessão entre fluxos:** use `/clear` ao passar de `/bootstrap-context` para `/refine-story` e depois para `/qa-plan`. O próximo fluxo sempre lê o artefato salvo no workspace, sem carregar ruído de conversa anterior.
+- **Tire dúvidas com `/ask-refinement`:** rode `/ask-refinement` (com uma pergunta ou sem argumentos) para diagnosticar o estado atual do seu workspace, entender o significado de marcadores e vereditos ou saber como retomar uma User Story após receber respostas de questionário.
 
 ---
 
@@ -86,6 +87,7 @@ Prompts comuns tentam parecer prestativos inventando regras, perfis genéricos (
 Times que usam agentes web sem repositório local (**Claude Projects, Custom GPTs, Gemini Gems, Copilot Studio** ou chats padrão) utilizam os arquivos gerados em [`prompts/`](../prompts/):
 
 - `prompts/which-flow.md` (roteador de fluxos)
+- `prompts/ask-refinement.md` (tira-dúvidas de uso e manutenção de memória)
 - `prompts/bootstrap-context.md`
 - `prompts/meeting-minutes.md`
 - `prompts/requirements-discovery.md`

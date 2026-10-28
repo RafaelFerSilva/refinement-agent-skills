@@ -1,7 +1,7 @@
 # Refinement Skills
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-9%20available-blue)](skills/)
+[![Skills](https://img.shields.io/badge/skills-10%20available-blue)](skills/)
 [![Languages](https://img.shields.io/badge/languages-en--US%20(default)%20%7C%20pt--BR-green)](#two-modes-and-two-languages)
 
 Agent skills for software requirements refinement: from meeting transcripts to QA test plans, driven by **socratic examination** (sabatina). The AI agent interviews the Product Owner in structured rounds with recommended answers, leaving no silent assumptions behind. Only then does it synthesize and publish. Nothing is invented: statements without backing become questions, and unanswered points are marked as explicit gaps and routed to questionnaires for stakeholders.
@@ -24,12 +24,13 @@ flowchart TD
         BOOT --> BOOT_OUT["CONTEXT.md +<br/>docs/product-overview.md"]
     end
 
-    subgraph Router["Router"]
+    subgraph Router["Router & Q&A"]
         QF["/which-flow"] -.->|"guides starting point"| BOOT
         QF -.-> ATA
         QF -.-> DISC
         QF -.-> REF
         QF -.-> QA
+        ASK["/ask-refinement<br/>Usage Q&A and workspace diagnosis"]
     end
 
     subgraph Pipeline["Refinement Pipeline"]
@@ -65,6 +66,7 @@ Start at any point in the workflow. A User Story written by the PO can jump dire
 | `/refine-story` | Text, file path, or ID of a User Story | Refined US with Gherkin criteria and INVEST verdict | `/qa-plan` |
 | `/qa-plan` | Refined User Story | QA test matrix mapped by technique, risk, and testing layers | Sprint planning |
 | `/which-flow` | Description of your current input material | Recommendation of the right command to use | Recommended flow |
+| `/ask-refinement` | Question about workflows, markers, files, or empty input | Direct answer, workspace diagnosis, and exact next command | Recommended command |
 
 ---
 
@@ -185,7 +187,7 @@ Use the command matching how you installed the package:
 - **Via Agent Skills CLI (`npx skills`):**
   Update only the skills from this package:
   ```bash
-  npx skills update which-flow bootstrap-context meeting-minutes requirements-discovery refine-story qa-plan configure-refinement socratic-examination requirements-rigor
+  npx skills update which-flow ask-refinement bootstrap-context meeting-minutes requirements-discovery refine-story qa-plan configure-refinement socratic-examination requirements-rigor
   ```
   (Add `-g` for global scope, `-p` for project scope, or `-y` for non-interactive mode. To also pick up newly added skills from this repository, re-run `npx skills add RafaelFerSilva/refinement-agent-skills`.)
 
@@ -201,12 +203,16 @@ Use the command matching how you installed the package:
 
 **User-Invoked Workflows**
 
-- [which-flow](skills/which-flow/SKILL.md): router skill that identifies the right workflow for your input.
 - [bootstrap-context](skills/bootstrap-context/SKILL.md): builds `CONTEXT.md` and `docs/product-overview.md` for ongoing products from existing docs, code, or a short PO examination.
 - [meeting-minutes](skills/meeting-minutes/SKILL.md): turns meeting transcripts into auditable minutes, JSON action items, and discovery input.
 - [requirements-discovery](skills/requirements-discovery/SKILL.md): transforms raw briefs and notes into epics and candidate user stories.
 - [refine-story](skills/refine-story/SKILL.md): refines a User Story through examination until it earns a READY, REFINE, or BLOCKED verdict.
 - [qa-plan](skills/qa-plan/SKILL.md): creates test conditions with declared design techniques, risk levels, test layers, and blockers.
+
+**User-Invoked Support Skills**
+
+- [which-flow](skills/which-flow/SKILL.md): router skill that identifies the right workflow for your input.
+- [ask-refinement](skills/ask-refinement/SKILL.md): read-only Q&A and workspace diagnostic helper that explains workflows, markers, verdicts, and next steps.
 - [configure-refinement](skills/configure-refinement/SKILL.md): configures workspace mode, language, tracker, and instructions.
 
 **Model-Invoked Primitives**

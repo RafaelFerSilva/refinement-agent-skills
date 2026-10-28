@@ -195,11 +195,14 @@ if (!existsSync(evalsDir) || !statSync(evalsDir).isDirectory()) {
   fail('evals missing: the package has no evaluation suites');
 }
 const underDir = (ref, dir) => ref === dir || ref.startsWith(`${dir}/`);
+const CONFIG_OPTIONAL_SUITES = new Set(['ask-refinement']);
 for (const f of (existsSync(evalsDir) && statSync(evalsDir).isDirectory() ? readdirSync(evalsDir) : []).filter((f) => f.endsWith('.json'))) {
   let suite = null;
   try { suite = JSON.parse(readFileSync(join(evalsDir, f), 'utf8')); } catch (e) { fail(`evals/${f}: invalid JSON (${e.message})`); }
   if (!suite) continue;
   if (!skills.includes(suite.skill_name)) fail(`evals/${f}: skill_name "${suite.skill_name}" does not exist in skills/`);
+  const configOptional = CONFIG_OPTIONAL_SUITES.has(suite.skill_name);
+  let unconfiguredSkillCases = 0;
   for (const c of suite.evals ?? []) {
     const caseFiles = c.files ?? [];
     const casePrompt = c.prompt ?? '';
@@ -226,26 +229,33 @@ for (const f of (existsSync(evalsDir) && statSync(evalsDir).isDirectory() ? read
       continue;
     }
     const configs = caseFiles.filter((ref) => /^evals\/fixtures\/refinement-(?:no|with)-code-(en-US|pt-BR)\.md$/.test(ref));
-    if (configs.length === 0) {
-      fail(`evals/${f}: case ${c.id} provides no workspace configuration fixture; the workflow would stop asking for /configure-refinement`);
-    } else if (configs.length > 1) {
-      fail(`evals/${f}: case ${c.id} provides ${configs.length} workspace configuration fixtures, expected 1`);
-    } else {
-      for (const m of casePrompt.matchAll(/evals\/fixtures\/refinement-[a-z-]+-(?:en-US|pt-BR)\.md/g)) {
-        if (m[0] !== configs[0]) fail(`evals/${f}: case ${c.id} names ${m[0]} in prompt while declaring ${configs[0]} in files`);
-      }
-      if (/refinement-with-code-/.test(configs[0])) {
-        const missingCode = codeWorkspaceFiles.filter((wf) => !caseFiles.includes(wf));
-        if (missingCode.length) {
-          fail(`evals/${f}: case ${c.id} uses a with-code configuration without declaring ${missingCode.join(', ')} in files`);
-        }
-      } else {
-        const leakedCode = caseFiles.filter((ref) => underDir(ref, 'evals/fixtures/code-workspace'));
-        if (leakedCode.length) {
-          fail(`evals/${f}: case ${c.id} uses a without-code configuration while declaring ${leakedCode.join(', ')} in files`);
-        }
+    const leakedCode = caseFiles.filter((ref) => underDir(ref, 'evals/fixtures/code-workspace'));
+    for (const m of casePrompt.matchAll(/evals\/fixtures\/refinement-[a-z-]+-(?:en-US|pt-BR)\.md/g)) {
+      if (m[0] !== configs[0]) {
+        fail(`evals/${f}: case ${c.id} names ${m[0]} in prompt while declaring ${configs[0] ?? 'no workspace configuration fixture'} in files`);
       }
     }
+    if (configs.length === 0) {
+      if (!configOptional) {
+        fail(`evals/${f}: case ${c.id} provides no workspace configuration fixture; the workflow would stop asking for /configure-refinement`);
+      }
+      unconfiguredSkillCases++;
+      if (leakedCode.length) {
+        fail(`evals/${f}: case ${c.id} provides no workspace configuration fixture while declaring ${leakedCode.join(', ')} in files`);
+      }
+    } else if (configs.length > 1) {
+      fail(`evals/${f}: case ${c.id} provides ${configs.length} workspace configuration fixtures, expected 1`);
+    } else if (/refinement-with-code-/.test(configs[0])) {
+      const missingCode = codeWorkspaceFiles.filter((wf) => !caseFiles.includes(wf));
+      if (missingCode.length) {
+        fail(`evals/${f}: case ${c.id} uses a with-code configuration without declaring ${missingCode.join(', ')} in files`);
+      }
+    } else if (leakedCode.length) {
+      fail(`evals/${f}: case ${c.id} uses a without-code configuration while declaring ${leakedCode.join(', ')} in files`);
+    }
+  }
+  if (configOptional && unconfiguredSkillCases === 0) {
+    fail(`evals/${f}: expected at least 1 unconfigured cold-start skill case with no workspace configuration fixture`);
   }
 }
 
