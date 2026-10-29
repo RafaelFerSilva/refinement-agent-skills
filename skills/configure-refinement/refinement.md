@@ -8,7 +8,7 @@ How the `/bootstrap-context`, `/refine-story`, `/qa-plan`, `/requirements-discov
 ## Mode
 
 - **without-code**: the PO is the source of answers. Facts originate from `CONTEXT.md`, previous stories in `.scratch/`, and documents in `docs/`. Architecture, observability, and test-layer questions flow to the engineering team via questionnaires; never answered by assumption.
-- **with-code**: before asking questions, the agent inspects source code directly. Architecture questions are resolved by reading code, citing the source file. The PO receives only business and expected-behavior questions.
+- **with-code**: before asking questions, the agent inspects source code directly (read-only, in this workspace or at the codebase path(s) listed in `Fact sources`). Architecture questions are resolved by reading code, citing the source file. The PO receives only business and expected-behavior questions.
 
 ## Language
 
@@ -17,7 +17,7 @@ How the `/bootstrap-context`, `/refine-story`, `/qa-plan`, `/requirements-discov
 
 ## Fact sources
 
-In priority order: `CONTEXT.md` (product domain glossary), `docs/adr/`, `docs/product-overview.md` (operational product baseline), previous stories in `.scratch/`, reference documents in `docs/reference/` and `docs/` (manuals, regulations, wireframes, requirements sheets).
+In priority order: `CONTEXT.md` (product domain glossary), `docs/adr/`, `docs/product-overview.md` (operational product baseline), previous stories in `.scratch/`, reference documents in `docs/reference/` and `docs/` (manuals, regulations, wireframes, requirements sheets), source code in `<. | ., ../sibling-repo | ../product-api, ../product-web>` (read-only; omit the `source code in` clause in `without-code` mode).
 
 ## Work items
 

@@ -213,6 +213,24 @@ for (const rel of ['skills/configure-refinement/SKILL.md', 'skills/requirements-
   }
 }
 
+// External and multi-repo codebase paths in with-code mode
+if (existsSync(refinementTemplate) && statSync(refinementTemplate).isFile()) {
+  const text = readFileSync(refinementTemplate, 'utf8');
+  if (!/## Fact sources\n\n[^\n]*source code in\b[^\n]*read-only/.test(text)) {
+    fail('skills/configure-refinement/refinement.md: ## Fact sources does not template read-only "source code in" codebase paths');
+  }
+}
+for (const rel of ['skills/configure-refinement/SKILL.md', 'skills/requirements-rigor/SKILL.md']) {
+  const p = join(root, rel);
+  if (!existsSync(p)) continue;
+  const text = readFileSync(p, 'utf8');
+  for (const token of ['Fact sources', 'read-only', 'Multi-root', '--add-dir']) {
+    if (!text.includes(token)) {
+      fail(`${rel}: missing external codebase path or sandbox guidance "${token}"`);
+    }
+  }
+}
+
 const workspaceConfigFixtures = [
   ['evals/fixtures/refinement-with-code-en-US.md', 'with-code', 'en-US', true],
   ['evals/fixtures/refinement-no-code-en-US.md', 'without-code', 'en-US', false],

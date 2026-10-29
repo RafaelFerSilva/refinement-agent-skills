@@ -99,10 +99,10 @@ Recommendation: no recommendation (the text provides no baseline for SLA numbers
 
 | | Without Code (`without-code`) | With Code (`with-code`) |
 | --- | --- | --- |
-| Target Audience | Product Owners, business analysts, QA engineers | Engineering teams with repository access |
-| Source of Truth | `CONTEXT.md`, previous stories, documents in `docs/` | All workspace files plus source code via subagent |
+| Target Audience | Product Owners, business analysts, QA engineers | Engineering, QA, and product teams with local repo checkouts |
+| Source of Truth | `CONTEXT.md`, previous stories, documents in `docs/` | All workspace files plus read-only source code via subagent (in-repo or external local repo paths) |
 | Technical Questions | Exported as questionnaires for developers | Answered by reading the code directly |
-| Where to install | Dedicated product analysis workspace | The product codebase repository |
+| Where to install | Dedicated product analysis workspace | The product codebase repository, or a dedicated refinement workspace pointing `Fact sources` to one or more local repositories (exposed via Multi-root workspace folders or `claude --add-dir <path>`) |
 
 ### Supported Languages
 
@@ -167,7 +167,7 @@ Open your AI coding assistant inside your target project and run:
 ```
 
 The interactive skill guides you through:
-1. **Operating mode:** `with-code` (agent inspects source code) or `without-code` (technical questions become questionnaires); legacy `com-codigo` and `sem-codigo` remain accepted on read.
+1. **Operating mode:** `with-code` (agent inspects source code read-only in `.` or at local repository paths listed in `Fact sources`, such as `../product-api` and `../product-web`) or `without-code` (technical questions become questionnaires); legacy `com-codigo` and `sem-codigo` remain accepted on read.
 2. **Language:** `en-US` (default) or `pt-BR`.
 3. **Issue tracker:** base URL and prefix for task cards (Azure DevOps, Jira, GitHub Issues, etc.).
 4. **Generated files:**

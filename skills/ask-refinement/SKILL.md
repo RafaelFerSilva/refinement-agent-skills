@@ -13,11 +13,11 @@ Question: $ARGUMENTS
 
 ## Steps
 
-1. **Inspect workspace state silently.** Check which workspace files exist: `docs/agents/refinement.md` (configured `Mode:` `with-code` or `without-code`, or legacy `com-codigo` or `sem-codigo`, and `Language:` or legacy `Idioma:` `en-US` or `pt-BR`), `docs/agents/issue-tracker.md`, `CONTEXT.md`, `docs/product-overview.md`, `docs/adr/`, `docs/reference/`, and `.scratch/` (`Status:` lines on artifacts, `issues/` decision files with `Status:` and `Blocked by:` when a discovery spec has `Status: open map` or `Status: mapa aberto`, and any `questionnaire-*.md` or `questionario-*.md` files). When `docs/agents/refinement.md` is absent, record that workspace configuration has not run yet and continue. Select the response language from `Language:` (or `Idioma:`) in `docs/agents/refinement.md` when present, otherwise from the language of the user's question (`en-US` or `pt-BR`, default `en-US`).
-   Completed when: response language (`en-US` or `pt-BR`) is selected and existing configuration, context files, open artifacts, decision-map items, and pending questionnaires are inventoried.
+1. **Inspect workspace state silently.** Check which workspace files exist: `docs/agents/refinement.md` (configured `Mode:` `with-code` or `without-code`, or legacy `com-codigo` or `sem-codigo`, `Language:` or legacy `Idioma:` `en-US` or `pt-BR`, and any codebase path(s) listed under `Fact sources` in `with-code` mode), `docs/agents/issue-tracker.md`, `CONTEXT.md`, `docs/product-overview.md`, `docs/adr/`, `docs/reference/`, and `.scratch/` (`Status:` lines on artifacts, `issues/` decision files with `Status:` and `Blocked by:` when a discovery spec has `Status: open map` or `Status: mapa aberto`, and any `questionnaire-*.md` or `questionario-*.md` files). When `docs/agents/refinement.md` is absent, record that workspace configuration has not run yet and continue. Select the response language from `Language:` (or `Idioma:`) in `docs/agents/refinement.md` when present, otherwise from the language of the user's question (`en-US` or `pt-BR`, default `en-US`).
+   Completed when: response language (`en-US` or `pt-BR`) is selected and existing configuration, codebase paths, context files, open artifacts, decision-map items, and pending questionnaires are inventoried.
 
 2. **Load authoritative rules on demand.** Consult the package primitives strictly as reference material so explanations match canonical package rules:
-   - When the question concerns markers, verdicts, triage labels, Gherkin, INVEST, anti-patterns, or questionnaires, invoke the Skill tool for `requirements-rigor` (and read `ANTI-PATTERNS.md` or `QUESTIONNAIRE.md` in `requirements-rigor` when asked about anti-patterns or questionnaires).
+   - When the question concerns operating modes, codebase paths, markers, verdicts, triage labels, Gherkin, INVEST, anti-patterns, or questionnaires, invoke the Skill tool for `requirements-rigor` (and read `ANTI-PATTERNS.md` or `QUESTIONNAIRE.md` in `requirements-rigor` when asked about anti-patterns or questionnaires).
    - When the question concerns examination rounds, question frontier, recommended answers, early closure, `CONTEXT.md` rules, or ADRs, invoke the Skill tool for `socratic-examination` (and read `GLOSSARY.md` or `ADR.md` in `socratic-examination` when asked about glossary or ADR format).
    Completed when: every package rule, marker, verdict, or format touched by the question is verified against its authoritative primitive.
 
@@ -28,7 +28,7 @@ Question: $ARGUMENTS
 
 ### File responsibilities in a target workspace
 
-- `docs/agents/refinement.md`: operating mode (`with-code` or `without-code`), language (`en-US` or `pt-BR`), fact-source priority order, and artifact conventions. Created once by `/configure-refinement`.
+- `docs/agents/refinement.md`: operating mode (`with-code` or `without-code`), language (`en-US` or `pt-BR`), fact-source priority order (including `.` and/or read-only local repository paths in `with-code` mode; see `requirements-rigor` for path resolution and session sandbox access), and artifact conventions. Created once by `/configure-refinement`.
 - `docs/agents/issue-tracker.md`: external work item ID convention (for example `Azure: <ID>`) and local `.scratch/<slug>/` publishing paths.
 - `CONTEXT.md`: **domain glossary only** (roles, business entities, domain events, and `_Avoid_` synonyms). Operational prose, scope decisions, and implementation details stay out.
 - `docs/product-overview.md`: operational baseline of an ongoing product (purpose, role permissions, production modules, active integrations, cross-cutting rules and SLAs, resolved source conflicts). Created and updated by `/bootstrap-context`.

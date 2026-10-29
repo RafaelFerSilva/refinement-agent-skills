@@ -97,11 +97,11 @@ A user-invoked skill that runs an examination and publishes an artifact: `/boots
 _Avoid_: copilot, prompt, command, agent
 
 **Workspace**:
-The repository where the package is installed and User Stories are analyzed. Contains the product's `CONTEXT.md`, `docs/agents/refinement.md` with operating mode, and `.scratch/` with generated artifacts. On web agent platforms without a local repository, a **unified web workspace** pairs `prompts/project/INSTRUCTIONS.md` with a shared Knowledge Base holding `refinement-core.md`, the five workflow files, `CONTEXT.md`, and `product-overview.md`.
+The repository where the package is installed and User Stories are analyzed, either inside the product codebase or in a dedicated repository holding refinement artifacts. Contains the product's `CONTEXT.md`, `docs/agents/refinement.md` with operating mode and fact sources, and `.scratch/` with generated artifacts. On web agent platforms without a local repository, a **unified web workspace** pairs `prompts/project/INSTRUCTIONS.md` with a shared Knowledge Base holding `refinement-core.md`, the five workflow files, `CONTEXT.md`, and `product-overview.md`.
 _Avoid_: project (ambiguous with product), analysis repo
 
 **Mode**:
-How the workspace resolves factual questions, defined by `Mode:` in `docs/agents/refinement.md`. **With code** (`with-code`, or `com-codigo`): the agent inspects product code directly. **Without code** (`without-code`, or `sem-codigo`): the PO is the source of facts, and architecture questions are routed to the dev team via questionnaires.
+How the workspace resolves factual questions, defined by `Mode:` in `docs/agents/refinement.md`. **With code** (`with-code`, or `com-codigo`): the agent inspects product source code read-only in the workspace root or at local repository paths listed in `Fact sources`. **Without code** (`without-code`, or `sem-codigo`): the PO is the source of facts, and architecture questions are routed to the dev team via questionnaires.
 _Avoid_: scenario, profile, environment
 
 **Language**:

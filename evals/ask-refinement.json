@@ -71,6 +71,18 @@
         "It accurately explains both `[DEPENDÊNCIA NÃO MAPEADA]` (unconfirmed integration or external system availability blocking sprint entry until confirmed) and `[INVEST-FAIL: S]` (failed Small INVEST criterion for a User Story too large for a single sprint, paired with decomposition)",
         "It makes no claim of reading or writing local repository files or `.scratch/`"
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "/ask-refinement Nosso produto tem repositórios separados de backend e frontend (`../routewise-api` e `../routewise-web`) e criamos este workspace dedicado só para refinamento. Para usar o modo `with-code`, somos obrigados a instalar dentro de um repositório de código ou podemos apontar os caminhos dos dois repositórios?",
+      "expected_output": "Single-turn read-only answer in Portuguese (`pt-BR`): explains that `with-code` works both inside a product codebase repository and from a dedicated refinement workspace by listing one or more local repository paths (`../routewise-api` and `../routewise-web`) under `## Fact sources` in `docs/agents/refinement.md`; notes that external codebases are inspected strictly read-only while refinement artifacts (`CONTEXT.md`, `docs/`, `.scratch/`) stay in the dedicated workspace; explains how to grant read-only session access outside the workspace sandbox via Multi-root workspace folders (Antigravity, VS Code, Cursor) or `claude --add-dir ../routewise-api --add-dir ../routewise-web`; and recommends running `/configure-refinement` next to set up `docs/agents/refinement.md` (followed by `/bootstrap-context` for an ongoing product). Opens no `❓ Q<n>` examination round and writes no files.",
+      "files": [],
+      "assertions": [
+        "The response answers directly in Portuguese (`pt-BR`) in a single turn without opening any `❓ Q<n>` examination round or writing files",
+        "It confirms that `with-code` works both inside a code repository and from a dedicated refinement workspace by listing multiple read-only local repository paths (`../routewise-api` and `../routewise-web`) under `Fact sources` in `docs/agents/refinement.md`",
+        "It explains how to expose external repository folders to the agent session sandbox via Multi-root workspace folders (Antigravity, VS Code, Cursor) or `claude --add-dir`",
+        "It recommends `/configure-refinement` as the concrete next command to configure the unconfigured workspace"
+      ]
     }
   ]
 }

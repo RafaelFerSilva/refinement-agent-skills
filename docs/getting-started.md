@@ -8,7 +8,7 @@ Practical guide to adopting **Refinement Skills** in day-to-day product and engi
 
 ## 1. Target Workspace Anatomy
 
-When you install this package into a product repository (or into a dedicated workspace in `without-code` mode), workflows read and write a predictable set of files so context compounds from session to session:
+When you install this package into a product repository or into a dedicated refinement workspace (`without-code`, or `with-code` pointing `Fact sources` at one or more local source repositories), workflows read and write a predictable set of files so context compounds from session to session:
 
 ```text
 my-product/
@@ -29,7 +29,9 @@ Before asking the Product Owner any factual question, every workflow searches th
 3. `docs/product-overview.md` (current modules, permissions, active integrations, cross-cutting rules, and SLAs)
 4. `.scratch/` (previously refined stories, specs, minutes, and QA plans)
 5. `docs/reference/` and `docs/` (raw manuals, regulations, wireframes, requirements sheets)
-6. Product source code via read-only subagent (when `Mode: with-code`)
+6. Product source code via read-only subagent (when `Mode: with-code`, either in the workspace root `.` or at local repository paths listed in `docs/agents/refinement.md`, such as `../product-api` and `../product-web`)
+
+> **Dedicated workspace or multi-repo in `with-code` mode:** you do not have to install inside a single code repository. Run `/configure-refinement` in a dedicated refinement workspace (or in one primary repo) and list your local repository checkouts under `## Fact sources` in `docs/agents/refinement.md` (for example `source code in ../product-api, ../product-web` (read-only), or `source code in ., ../product-web` (read-only) when installed in one primary repo). Source repositories are inspected strictly read-only; expose external folders to your agent session via **Multi-root workspace folders** (Antigravity, VS Code, Cursor) or `claude --add-dir ../product-api --add-dir ../product-web` (Claude Code).
 
 ---
 
@@ -37,7 +39,7 @@ Before asking the Product Owner any factual question, every workflow searches th
 
 On a brand-new product, context grows naturally alongside discovery and story refinement:
 
-1. **Configure once:** run `/configure-refinement`, choose `with-code` or `without-code`, select `en-US` or `pt-BR`, and set your tracker URL/ID prefix. Leave `CONTEXT.md` absent for now.
+1. **Configure once:** run `/configure-refinement`, choose `with-code` (in-repo or pointing to external local repo paths) or `without-code`, select `en-US` or `pt-BR`, and set your tracker URL/ID prefix. Leave `CONTEXT.md` absent for now.
 2. **Start from raw input:**
    - Have a kickoff or alignment transcript? Run `/meeting-minutes`. It separates explicitly stated decisions from presumed agreements, generates stakeholder questionnaires, and writes `discovery-input.md`.
    - Have a briefing, feature idea, or `discovery-input.md`? Run `/requirements-discovery` to map domains, size epics, and generate candidate stories in `.scratch/<topic>/issues/`.
@@ -69,7 +71,7 @@ Standard AI prompts fill context gaps with plausible-sounding inventions (invent
 3. **Run `/bootstrap-context` before your first User Story:**
    `/bootstrap-context` supports all three brownfield realities:
    - **With legacy docs (`docs/reference/`):** scans the documents, flags competing synonyms (for example, "Account" vs. "Depot") and potentially stale rules, runs a short curation round with the PO so outdated terminology never enters the glossary silently, and publishes `CONTEXT.md` plus `docs/product-overview.md`.
-   - **With codebase access (`Mode: with-code`):** dispatches a subagent to inspect schemas, roles, thresholds, and integrations directly in code, citing source files as recommendations and surfacing contradictions between legacy docs and live code.
+   - **With codebase access (`Mode: with-code`):** dispatches a read-only subagent across the workspace root or every local repository path listed in `## Fact sources` to inspect schemas, roles, thresholds, and integrations directly in code, citing source files as recommendations and surfacing contradictions between legacy docs and live code.
    - **No docs and no code (`TACIT ONLY`):** runs a focused 10-minute onboarding examination with the PO to capture product purpose, active roles, the 5 to 10 core domain entities, production modules, and external integrations before any story is refined.
 
 ### Day-to-day tips for ongoing teams

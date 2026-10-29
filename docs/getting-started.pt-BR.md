@@ -8,7 +8,7 @@ Guia prático para adotar o **Refinement Skills** no dia a dia de produto, engen
 
 ## 1. Anatomia do Workspace Alvo
 
-Quando você instala este pacote no repositório do produto (ou em um repositório dedicado só para análise no modo `without-code`), os fluxos leem e gravam em uma estrutura previsível para acumular memória entre sessões:
+Quando você instala este pacote no repositório do produto ou em um workspace dedicado de refinamento (`without-code`, ou `with-code` apontando `Fact sources` para um ou mais repositórios locais de código), os fluxos leem e gravam em uma estrutura previsível para acumular memória entre sessões:
 
 ```text
 meu-produto/
@@ -29,7 +29,9 @@ Antes de fazer qualquer pergunta factual ao PO, todas as skills consultam estas 
 3. `docs/product-overview.md` (propósito, módulos em produção, permissões, integrações ativas e regras/SLAs vigentes)
 4. `.scratch/` (histórias, specs, atas e planos de QA de sessões anteriores)
 5. `docs/reference/` e `docs/` (manuais brutos, regulamentos, wireframes, planilhas de regras)
-6. Código-fonte do produto via subagente somente-leitura (quando `Mode: with-code`)
+6. Código-fonte do produto via subagente somente-leitura (quando `Mode: with-code`, na raiz `.` do workspace ou nos caminhos de repositórios locais listados em `docs/agents/refinement.md`, como `../produto-api` e `../produto-web`)
+
+> **Workspace dedicado ou múltiplos repositórios no modo `with-code`:** você não precisa instalar dentro de um único repositório de código. Rode `/configure-refinement` em um workspace dedicado de refinamento (ou no repositório principal) e liste os checkouts locais em `## Fact sources` no `docs/agents/refinement.md` (por exemplo, `source code in ../produto-api, ../produto-web` (read-only), ou `source code in ., ../produto-web` (read-only) quando instalado no repositório principal). Os repositórios de código são lidos estritamente em modo somente-leitura; exponha pastas externas à sessão do agente adicionando-as como pastas de um **workspace Multi-root** (Antigravity, VS Code, Cursor) ou iniciando o Claude Code com `claude --add-dir ../produto-api --add-dir ../produto-web`.
 
 ---
 
@@ -37,7 +39,7 @@ Antes de fazer qualquer pergunta factual ao PO, todas as skills consultam estas 
 
 Em projetos que estão nascendo do zero, o contexto é construído organicamente junto com as primeiras definições:
 
-1. **Configure uma única vez:** rode `/configure-refinement`, escolha `with-code` ou `without-code`, selecione `pt-BR` (ou `en-US`) e informe a URL/prefixo do seu tracker. Não precisa criar `CONTEXT.md` manualmente.
+1. **Configure uma única vez:** rode `/configure-refinement`, escolha `with-code` (no próprio repositório ou apontando caminhos de repositórios locais) ou `without-code`, selecione `pt-BR` (ou `en-US`) e informe a URL/prefixo do seu tracker. Não precisa criar `CONTEXT.md` manualmente.
 2. **Comece pelo material bruto:**
    - Tem transcrição de reunião? Rode `/meeting-minutes` para separar decisões verbalizadas de acordos presumidos, gerar questionários e criar o `discovery-input.md`.
    - Tem briefing, notas ou `discovery-input.md`? Rode `/requirements-discovery` para mapear domínios, dimensionar épicos e gerar histórias candidatas.
@@ -69,7 +71,7 @@ Prompts comuns tentam parecer prestativos inventando regras, perfis genéricos (
 3. **Rode `/bootstrap-context` antes da primeira US:**
    A skill cobre os três cenários reais de produtos em andamento:
    - **Com documentação (`docs/reference/`):** lê os arquivos, identifica sinônimos conflitantes nos documentos legados (ex.: "Cliente" vs. "Conta" vs. "Garagem") e regras potencialmente defasadas, faz 1 rodada curta de curadoria com o PO e grava `CONTEXT.md` + `docs/product-overview.md` (mais questionários para engenharia se sobrarem lacunas técnicas).
-   - **Com código (`Mode: with-code`):** despacha um subagente para ler entidades, perfis de acesso, limiares e integrações direto no código, trazendo recomendações com citação de arquivo e apontando divergências entre documentação antiga e código em produção.
+   - **Com código (`Mode: with-code`):** despacha um subagente somente-leitura na raiz do workspace ou em todos os caminhos de repositórios locais listados em `## Fact sources` para ler entidades, perfis de acesso, limiares e integrações direto no código, trazendo recomendações com citação de arquivo e apontando divergências entre documentação antiga e código em produção.
    - **Sem documentação e sem código (`APENAS TÁCITO`):** conduz uma sabatina rápida e guiada (10 minutos) com o PO para registrar propósito do produto, perfis ativos, as 5 a 10 entidades centrais, módulos em produção e integrações externas antes de refinar histórias.
 
 ### Boas práticas no dia a dia de projetos avançados

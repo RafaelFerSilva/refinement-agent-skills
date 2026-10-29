@@ -29,7 +29,7 @@ Each workflow fits in a single session and publishes to the tracker. Between wor
 
 ## Two operating modes
 
-The workspace declares in `docs/agents/refinement.md` whether it runs **with code** (`with-code`) or **without code** (`without-code`). With code, workflows inspect the codebase before asking questions and resolve architectural questions directly. Without code, the PO is the source of facts, the glossary and previous stories serve as memory, and architectural questions become questionnaires for the engineering team. The workflows remain identical; only who answers what changes.
+The workspace declares in `docs/agents/refinement.md` whether it runs **with code** (`with-code`) or **without code** (`without-code`). With code, workflows inspect the codebase (in the workspace root or at read-only repository paths listed in `Fact sources`) before asking questions and resolve architectural questions directly. Without code, the PO is the source of facts, the glossary and previous stories serve as memory, and architectural questions become questionnaires for the engineering team. The workflows remain identical; only who answers what changes.
 
 ## Underlying primitives
 
