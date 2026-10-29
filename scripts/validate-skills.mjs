@@ -3,7 +3,7 @@
 // usage: node scripts/validate-skills.mjs
 import { readFileSync, readdirSync, existsSync, statSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
-import { join, resolve, dirname } from 'node:path';
+import { join, resolve, dirname, basename } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
@@ -19,21 +19,61 @@ const hasDash = (text) => /[\u2013\u2014]/.test(text);
 function frontmatter(text, skillName) {
   const m = text.match(/^---\n([\s\S]*?)\n---\n/);
   if (!m) return null;
-  const fm = {};
+  const rootMap = Object.create(null);
+  const stack = [{ indent: 0, map: rootMap, prefix: '', pending: null }];
   for (const line of m[1].split('\n')) {
-    if (!line.trim()) continue;
-    const kv = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (!line.trim() || /^\s*#/.test(line)) continue;
+    if (/^[ ]*\t/.test(line)) {
+      fail(`${skillName}: tab indentation in frontmatter: "${line}"`);
+      continue;
+    }
+    const kv = line.match(/^( *)([A-Za-z0-9_-]+):(.*)$/);
     if (!kv) {
       fail(`${skillName}: invalid frontmatter line: "${line}"`);
       continue;
     }
-    const val = kv[2].trim();
-    if (val.includes(': ') && !(val.startsWith('"') && val.endsWith('"')) && !(val.startsWith("'") && val.endsWith("'"))) {
-      fail(`${skillName}: value of "${kv[1]}" contains ": " and is not quoted (breaks YAML parsers)`);
+    const indent = kv[1].length;
+    const key = kv[2];
+    let top = stack[stack.length - 1];
+    if (indent > top.indent) {
+      if (!top.pending) {
+        fail(`${skillName}: unexpected frontmatter indentation: "${line}"`);
+        continue;
+      }
+      const next = { indent, map: top.pending.map, prefix: top.pending.prefix, pending: null };
+      top.pending = null;
+      stack.push(next);
+      top = next;
+    } else if (indent < top.indent) {
+      while (stack.length > 1 && indent < stack[stack.length - 1].indent) stack.pop();
+      top = stack[stack.length - 1];
+      top.pending = null;
+      if (indent !== top.indent) {
+        fail(`${skillName}: inconsistent frontmatter indentation: "${line}"`);
+        continue;
+      }
     }
-    fm[kv[1]] = val.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
+    const fullKey = top.prefix ? `${top.prefix}.${key}` : key;
+    if (Object.hasOwn(top.map, key)) {
+      fail(`${skillName}: duplicate frontmatter key "${fullKey}"`);
+    }
+    let val = kv[3].trim();
+    if (val && !val.startsWith('"') && !val.startsWith("'")) {
+      val = val.replace(/(?:^|\s)#.*$/, '').trim();
+    }
+    if (!val) {
+      const child = Object.create(null);
+      top.map[key] = child;
+      top.pending = { map: child, prefix: fullKey };
+      continue;
+    }
+    top.pending = null;
+    if (val.includes(': ') && !(val.startsWith('"') && val.endsWith('"')) && !(val.startsWith("'") && val.endsWith("'"))) {
+      fail(`${skillName}: value of "${fullKey}" contains ": " and is not quoted (breaks YAML parsers)`);
+    }
+    top.map[key] = val.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
   }
-  return fm;
+  return rootMap;
 }
 
 const skills = readdirSync(skillsDir)
@@ -50,8 +90,11 @@ for (const name of skills) {
   if (!fm) { fail(`${name}: missing frontmatter`); continue; }
   if (fm.name !== name) fail(`${name}: name "${fm.name}" differs from the folder`);
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(name) || name.length > 64) fail(`${name}: name outside the Agent Skills pattern`);
-  if (!fm.description) fail(`${name}: missing description`);
+  if (typeof fm.description !== 'string' || !fm.description) fail(`${name}: missing description`);
   else if (fm.description.length > 1024) fail(`${name}: description above 1024 characters`);
+  if (fm.internal === 'true' || fm.metadata?.internal === 'true') {
+    fail(`${name}: published package skill declares internal: true`);
+  }
   const lines = text.split('\n').length;
   if (lines > 500) fail(`${name}: SKILL.md with ${lines} lines (maximum 500)`);
   const yamlFile = join(dir, 'agents', 'openai.yaml');
@@ -314,6 +357,38 @@ const bridge = join(root, '.claude', 'CLAUDE.md');
 if (existsSync(join(root, 'CLAUDE.md'))) fail('CLAUDE.md at the repository root: a plugin root CLAUDE.md is not loaded as context, move it to .claude/CLAUDE.md');
 if (!existsSync(bridge)) fail('.claude/CLAUDE.md missing: Claude Code loses the AGENTS.md instructions in this repository');
 else if (!readFileSync(bridge, 'utf8').includes('@../AGENTS.md')) fail('.claude/CLAUDE.md does not import @../AGENTS.md');
+
+// Internal toolchain isolation: npx skills add walks AGENT_PROJECT_SKILL_DIRS (.agents/skills/,
+// .claude/skills/, etc.) alongside skills/ and skips a skill only when its frontmatter declares
+// metadata.internal: true. Every SKILL.md outside skills/ goes through frontmatter() and must carry
+// metadata.internal: true, and the .claude/skills/ and .agents/skills/ mirrors must match byte for byte.
+for (const file of walk(root, (p) => basename(p) === 'SKILL.md')) {
+  const rel = file.slice(root.length + 1);
+  if (underDir(rel, 'skills')) continue;
+  const fm = frontmatter(readFileSync(file, 'utf8'), rel);
+  if (!fm) fail(`${rel}: missing frontmatter`);
+  else if (typeof fm.metadata !== 'object' || fm.metadata === null || fm.metadata.internal !== 'true') {
+    fail(`${rel}: missing metadata.internal: true (leaks internal skill into npx skills add)`);
+  }
+}
+const claudeSkillsDir = join(root, '.claude', 'skills');
+const agentSkillsDir = join(root, '.agents', 'skills');
+if (existsSync(claudeSkillsDir) || existsSync(agentSkillsDir)) {
+  const listMirror = (base) => (existsSync(base) ? walk(base, () => true).map((p) => p.slice(base.length + 1)).sort() : []);
+  const claudeFiles = listMirror(claudeSkillsDir);
+  const agentFiles = listMirror(agentSkillsDir);
+  const claudeSet = new Set(claudeFiles);
+  const agentSet = new Set(agentFiles);
+  for (const f of claudeFiles) {
+    if (!agentSet.has(f)) fail(`.claude/skills/${f}: missing mirror at .agents/skills/${f}`);
+    else if (!readFileSync(join(claudeSkillsDir, f)).equals(readFileSync(join(agentSkillsDir, f)))) {
+      fail(`.claude/skills/${f}: differs from mirror .agents/skills/${f}`);
+    }
+  }
+  for (const f of agentFiles) {
+    if (!claudeSet.has(f)) fail(`.agents/skills/${f}: missing mirror at .claude/skills/${f}`);
+  }
+}
 
 // Grader regression: every artifact fixture passes its own grader, in the language its name declares.
 const artifactsDir = join(root, 'evals', 'fixtures', 'artifacts');

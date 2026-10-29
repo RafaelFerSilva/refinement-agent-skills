@@ -2,6 +2,8 @@
 name: implement-spec
 description: "Implement the result of /to-spec and /to-tickets on this package."
 disable-model-invocation: true
+metadata:
+  internal: true
 ---
 
 You have been provided a spec. This spec should have tickets associated with it under `docs/tickets/<feature-slug>/`, describing how to implement the spec.

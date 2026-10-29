@@ -2,6 +2,8 @@
 name: implement
 description: "Implement a piece of work on this package based on a spec or set of tickets."
 disable-model-invocation: true
+metadata:
+  internal: true
 ---
 
 If the user passes a ticket reference, fetch it from the issue tracker in [`docs/agents/build-issue-tracker.md`](../../../docs/agents/build-issue-tracker.md) and state its title before starting. If the reference is ambiguous, ask.

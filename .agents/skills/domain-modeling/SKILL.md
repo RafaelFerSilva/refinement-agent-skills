@@ -1,6 +1,8 @@
 ---
 name: domain-modeling
 description: Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing CONTEXT.md (or GLOSSARY.md), or recording or editing an ADR.
+metadata:
+  internal: true
 ---
 
 # Domain Modeling

@@ -31,7 +31,7 @@ Every step concludes with a checkable, rigorous completion criterion. References
 
 ## How this package is built
 
-The package is built with the engineering skills derived from `mattpocock/skills` and maintained locally in both `.claude/skills/` (Claude Code) and `.agents/skills/` (Antigravity), with zero global dependency: a decision becomes a spec and tickets, and `/implement` and `/implement-spec` run the ticket preflight in `docs/agents/ticket-preflight.md` first and end on the Definition of Done above instead of a test suite this repository does not have. Those skills are the toolchain that builds the package, not a dependency of it: nothing under `skills/` references them, and the self-containment invariant is about the package.
+The package is built with the engineering skills derived from `mattpocock/skills` and maintained locally in both `.claude/skills/` (Claude Code) and `.agents/skills/` (Antigravity), with zero global dependency: a decision becomes a spec and tickets, and `/implement` and `/implement-spec` run the ticket preflight in `docs/agents/ticket-preflight.md` first and end on the Definition of Done above instead of a test suite this repository does not have. Those skills are the toolchain that builds the package, not a dependency of it: nothing under `skills/` references them, and the self-containment invariant is about the package. Every `SKILL.md` outside `skills/` declares `metadata.internal: true` and stays identical across `.claude/skills/` and `.agents/skills/` so `npx skills add` installs only `skills/` into target workspaces.
 
 ## Agent skills
 
